@@ -5,9 +5,11 @@ type Player struct {
 }
 
 func NewPlayer(p *Piece) *Player {
-	return nil
+	return &Player{
+		piece: p,
+	}
 }
 
 func (p *Player) GetPiece() *Piece {
-	return nil
+	return p.piece
 }
