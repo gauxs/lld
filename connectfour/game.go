@@ -6,17 +6,12 @@ import (
 	"github.com/gauxs/lld/connectfour/enum"
 )
 
-type GameRule struct {
-	consecutiveCount uint
-	directions       []enum.Direction
-}
-
 type Game struct {
 	turnNo        int
 	board         *Board
 	players       []*Player
 	winningPlayer *Player
-	rules         *GameRule
+	rule          Rule
 }
 
 func NewGame(numOfPlayers uint, boardDimensionX uint, boardDimensionY uint) *Game {
@@ -31,14 +26,11 @@ func NewGame(numOfPlayers uint, boardDimensionX uint, boardDimensionY uint) *Gam
 		board:         NewBoard(boardDimensionX, boardDimensionY),
 		players:       players,
 		winningPlayer: nil,
-		rules: &GameRule{
-			consecutiveCount: 4,
-			directions: []enum.Direction{
-				enum.DIRECTION_DIAGONAL,
-				enum.DIRECTION_HORIZONTAL,
-				enum.DIRECTION_VERTICAL,
-			},
-		},
+		rule: NewStandardRules(4, []enum.Direction{
+			enum.DIRECTION_DIAGONAL,
+			enum.DIRECTION_HORIZONTAL,
+			enum.DIRECTION_VERTICAL,
+		}),
 	}
 }
 
@@ -58,7 +50,8 @@ func (g *Game) Start() error {
 
 		g.board.Place(col, curentPlayer.GetPiece())
 
-		if g.board.TopPieceHasNConsecutive(col, g.rules.consecutiveCount, g.rules.directions) {
+		// if g.board.TopPieceHasNConsecutive(col, g.rules.consecutiveCount, g.rules.directions) {
+		if g.rule.HasWon(g.board, int(col)) {
 			g.winningPlayer = curentPlayer
 			break
 		}
