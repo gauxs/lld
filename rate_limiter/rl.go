@@ -6,14 +6,15 @@ import (
 )
 
 type RateLimiter struct {
-	s   *Storage
-	alg RLAlgorithm
+	s      *Storage
+	alg    RLAlgorithm
+	resgen ResourceIDGenerator
 }
 
 func (rl *RateLimiter) Handle(req *pkg.Request) enum.RLStatus {
 	return enum.RLStatus_INVALID
 }
 
-func (rl *RateLimiter) UpdateAlgorithm(newAlg RLAlgorithm) {
+func (rl *RateLimiter) UpdateRLAlgorithm(newAlg RLAlgorithm) {
 
 }

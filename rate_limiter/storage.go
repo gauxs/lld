@@ -1,16 +1,18 @@
 package ratelimiter
 
+import "sync"
+
 type Storage struct {
+	s sync.Map
 }
 
-func (s *Storage) GetResourceCount(res *Resource) int {
+func (s *Storage) Get(key string) int {
 	return 0
 }
 
-func (s *Storage) IncrementResourceCount(res *Resource) int {
-	return 0
+func (s *Storage) CompareAndIncrement(key string, lessThan int) bool {
+	return false
 }
 
-func (s *Storage) DecrementResourceCount(res *Resource) int {
-	return 0
+func (s *Storage) Delete(key string) {
 }
