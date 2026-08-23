@@ -13,9 +13,9 @@ func NewRequest(cID string, a string) *Request {
 }
 
 func (r *Request) GetClientID() string {
-	return ""
+	return r.clientID
 }
 
 func (r *Request) GetAPI() string {
-	return ""
+	return r.api
 }

@@ -12,9 +12,9 @@ type RateLimiter struct {
 }
 
 func (rl *RateLimiter) Handle(req *pkg.Request) enum.RLStatus {
-	return enum.RLStatus_INVALID
+	return rl.alg.HandleResource(rl.resgen.GetResource(req), rl.s)
 }
 
 func (rl *RateLimiter) UpdateRLAlgorithm(newAlg RLAlgorithm) {
-
+	rl.alg = newAlg
 }

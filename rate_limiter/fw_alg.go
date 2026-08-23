@@ -22,32 +22,53 @@ type FixedWindowAlgorithm struct {
 	config map[string]*resourceConfig
 }
 
-func (fwa *FixedWindowAlgorithm) generateKey(res *Resource) string {
-	// resourceID + lastWindowStartTime
-	return ""
+func (fwa *FixedWindowAlgorithm) generateKey(resID string, lastWindowStartTime time.Time) string {
+	return resID + "#" + lastWindowStartTime.String()
 }
 
-func (fwa *FixedWindowAlgorithm) isNewWindow(rc *resourceConfig) string {
-	return ""
+func (fwa *FixedWindowAlgorithm) isNewWindow(rc *resourceConfig) bool {
+	return time.Now().After(rc.lastWindowStartTime.Add(rc.windowDuration))
 }
 
-func (fwa *FixedWindowAlgorithm) generateNewWindow(rc *resourceConfig) string {
-	// cleanup last window here
-	return ""
+func (fwa *FixedWindowAlgorithm) getOrGenerateKey(resID string, rc *resourceConfig, s *Storage) string {
+	if fwa.isNewWindow(rc) {
+		rc.l.RUnlock()
+		defer rc.l.Lock()
+		rc.l.Lock()
+		if rc.lastWindowStartTime.Add(rc.windowDuration).Before(time.Now()) {
+			s.Delete(fwa.generateKey(resID, rc.lastWindowStartTime))
+			rc.lastWindowStartTime = rc.lastWindowStartTime.Add(rc.windowDuration)
+		}
+		rc.l.Unlock()
+	}
+
+	return fwa.generateKey(resID, rc.lastWindowStartTime)
 }
 
 func (fwa *FixedWindowAlgorithm) HandleResource(res *Resource, s *Storage) enum.RLStatus {
-	return enum.RLStatus_INVALID
+	resConfig := fwa.config[res.GetID()]
+	resConfig.l.RLock()
+	defer resConfig.l.RUnlock()
+
+	if !s.CompareAndIncrement(fwa.getOrGenerateKey(res.GetID(), resConfig, s), resConfig.maxResourceCount) {
+		return enum.RLStatus_REJECTED
+	}
+
+	return enum.RLStatus_ACCEPTED
 }
 
 func (fwa *FixedWindowAlgorithm) UpdateWindowDuration(res *Resource, newWD time.Duration) {
+	resConfig := fwa.config[res.GetID()]
+	resConfig.l.Lock()
+	defer resConfig.l.Unlock()
 
+	resConfig.windowDuration = newWD
 }
 
 func (fwa *FixedWindowAlgorithm) UpdateMaxResourceCount(res *Resource, newmrc int) {
+	resConfig := fwa.config[res.GetID()]
+	resConfig.l.Lock()
+	defer resConfig.l.Unlock()
 
-}
-
-func (fwa *FixedWindowAlgorithm) UpdateLastWindowStartTime(res *Resource, newlwst time.Time) {
-
+	resConfig.maxResourceCount = newmrc
 }
