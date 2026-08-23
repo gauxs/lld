@@ -12,6 +12,12 @@ type Storage struct {
 	m sync.Map
 }
 
+func NewStorage() *Storage {
+	return &Storage{
+		m: sync.Map{},
+	}
+}
+
 func (s *Storage) CompareAndIncrement(key string, lessThan int) bool {
 	if actual, loaded := s.m.LoadOrStore(key, &ds{
 		sync.RWMutex{},
@@ -35,4 +41,8 @@ func (s *Storage) CompareAndIncrement(key string, lessThan int) bool {
 
 func (s *Storage) Delete(key string) {
 	s.m.Delete(key)
+}
+
+func (s *Storage) GC() {
+	// run GC every duration and clear
 }

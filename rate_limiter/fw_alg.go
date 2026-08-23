@@ -1,6 +1,7 @@
 package ratelimiter
 
 import (
+	"strconv"
 	"sync"
 	"time"
 
@@ -12,37 +13,21 @@ type RLAlgorithm interface {
 }
 
 type resourceConfig struct {
-	l                   sync.RWMutex
-	maxResourceCount    int
-	windowDuration      time.Duration
-	lastWindowStartTime time.Time
+	l                sync.RWMutex
+	maxResourceCount int
+	windowDuration   time.Duration
 }
 
 type FixedWindowAlgorithm struct {
 	config map[string]*resourceConfig
 }
 
-func (fwa *FixedWindowAlgorithm) generateKey(resID string, lastWindowStartTime time.Time) string {
-	return resID + "#" + lastWindowStartTime.String()
+func (fwa *FixedWindowAlgorithm) generateKey(resID string, windowNo int) string {
+	return resID + "#" + strconv.Itoa(windowNo)
 }
 
-func (fwa *FixedWindowAlgorithm) isNewWindow(rc *resourceConfig) bool {
-	return time.Now().After(rc.lastWindowStartTime.Add(rc.windowDuration))
-}
-
-func (fwa *FixedWindowAlgorithm) getOrGenerateKey(resID string, rc *resourceConfig, s *Storage) string {
-	if fwa.isNewWindow(rc) {
-		rc.l.RUnlock()
-		defer rc.l.Lock()
-		rc.l.Lock()
-		if rc.lastWindowStartTime.Add(rc.windowDuration).Before(time.Now()) {
-			s.Delete(fwa.generateKey(resID, rc.lastWindowStartTime))
-			rc.lastWindowStartTime = rc.lastWindowStartTime.Add(rc.windowDuration)
-		}
-		rc.l.Unlock()
-	}
-
-	return fwa.generateKey(resID, rc.lastWindowStartTime)
+func (fwa *FixedWindowAlgorithm) currentWindow(rc *resourceConfig) int {
+	return int(float64(time.Now().UnixNano()) / float64(rc.windowDuration.Nanoseconds()))
 }
 
 func (fwa *FixedWindowAlgorithm) HandleResource(res *Resource, s *Storage) enum.RLStatus {
@@ -50,7 +35,7 @@ func (fwa *FixedWindowAlgorithm) HandleResource(res *Resource, s *Storage) enum.
 	resConfig.l.RLock()
 	defer resConfig.l.RUnlock()
 
-	if !s.CompareAndIncrement(fwa.getOrGenerateKey(res.GetID(), resConfig, s), resConfig.maxResourceCount) {
+	if !s.CompareAndIncrement(fwa.generateKey(res.GetID(), fwa.currentWindow(resConfig)), resConfig.maxResourceCount) {
 		return enum.RLStatus_REJECTED
 	}
 
