@@ -1,6 +1,9 @@
 package ratelimiter
 
-import "sync"
+import (
+	"sync"
+	"time"
+)
 
 type ds struct {
 	l     sync.RWMutex
@@ -18,7 +21,7 @@ func NewStorage() *Storage {
 	}
 }
 
-func (s *Storage) CompareAndIncrement(key string, lessThan int) bool {
+func (s *Storage) CompareAndIncrement(key string, lessThan int, expiry time.Duration) bool {
 	if actual, loaded := s.m.LoadOrStore(key, &ds{
 		sync.RWMutex{},
 		key,
@@ -34,15 +37,16 @@ func (s *Storage) CompareAndIncrement(key string, lessThan int) bool {
 		}
 
 		return false
+	} else {
+		s.DeleteAfterDuration(key, expiry)
 	}
 
 	return true
 }
 
-func (s *Storage) Delete(key string) {
-	s.m.Delete(key)
-}
-
-func (s *Storage) GC() {
-	// run GC every duration and clear
+func (s *Storage) DeleteAfterDuration(key string, expiry time.Duration) {
+	// Automatically runs the function in its own goroutine after the duration
+	time.AfterFunc(expiry, func() {
+		s.m.Delete(key)
+	})
 }
