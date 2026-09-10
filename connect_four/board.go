@@ -1,7 +1,7 @@
 package connectfour
 
 import (
-	"github.com/gauxs/lld/connectfour/enum"
+	"github.com/gauxs/lld/connect_four/enum"
 )
 
 type Board struct {

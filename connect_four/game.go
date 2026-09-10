@@ -3,7 +3,7 @@ package connectfour
 import (
 	"fmt"
 
-	"github.com/gauxs/lld/connectfour/enum"
+	"github.com/gauxs/lld/connect_four/enum"
 )
 
 type Game struct {

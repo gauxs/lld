@@ -1,6 +1,6 @@
 package connectfour
 
-import "github.com/gauxs/lld/connectfour/enum"
+import "github.com/gauxs/lld/connect_four/enum"
 
 type Piece struct {
 	color enum.Color

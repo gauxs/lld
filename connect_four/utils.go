@@ -1,6 +1,6 @@
 package connectfour
 
-import "github.com/gauxs/lld/connectfour/enum"
+import "github.com/gauxs/lld/connect_four/enum"
 
 func nextAvailaibleColor(players []*Player) enum.Color {
 	m := make(map[enum.Color]bool)
