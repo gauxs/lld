@@ -1,7 +1,7 @@
-## Problem Statement
+# Problem Statement
 > Build the object-oriented design for a two-player Connect Four game. Players take turns dropping discs into a 7-column, 6-row board. The first to align four of their own discs vertically, horizontally, or diagonally wins.
 
-## Requirement Gathering
+# [Step: I] Requirement Gathering
 ### Functional requirement
 > Player can choose only column?
 Yes and the last empty slot will be filled
@@ -51,15 +51,75 @@ Do no allow the player to make the move
 9. Future support for more players.
 10. Future configurable consecutive-piece count and winning directions.
 
+# [Step: II] Entities and relationships
 ## Entities
-Game
-Player
-Board
-Piece
+1. Game: Holds the board and players. Manages game's state. Enforces players turns. 
+2. Board: Represents a board. The grid where the discs will be placed. Checks the validity of moves. Knows if the column / board is full. Can check if 4 discs are connected.
+3. Player: Represents a player. Holds the name and disc color.
 
-## Relationships
-Game contains Players and Board.
-Board contains Pieces.
-Piece belongs to a Player.
-Game coordinates turns and game state.
-Board manages board state/placement.
+# [Step: III] Class design
+
+### Player
+```go
+type Disc int
+
+const(
+    DISK_RED = iota
+    DISK_BLUE
+)
+
+type Player struct{
+    name string
+    color Disc
+}
+
+func (p *Player) GetName() string{}
+func (p *Player) GetColor() string{}
+```
+
+### Board
+```go
+type Direction int
+
+const(
+    Direction_Horizontal = iota
+    Direction_Vertical
+    Direction_Diagonal
+)
+
+type Board struct{
+    row int
+    col int
+    grid [][]Disc
+}
+
+func (b *Board) PlaceDisk(d Disc, col int) error{}
+func (b *Board) CountConsecutiveInDirection(col int, d Direction) int{}
+func (b *Board) IsFull() bool{}
+```
+
+### Game
+```go
+type GameState int
+
+const(
+    GameState_Not_Playing = iota
+    GameState_Playing
+    GameState_Won
+    GameState_Draw
+)
+
+type Game struct{
+    players []*Player
+    board *Board
+    state GameState
+    currentPlayer *Player
+    winner *Player
+}
+
+func (g *Game) WinningPlayer() *Player{}
+func (g *Game) GetGameState() GameState{}
+func (g *Game) GetCurrentPlayer() *Player{}
+func (g *Game) GetWinner() *Player{}
+func (g *Game) MakeMove(*Player, col int) error{}
+```
