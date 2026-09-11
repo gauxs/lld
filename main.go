@@ -1,7 +1,7 @@
 package main
 
-import "fmt"
+import connectfour "github.com/gauxs/lld/connect_four"
 
 func main() {
-	fmt.Println("Hello")
+	connectfour.Execute()
 }

@@ -6,10 +6,31 @@ import (
 	"github.com/gauxs/lld/connect_four/enum"
 )
 
+var directionRowColSteps = map[enum.Direction][][]int{
+	enum.DIRECTION_HORIZONTAL:     {{0, 1}, {0, -1}},
+	enum.DIRECTION_VERTICAL:       {{1, 0}, {-1, 0}},
+	enum.DIRECTION_DIAGONAL_BACK:  {{-1, -1}, {1, 1}},
+	enum.DIRECTION_DIAGONAL_FRONT: {{-1, 1}, {1, -1}},
+}
+
 type Board struct {
 	row    int
 	column int
 	grid   [][]enum.Disc
+}
+
+func NewBoard(r int, c int) *Board {
+	g := make([][]enum.Disc, r)
+
+	for i := 0; i < r; i++ {
+		g[i] = make([]enum.Disc, c)
+	}
+
+	return &Board{
+		row:    r,
+		column: c,
+		grid:   g,
+	}
 }
 
 func (b *Board) getNextFreeSlot(col int) int {
@@ -50,13 +71,6 @@ func (b *Board) countInDirection(r int, c int, limit int, refDisk enum.Disc, dr 
 	}
 
 	return 1 + b.countInDirection(r+dr, c+dc, limit-1, refDisk, dr, dc)
-}
-
-var directionRowColSteps = map[enum.Direction][][]int{
-	enum.DIRECTION_HORIZONTAL:     {{0, 1}, {0, -1}},
-	enum.DIRECTION_VERTICAL:       {{1, 0}, {-1, 0}},
-	enum.DIRECTION_DIAGONAL_BACK:  {{-1, -1}, {1, 1}},
-	enum.DIRECTION_DIAGONAL_FRONT: {{-1, 1}, {1, -1}},
 }
 
 func (b *Board) CountInDirection(r int, c int, d enum.Direction, limit int) int {

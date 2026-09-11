@@ -9,6 +9,13 @@ type Player struct {
 	disk enum.Disc
 }
 
+func NewPlayer(name string, d enum.Disc) *Player {
+	return &Player{
+		name: name,
+		disk: d,
+	}
+}
+
 func (p *Player) GetName() string {
 	return p.name
 }
