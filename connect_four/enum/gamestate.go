@@ -1,0 +1,11 @@
+package enum
+
+type GameState int
+
+const (
+	GAMESTATE_INVALID = iota
+	GAMESTATE_NOT_PLAYING
+	GAMESTATE_PLAYING
+	GAMESTATE_WON
+	GAMESTATE_DRAW
+)

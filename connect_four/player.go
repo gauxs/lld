@@ -1,15 +1,17 @@
 package connectfour
 
+import (
+	"github.com/gauxs/lld/connect_four/enum"
+)
+
 type Player struct {
-	piece *Piece
+	name string
+	disk enum.Disc
 }
 
-func NewPlayer(p *Piece) *Player {
-	return &Player{
-		piece: p,
-	}
+func (p *Player) GetName() string {
+	return p.name
 }
-
-func (p *Player) GetPiece() *Piece {
-	return p.piece
+func (p *Player) GetDisk() enum.Disc {
+	return p.disk
 }
