@@ -44,6 +44,10 @@ func (g *Game) StartGame() error {
 		return ErrGameNotInCorrectState
 	}
 
+	if len(g.players) < 2 {
+		return ErrInsufficientPlayers
+	}
+
 	g.state = enum.GAMESTATE_PLAYING
 	return nil
 }
