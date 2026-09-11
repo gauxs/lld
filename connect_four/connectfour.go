@@ -10,8 +10,13 @@ func Execute() {
 	fmt.Println("Starting the game ConnectFour")
 
 	game := NewGame(6, 7)
-	game.AddPlayer("Player-A", enum.DISK_RED)
-	game.AddPlayer("Player-B", enum.DISK_BLUE)
+	if err := game.AddPlayer("Player-A", enum.DISK_RED); err != nil {
+		fmt.Println(err.Error())
+	}
+	if err := game.AddPlayer("Player-B", enum.DISK_BLUE); err != nil {
+		fmt.Println(err.Error())
+	}
+
 	game.StartGame()
 
 	for game.GetGameState() == enum.GAMESTATE_PLAYING {

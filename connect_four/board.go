@@ -43,18 +43,18 @@ func (b *Board) getNextFreeSlot(col int) int {
 	return -1
 }
 
-func (b *Board) PlaceDisk(d enum.Disc, col int) error {
+func (b *Board) PlaceDisk(d enum.Disc, col int) (int, error) {
 	if col < 0 || col >= b.column {
-		return fmt.Errorf("column %d: %w", col, ErrInvalidMove)
+		return -1, fmt.Errorf("column %d: %w", col, ErrInvalidMove)
 	}
 
 	r := b.getNextFreeSlot(col)
 	if r == -1 {
-		return fmt.Errorf("column %d if full: %w", col, ErrInvalidMove)
+		return -1, fmt.Errorf("column %d if full: %w", col, ErrInvalidMove)
 	}
 
 	b.grid[r][col] = d
-	return nil
+	return r, nil
 }
 
 func (b *Board) countInDirection(r int, c int, limit int, refDisk enum.Disc, dr int, dc int) int {
@@ -74,13 +74,14 @@ func (b *Board) countInDirection(r int, c int, limit int, refDisk enum.Disc, dr 
 }
 
 func (b *Board) CountInDirection(r int, c int, d enum.Direction, limit int) int {
-	if c < 0 || c >= b.column || r < 0 || r >= b.row {
+	if c < 0 || c >= b.column || r < 0 || r >= b.row || b.grid[r][c] == enum.DISK_INVALID {
 		return 0
 	}
 
 	count := 0
 	for _, rowColStep := range directionRowColSteps[d] {
-		count += b.countInDirection(r+rowColStep[0], c+rowColStep[1], limit, b.grid[r][c], rowColStep[0], rowColStep[1])
+		count += b.countInDirection(r+rowColStep[0], c+rowColStep[1], limit,
+			b.grid[r][c], rowColStep[0], rowColStep[1])
 	}
 
 	return 1 + count
