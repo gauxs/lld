@@ -1,12 +1,4 @@
----
-title: Design
-prev:
-  text: functional-requirement
-  link: /problems/connect-four/functional-requirement
-next:
-  text: codebase
-  link: /problems/connect-four/codebase
----
+# Connect Four — local two-player (design)
 
 ## Entities & responsibilities
 

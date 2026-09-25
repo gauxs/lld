@@ -1,6 +1,6 @@
-# Problem name — requirements
+# Problem name — baseline
 
-One-paragraph problem statement (interview prompt).
+One-paragraph problem statement (interview prompt for this extension only).
 
 ## Functional requirements
 
@@ -22,7 +22,7 @@ Requirement statement.
 
 </div>
 
-## Out of scope
+## Out of scope (this extension)
 
 <div class="lld-req lld-req--scope">
 
@@ -31,7 +31,7 @@ Requirement statement.
 
 <div class="lld-reveal-inner">
 
-- **Deferred idea?** Why not now.
+- **Deferred idea?** Point to a child extension or “not in this scope.”
 
 </div>
 </details>
@@ -46,14 +46,10 @@ Requirement statement.
 
 Requirement statement.
 
-<details class="lld-reveal">
-<summary><span class="lld-reveal-icon" aria-hidden="true"></span>Interview prompts</summary>
-
-<div class="lld-reveal-inner">
-
-- **Question?** Answer.
-
 </div>
-</details>
 
-</div>
+## Extensions from here
+
+| Extension | What it adds |
+| --- | --- |
+| _(none yet)_ | Add rows when you add `extensions/<child>/` |

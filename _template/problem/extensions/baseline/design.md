@@ -1,15 +1,13 @@
-# Design
+# Problem name — baseline (design)
 
 ## Entities & responsibilities
 
 | Entity | Responsibilities |
 | --- | --- |
-| **Name** | What it owns and enforces |
+| **Example** | … |
 
 ## API
 
-### ComponentName
-
 | Method | Description |
 | --- | --- |
-| `Example()` | |
+| `Example()` | … |

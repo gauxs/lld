@@ -3,17 +3,22 @@ import { computed, onMounted, onUnmounted, ref } from "vue";
 
 const props = defineProps({
   problem: { type: String, required: true },
+  extension: { type: String, default: "baseline" },
 });
 
 const modules = import.meta.glob(
-  "../../../../problems/*/code/**/*.go",
+  "../../../../problems/**/code/**/*.go",
   { query: "?raw", import: "default", eager: true },
 );
 
 const activeId = ref("");
 
 const files = computed(() => {
-  const prefix = `../../../../problems/${props.problem}/code/`;
+  const extPrefix = `../../../../problems/${props.problem}/extensions/${props.extension}/code/`;
+  const legacyPrefix = `../../../../problems/${props.problem}/code/`;
+  const prefix = Object.keys(modules).some((p) => p.startsWith(extPrefix))
+    ? extPrefix
+    : legacyPrefix;
   return Object.entries(modules)
     .filter(([p]) => p.startsWith(prefix))
     .map(([p, content]) => {

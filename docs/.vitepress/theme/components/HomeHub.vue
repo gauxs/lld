@@ -19,8 +19,8 @@ const cards = [
   {
     title: "Problems",
     description:
-      "Requirement-first trails with variations and Go reference code.",
-    link: `${base}problems/connect-four/functional-requirement`,
+      "Requirement-first extensions with optional Go reference code.",
+    link: `${base}problems/connect-four/extensions/baseline/requirements`,
     meta: "Connect Four",
   },
 ];

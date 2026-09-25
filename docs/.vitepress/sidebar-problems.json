@@ -1,0 +1,64 @@
+{
+  "connectFour": [
+    {
+      "text": "Local two-player",
+      "collapsed": true,
+      "items": [
+        {
+          "text": "Requirements",
+          "link": "/problems/connect-four/extensions/baseline/requirements"
+        },
+        {
+          "text": "Design",
+          "link": "/problems/connect-four/extensions/baseline/design"
+        },
+        {
+          "text": "Codebase",
+          "link": "/problems/connect-four/extensions/baseline/codebase"
+        }
+      ]
+    },
+    {
+      "text": "Networked multiplayer",
+      "collapsed": true,
+      "items": [
+        {
+          "text": "Requirements",
+          "link": "/problems/connect-four/extensions/networked/requirements"
+        },
+        {
+          "text": "Design",
+          "link": "/problems/connect-four/extensions/networked/design"
+        }
+      ]
+    },
+    {
+      "text": "Configurable rules & board",
+      "collapsed": true,
+      "items": [
+        {
+          "text": "Requirements",
+          "link": "/problems/connect-four/extensions/configurable-rules/requirements"
+        },
+        {
+          "text": "Design",
+          "link": "/problems/connect-four/extensions/configurable-rules/design"
+        }
+      ]
+    },
+    {
+      "text": "Spectators",
+      "collapsed": true,
+      "items": [
+        {
+          "text": "Requirements",
+          "link": "/problems/connect-four/extensions/spectators/requirements"
+        },
+        {
+          "text": "Design",
+          "link": "/problems/connect-four/extensions/spectators/design"
+        }
+      ]
+    }
+  ]
+}

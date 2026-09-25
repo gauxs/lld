@@ -5,8 +5,8 @@ prev:
   text: coordination
   link: /learn/concurrency/coordination
 next:
-  text: functional-requirement
-  link: /problems/connect-four/functional-requirement
+  text: baseline
+  link: /problems/connect-four/extensions/baseline/requirements
 ---
 
 # Scarcity
@@ -35,4 +35,4 @@ defer func() { <-sem }() // release
 
 ## What's next
 
-Apply the requirement-first trail on a full problem: [Connect Four](/problems/connect-four/functional-requirement), then compare follow-ups and the rate limiter package when added.
+Apply the requirement-first trail on a full problem: [Connect Four baseline](/problems/connect-four/extensions/baseline/requirements), then open child extensions from there.

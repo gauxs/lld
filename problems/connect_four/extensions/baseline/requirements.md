@@ -1,4 +1,4 @@
-# Connect Four — requirements
+# Connect Four — local two-player
 
 Build the object-oriented design for a two-player Connect Four game. Players take turns dropping discs into a 7-column, 6-row board. The first to align four of their own discs vertically, horizontally, or diagonally wins.
 
@@ -90,7 +90,7 @@ Moves out of range, into a full column, or while the game is not in `PLAYING` st
 
 <div class="lld-reveal-inner">
 
-- **Wrong player in API?** This baseline uses `MakeMove(col)` for the current player only.
+- **Wrong player in API?** This extension uses `MakeMove(col)` for the current player only.
 - **Silent ignore vs error?** Return an error; CLI prompts again.
 
 </div>
@@ -98,7 +98,7 @@ Moves out of range, into a full column, or while the game is not in `PLAYING` st
 
 </div>
 
-## Out of scope
+## Out of scope (this extension)
 
 <div class="lld-req lld-req--scope">
 
@@ -108,9 +108,9 @@ Moves out of range, into a full column, or while the game is not in `PLAYING` st
 <div class="lld-reveal-inner">
 
 - **Undo?** No.
-- **More than two players?** Not now; registration API can be extended later.
-- **Configurable board size?** Constructor accepts dimensions; interview story uses 6×7.
-- **Configurable win rule?** Use a `Rule` strategy; default is four in a line.
+- **More than two players?** Not in this extension.
+- **Remote play?** See [networked extension](/problems/connect-four/extensions/networked/requirements).
+- **Configurable board or win rule?** See [configurable rules extension](/problems/connect-four/extensions/configurable-rules/requirements).
 
 </div>
 </details>
@@ -123,14 +123,14 @@ Moves out of range, into a full column, or while the game is not in `PLAYING` st
 
 ### NFR-1: Concurrency model
 
-Single-threaded, in-process execution—no locking in this baseline.
+Single-threaded, in-process execution—no locking in this extension.
 
 <details class="lld-reveal">
 <summary><span class="lld-reveal-icon" aria-hidden="true"></span>Interview prompts</summary>
 
 <div class="lld-reveal-inner">
 
-- **Multiple threads?** Not for variation 1; networked follow-up adds server-side serialization.
+- **Multiple threads?** Not here; the networked extension adds server-side serialization.
 - **Reentrancy?** Not required for CLI-driven play.
 
 </div>
@@ -175,3 +175,10 @@ Invalid operations surface as errors instead of silent no-ops.
 </details>
 
 </div>
+
+## Extensions from here
+
+| Extension | What it adds |
+| --- | --- |
+| [Networked multiplayer](/problems/connect-four/extensions/networked/requirements) | Authoritative server, remote `MakeMove`, live state sync |
+| [Configurable rules & board](/problems/connect-four/extensions/configurable-rules/requirements) | Pluggable win rule and non-default board sizes |

@@ -1,11 +1,23 @@
 import path from "node:path";
+import fs from "node:fs";
 import { fileURLToPath } from "node:url";
 import { defineConfig, type UserConfig } from "vitepress";
+import { withMermaid } from "vitepress-plugin-mermaid";
 import { SITE_ICON_DARK, SITE_ICON_LIGHT } from "./site-assets";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, "../..");
-const PROD_BASE = "/lld/";
+const BASE = "/lld";
+
+const sidebarProblemsPath = path.join(__dirname, "sidebar-problems.json");
+const sidebarProblems = fs.existsSync(sidebarProblemsPath)
+  ? JSON.parse(fs.readFileSync(sidebarProblemsPath, "utf8"))
+  : { connectFour: [] };
+
+const connectFourItems = [
+  { text: "Overview", link: "/problems/connect-four/" },
+  ...(sidebarProblems.connectFour ?? []),
+];
 
 const sidebar = [
   {
@@ -34,15 +46,7 @@ const sidebar = [
           {
             text: "Connect Four",
             collapsed: false,
-            items: [
-              {
-                text: "Functional requirements",
-                link: "/problems/connect-four/functional-requirement",
-              },
-              { text: "Design", link: "/problems/connect-four/design" },
-              { text: "Codebase", link: "/problems/connect-four/codebase" },
-              { text: "Follow-up", link: "/problems/connect-four/followup" },
-            ],
+            items: connectFourItems,
           },
         ],
       },
@@ -50,19 +54,15 @@ const sidebar = [
   },
 ];
 
-function devRootRedirectPlugin(base: string) {
+function devRootRedirectPlugin() {
   return {
     name: "lld-dev-root-redirect",
     configureServer(server) {
       server.middlewares.use((req, res, next) => {
         const pathname = req.url?.split("?")[0] ?? "";
-        if (base === "/" && (pathname === "/" || pathname === "")) {
-          next();
-          return;
-        }
         if (pathname === "/" || pathname === "") {
           res.statusCode = 302;
-          res.setHeader("Location", base);
+          res.setHeader("Location", `${BASE}/`);
           res.end();
           return;
         }
@@ -72,10 +72,10 @@ function devRootRedirectPlugin(base: string) {
   };
 }
 
-export default defineConfig(({ command }) => {
-  const base = command === "build" ? PROD_BASE : "/";
+export default defineConfig(() => {
+  const base = `${BASE}/`;
 
-  const config: UserConfig = {
+  return withMermaid({
     title: "LLDZen",
     description:
       "Low-level design: concurrency theory and problem trails with Go code",
@@ -102,9 +102,13 @@ export default defineConfig(({ command }) => {
       ],
     ],
     vite: {
-      plugins: [devRootRedirectPlugin(base)],
+      plugins: [devRootRedirectPlugin()],
       server: {
         fs: { allow: [ROOT] },
+      },
+      optimizeDeps: {
+        needsInterop: ["fastdom"],
+        include: ["fastdom", "mermaid"],
       },
       resolve: {
         alias: [
@@ -146,7 +150,7 @@ export default defineConfig(({ command }) => {
         },
         {
           text: "Problems",
-          link: "/problems/connect-four/functional-requirement",
+          link: "/problems/connect-four/extensions/baseline/requirements",
           activeMatch: "/problems/",
         },
       ],
@@ -160,7 +164,5 @@ export default defineConfig(({ command }) => {
         },
       ],
     },
-  };
-
-  return config;
+  } satisfies UserConfig);
 });

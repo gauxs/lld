@@ -1,4 +1,14 @@
-# Design
+---
+title: Connect Four — local two-player (design)
+problem: connect_four
+extension: baseline
+prev:
+  text: requirements
+  link: /problems/connect-four/extensions/baseline/requirements
+next:
+  text: codebase
+  link: /problems/connect-four/extensions/baseline/codebase
+---
 
 ## Entities & responsibilities
 

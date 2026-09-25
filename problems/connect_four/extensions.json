@@ -1,0 +1,21 @@
+{
+  "default": "baseline",
+  "order": ["baseline", "networked", "configurable_rules", "spectators"],
+  "extensions": {
+    "baseline": {
+      "title": "Local two-player"
+    },
+    "networked": {
+      "title": "Networked multiplayer",
+      "buildsOn": "baseline"
+    },
+    "configurable_rules": {
+      "title": "Configurable rules & board",
+      "buildsOn": "baseline"
+    },
+    "spectators": {
+      "title": "Spectators",
+      "buildsOn": "networked"
+    }
+  }
+}

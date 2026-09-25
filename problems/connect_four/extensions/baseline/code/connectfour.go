@@ -3,7 +3,7 @@ package connectfour
 import (
 	"fmt"
 
-	"github.com/gauxs/lld/problems/connect_four/code/enum"
+	"github.com/gauxs/lld/problems/connect_four/extensions/baseline/code/enum"
 )
 
 func Execute() {
