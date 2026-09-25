@@ -11,7 +11,24 @@ const REPO = "https://github.com/gauxs/lld";
 /** problem_dir_name -> docs slug */
 const SLUGS = {
   connect_four: "connect-four",
+  rate_limiter: "rate-limiter",
 };
+
+const PROBLEM_TITLES = {
+  connect_four: "Connect Four",
+  rate_limiter: "Rate limiter",
+};
+
+function problemTitle(problemId) {
+  return (
+    PROBLEM_TITLES[problemId] ??
+    problemId.replace(/_/g, " ").replace(/^\w/, (c) => c.toUpperCase())
+  );
+}
+
+function sidebarJsonKey(problemId) {
+  return problemId.replace(/_([a-z])/g, (_, c) => c.toUpperCase());
+}
 
 function ensureDir(dir) {
   fs.mkdirSync(dir, { recursive: true });
@@ -142,11 +159,10 @@ function syncExtensionProblem(problemId, slug) {
   const destRoot = path.join(ROOT, "docs", "problems", slug);
   ensureDir(destRoot);
 
-  const problemTitle =
-    problemId === "connect_four" ? "Connect Four" : problemId.replace(/_/g, " ");
+  const title = problemTitle(problemId);
 
   const hubLines = [
-    `# ${problemTitle}`,
+    `# ${title}`,
     "",
     "Extensions are **siblings** in the sidebar (baseline first). Use **Builds on** or the graph to see dependencies.",
     "",
@@ -170,7 +186,7 @@ function syncExtensionProblem(problemId, slug) {
   fs.writeFileSync(
     path.join(destRoot, "index.md"),
     `---
-title: Connect Four
+title: ${title}
 ---
 
 ${hubLines.join("\n")}
@@ -275,22 +291,19 @@ function buildSidebarExtensionItems(problemId, slug) {
   });
 }
 
+const sidebarPayload = {};
 for (const [problemId, slug] of Object.entries(SLUGS)) {
   if (loadExtensions(problemId)) {
     syncExtensionProblem(problemId, slug);
+    sidebarPayload[sidebarJsonKey(problemId)] = buildSidebarExtensionItems(
+      problemId,
+      slug,
+    );
   }
 }
 
-const sidebarExtensions = buildSidebarExtensionItems(
-  "connect_four",
-  "connect-four",
-);
-
 const sidebarOut = path.join(ROOT, "docs", ".vitepress", "sidebar-problems.json");
-fs.writeFileSync(
-  sidebarOut,
-  JSON.stringify({ connectFour: sidebarExtensions }, null, 2),
-);
+fs.writeFileSync(sidebarOut, JSON.stringify(sidebarPayload, null, 2));
 
 console.log("Synced problem docs from problems/ → docs/problems/");
 console.log(`Wrote ${sidebarOut} (import in config.ts)`);

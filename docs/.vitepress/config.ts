@@ -12,11 +12,16 @@ const BASE = "/lld";
 const sidebarProblemsPath = path.join(__dirname, "sidebar-problems.json");
 const sidebarProblems = fs.existsSync(sidebarProblemsPath)
   ? JSON.parse(fs.readFileSync(sidebarProblemsPath, "utf8"))
-  : { connectFour: [] };
+  : { connectFour: [], rateLimiter: [] };
 
 const connectFourItems = [
   { text: "Overview", link: "/problems/connect-four/" },
   ...(sidebarProblems.connectFour ?? []),
+];
+
+const rateLimiterItems = [
+  { text: "Overview", link: "/problems/rate-limiter/" },
+  ...(sidebarProblems.rateLimiter ?? []),
 ];
 
 const sidebar = [
@@ -47,6 +52,11 @@ const sidebar = [
             text: "Connect Four",
             collapsed: false,
             items: connectFourItems,
+          },
+          {
+            text: "Rate limiter",
+            collapsed: false,
+            items: rateLimiterItems,
           },
         ],
       },

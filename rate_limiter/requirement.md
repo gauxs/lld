@@ -1,4 +1,7 @@
-## Consolidated Requirements
+Authoring moved to [`problems/rate_limiter/extensions/baseline/requirements.md`](../problems/rate_limiter/extensions/baseline/requirements.md). This file is kept as a pointer only.
+
+## Consolidated Requirements (archive)
+
 Single-application/component scope.
 API requests are rate limited.
 Multiple APIs/endpoints exist.

@@ -16,7 +16,7 @@ Open **`http://localhost:5173/lld/`** (port may differ). If the page is blank af
 | Problem | Go package |
 | --- | --- |
 | Connect Four (baseline) | `problems/connect_four/extensions/baseline/code` — `go run .` from repo root |
-| Rate limiter | `rate_limiter/` (WIP) |
+| Rate limiter (baseline) | `problems/rate_limiter/extensions/baseline/code` |
 
 ## Authoring
 

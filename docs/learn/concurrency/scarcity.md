@@ -23,7 +23,7 @@ next:
 
 - **Semaphore** (or weighted semaphore in Go) to cap concurrency.
 - **Object pool** with acquire/release and timeouts.
-- **Rate limiter** keyed by client + route (see `rate_limiter/` in this repo).
+- **Rate limiter** keyed by client + route — [baseline requirements](/problems/rate-limiter/extensions/baseline/requirements) (code under `problems/rate_limiter/extensions/baseline/code/`).
 
 Always release permits in `defer` or `finally` semantics.
 

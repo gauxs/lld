@@ -60,5 +60,67 @@
         }
       ]
     }
+  ],
+  "rateLimiter": [
+    {
+      "text": "Fixed window (in-process)",
+      "collapsed": true,
+      "items": [
+        {
+          "text": "Requirements",
+          "link": "/problems/rate-limiter/extensions/baseline/requirements"
+        },
+        {
+          "text": "Design",
+          "link": "/problems/rate-limiter/extensions/baseline/design"
+        },
+        {
+          "text": "Codebase",
+          "link": "/problems/rate-limiter/extensions/baseline/codebase"
+        }
+      ]
+    },
+    {
+      "text": "Pluggable algorithms",
+      "collapsed": true,
+      "items": [
+        {
+          "text": "Requirements",
+          "link": "/problems/rate-limiter/extensions/pluggable-algorithms/requirements"
+        },
+        {
+          "text": "Design",
+          "link": "/problems/rate-limiter/extensions/pluggable-algorithms/design"
+        }
+      ]
+    },
+    {
+      "text": "Rejection metadata",
+      "collapsed": true,
+      "items": [
+        {
+          "text": "Requirements",
+          "link": "/problems/rate-limiter/extensions/rejection-metadata/requirements"
+        },
+        {
+          "text": "Design",
+          "link": "/problems/rate-limiter/extensions/rejection-metadata/design"
+        }
+      ]
+    },
+    {
+      "text": "Distributed limits",
+      "collapsed": true,
+      "items": [
+        {
+          "text": "Requirements",
+          "link": "/problems/rate-limiter/extensions/distributed/requirements"
+        },
+        {
+          "text": "Design",
+          "link": "/problems/rate-limiter/extensions/distributed/design"
+        }
+      ]
+    }
   ]
 }

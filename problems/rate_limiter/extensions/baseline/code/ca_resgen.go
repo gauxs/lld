@@ -1,6 +1,6 @@
 package ratelimiter
 
-import "github.com/gauxs/lld/rate_limiter/pkg"
+import "github.com/gauxs/lld/problems/rate_limiter/extensions/baseline/code/pkg"
 
 type ResourceIDGenerator interface {
 	GetResource(r *pkg.Request) *Resource
@@ -9,6 +9,6 @@ type ResourceIDGenerator interface {
 type ClientAPIResourceGenerator struct {
 }
 
-func (carg *ClientAPIResourceGenerator) GetResourceID(r *pkg.Request) *Resource {
+func (carg *ClientAPIResourceGenerator) GetResource(r *pkg.Request) *Resource {
 	return NewResource(r.GetClientID() + r.GetAPI())
 }

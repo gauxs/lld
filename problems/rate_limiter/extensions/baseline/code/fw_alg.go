@@ -5,7 +5,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/gauxs/lld/rate_limiter/enum"
+	"github.com/gauxs/lld/problems/rate_limiter/extensions/baseline/code/enum"
 )
 
 type RLAlgorithm interface {

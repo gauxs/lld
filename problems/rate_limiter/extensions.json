@@ -1,0 +1,21 @@
+{
+  "default": "baseline",
+  "order": ["baseline", "pluggable_algorithms", "rejection_metadata", "distributed"],
+  "extensions": {
+    "baseline": {
+      "title": "Fixed window (in-process)"
+    },
+    "pluggable_algorithms": {
+      "title": "Pluggable algorithms",
+      "buildsOn": "baseline"
+    },
+    "rejection_metadata": {
+      "title": "Rejection metadata",
+      "buildsOn": "baseline"
+    },
+    "distributed": {
+      "title": "Distributed limits",
+      "buildsOn": "baseline"
+    }
+  }
+}

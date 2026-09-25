@@ -3,8 +3,8 @@ package ratelimiter
 import (
 	"sync"
 
-	"github.com/gauxs/lld/rate_limiter/enum"
-	"github.com/gauxs/lld/rate_limiter/pkg"
+	"github.com/gauxs/lld/problems/rate_limiter/extensions/baseline/code/enum"
+	"github.com/gauxs/lld/problems/rate_limiter/extensions/baseline/code/pkg"
 )
 
 type RateLimiter struct {

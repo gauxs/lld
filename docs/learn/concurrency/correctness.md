@@ -50,4 +50,4 @@ func (i *Inventory) Reserve(sku string) error {
 }
 ```
 
-Connect Four **variation 1** deliberately avoids this layer (single-threaded CLI). **Rate limiter** in this repo is where thread safety matters.
+Connect Four **baseline** deliberately avoids this layer (single-threaded CLI). The **[rate limiter](/problems/rate-limiter/extensions/baseline/requirements)** trail is where thread safety matters (`problems/rate_limiter/extensions/baseline/code/`).

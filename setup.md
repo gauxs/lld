@@ -116,14 +116,13 @@ Use the HTML patterns in [`_template/problem/extensions/baseline/requirements.md
    ```js
    const SLUGS = {
      connect_four: "connect-four",
-     my_problem: "my-problem",
+     rate_limiter: "rate-limiter",
    };
    ```
 
 4. **Sidebar** — Extend [`docs/.vitepress/config.ts`](docs/.vitepress/config.ts):
-   - Import sidebar JSON (today: `connectFour` key from `sidebar-problems.json`).
-   - Add a Problems entry with **Overview** → `/problems/<slug>/` plus synced extension items.
-   - Generalize the sync script to emit one JSON key per problem when you add more than Connect Four (mirror the `buildSidebarExtensionItems` + `sidebar-problems.json` pattern).
+   - Import `sidebar-problems.json` (keys are camelCase problem ids: `connectFour`, `rateLimiter`, …).
+   - Add a Problems entry with **Overview** → `/problems/<slug>/` plus the matching array from that JSON.
 
 5. **Run sync** — `npm run docs:dev` and open `/problems/<slug>/`.
 
