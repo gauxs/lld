@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "docs:dev": "node scripts/sync-problem-docs.mjs && vitepress dev docs",
-    "docs:build": "node scripts/sync-problem-docs.mjs && vitepress build docs",
+    "docs:build": "node scripts/sync-problem-docs.mjs && vitepress build docs && touch docs/.vitepress/dist/.nojekyll",
     "docs:preview": "vitepress preview docs"
   },
   "devDependencies": {
