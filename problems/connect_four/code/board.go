@@ -3,7 +3,7 @@ package connectfour
 import (
 	"fmt"
 
-	"github.com/gauxs/lld/connect_four/enum"
+	"github.com/gauxs/lld/problems/connect_four/code/enum"
 )
 
 var directionRowColSteps = map[enum.Direction][][]int{

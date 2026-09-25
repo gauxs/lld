@@ -31,4 +31,4 @@ defer func() { <-sem }() // release
 
 ## What's next
 
-Apply the requirement-first trail on a full problem: [Connect Four](/problems/connect-four/) (single-threaded baseline), then compare with concurrent follow-ups and the rate limiter package.
+Apply the requirement-first trail on a full problem: [Connect Four](/problems/connect-four/), then compare follow-ups and the rate limiter package when added.

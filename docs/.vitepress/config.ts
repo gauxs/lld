@@ -1,9 +1,12 @@
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 import { defineConfig, type UserConfig } from "vitepress";
 import { SITE_ICON_DARK, SITE_ICON_LIGHT } from "./site-assets";
 
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const ROOT = path.resolve(__dirname, "../..");
 const PROD_BASE = "/lld/";
 
-/** Single sidebar everywhere: Home, full Theory tree, full Problems tree. */
 const sidebar = [
   {
     items: [
@@ -34,31 +37,12 @@ const sidebar = [
             items: [
               { text: "Overview", link: "/problems/connect-four/" },
               {
-                text: "Variation 1 — In-memory OOP",
-                collapsed: false,
-                items: [
-                  {
-                    text: "Summary",
-                    link: "/problems/connect-four/variation-1/",
-                  },
-                  {
-                    text: "Requirements",
-                    link: "/problems/connect-four/variation-1/requirements",
-                  },
-                  {
-                    text: "Design",
-                    link: "/problems/connect-four/variation-1/design",
-                  },
-                  {
-                    text: "Codebase",
-                    link: "/problems/connect-four/variation-1/codebase",
-                  },
-                ],
+                text: "Functional requirements",
+                link: "/problems/connect-four/functional-requirement",
               },
-              {
-                text: "Follow-ups",
-                link: "/problems/connect-four/follow-ups",
-              },
+              { text: "Design", link: "/problems/connect-four/design" },
+              { text: "Codebase", link: "/problems/connect-four/codebase" },
+              { text: "Follow-up", link: "/problems/connect-four/followup" },
             ],
           },
         ],
@@ -66,6 +50,28 @@ const sidebar = [
     ],
   },
 ];
+
+function devRootRedirectPlugin(base: string) {
+  return {
+    name: "lld-dev-root-redirect",
+    configureServer(server) {
+      server.middlewares.use((req, res, next) => {
+        const pathname = req.url?.split("?")[0] ?? "";
+        if (base === "/" && (pathname === "/" || pathname === "")) {
+          next();
+          return;
+        }
+        if (pathname === "/" || pathname === "") {
+          res.statusCode = 302;
+          res.setHeader("Location", base);
+          res.end();
+          return;
+        }
+        next();
+      });
+    },
+  };
+}
 
 export default defineConfig(({ command }) => {
   const base = command === "build" ? PROD_BASE : "/";
@@ -96,6 +102,36 @@ export default defineConfig(({ command }) => {
         },
       ],
     ],
+    vite: {
+      plugins: [devRootRedirectPlugin(base)],
+      server: {
+        fs: { allow: [ROOT] },
+      },
+      resolve: {
+        alias: [
+          {
+            find: path.resolve(
+              __dirname,
+              "../../node_modules/vitepress/dist/client/theme-default/components/VPSidebarItem.vue",
+            ),
+            replacement: path.join(
+              __dirname,
+              "theme/components/VPSidebarItem.vue",
+            ),
+          },
+          {
+            find: path.resolve(
+              __dirname,
+              "../../node_modules/vitepress/dist/client/theme-default/components/VPNavBarTitle.vue",
+            ),
+            replacement: path.join(
+              __dirname,
+              "theme/components/VPNavBarTitle.vue",
+            ),
+          },
+        ],
+      },
+    },
     themeConfig: {
       logo: {
         light: SITE_ICON_LIGHT,

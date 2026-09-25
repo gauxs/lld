@@ -1,6 +1,6 @@
 # LLDZen
 
-Go reference implementations and interview-style write-ups. The static site is built with VitePress under `docs/`.
+Low-level design notes and Go reference implementations.
 
 ## Site
 
@@ -9,16 +9,24 @@ npm install
 npm run docs:dev
 ```
 
-Production build: `npm run docs:build` (output in `docs/.vitepress/dist`).
+`sync-problem-docs.mjs` copies `problems/*/`.md into `docs/problems/` before each dev/build.
 
-- **Learn:** concurrency trail under `docs/learn/concurrency/`
-- **Problems:** multi-page trails under `docs/problems/` (Connect Four first)
+## Problem layout
 
-Authoring template for new problems: [`_template/requirements.md`](_template/requirements.md).
+Each problem under `problems/<problem_name>/`:
 
-## Code packages
-
-| Package | Description |
+| Path | Purpose |
 | --- | --- |
-| `connect_four/` | Two-player Connect Four (variation 1) |
-| `rate_limiter/` | Fixed-window rate limiter (WIP) |
+| `functional_requirement.md` | FR-* with collapsible interview Q&A; NFR table |
+| `design.md` | Entity ↔ responsibilities and API tables |
+| `code/` | Reference source (verbatim on the site **Codebase** page) |
+| `followup.md` | Follow-up requirements (FU-*) |
+
+Template: [`_template/problem/`](_template/problem/) · Conventions: [`_template/CONVENTIONS.md`](_template/CONVENTIONS.md)
+
+## Packages
+
+| Problem | Code |
+| --- | --- |
+| Connect Four | `problems/connect_four/code` (`go run .` from repo root) |
+| Rate limiter | `rate_limiter/` (WIP) |
