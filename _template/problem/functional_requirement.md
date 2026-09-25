@@ -1,29 +1,59 @@
-# Functional & non-functional requirements
+# Problem name — requirements
+
+One-paragraph problem statement (interview prompt).
 
 ## Functional requirements
 
-### FR-1: Title
+<div class="lld-req">
 
-One-sentence requirement.
+### FR-1: Short title
 
-<details>
-<summary>Questions to ask</summary>
+Requirement statement.
 
-- **Question?** Answer that clarifies scope.
+<details class="lld-reveal">
+<summary><span class="lld-reveal-icon" aria-hidden="true"></span>Interview prompts</summary>
 
+<div class="lld-reveal-inner">
+
+- **Question?** Answer.
+
+</div>
 </details>
 
-## Out of scope (this version)
+</div>
 
-<details>
-<summary>Questions to ask (YAGNI)</summary>
+## Out of scope
 
-- **Future idea?** Defer; note extension point.
+<div class="lld-req lld-req--scope">
 
+<details class="lld-reveal">
+<summary><span class="lld-reveal-icon" aria-hidden="true"></span>Interview prompts</summary>
+
+<div class="lld-reveal-inner">
+
+- **Deferred idea?** Why not now.
+
+</div>
 </details>
+
+</div>
 
 ## Non-functional requirements
 
-| ID | Requirement |
-| --- | --- |
-| NFR-1 | e.g. single-threaded, in-memory |
+<div class="lld-req">
+
+### NFR-1: Short title
+
+Requirement statement.
+
+<details class="lld-reveal">
+<summary><span class="lld-reveal-icon" aria-hidden="true"></span>Interview prompts</summary>
+
+<div class="lld-reveal-inner">
+
+- **Question?** Answer.
+
+</div>
+</details>
+
+</div>

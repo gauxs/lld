@@ -17,7 +17,7 @@ Each problem under `problems/<problem_name>/`:
 
 | Path | Purpose |
 | --- | --- |
-| `functional_requirement.md` | FR-* with collapsible interview Q&A; NFR table |
+| `functional_requirement.md` | Problem statement, FR-* / NFR-* / out-of-scope with collapsible interview Q&A |
 | `design.md` | Entity ↔ responsibilities and API tables |
 | `code/` | Reference source (verbatim on the site **Codebase** page) |
 | `followup.md` | Follow-up requirements (FU-*) |

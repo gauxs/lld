@@ -1,12 +1,19 @@
-# Follow-up requirements
+# Problem name — follow-ups
 
-## FU-1: Title
+<div class="lld-req">
 
-<details>
-<summary>Questions to ask</summary>
+### FU-1: Title
 
-- **Clarifying question?** Answer.
+<details class="lld-reveal">
+<summary><span class="lld-reveal-icon" aria-hidden="true"></span>Interview prompts</summary>
 
+<div class="lld-reveal-inner">
+
+- **Question?** Answer.
+
+</div>
 </details>
 
-**Requirement:** Single sentence outcome.
+**Outcome:** One-sentence requirement.
+
+</div>

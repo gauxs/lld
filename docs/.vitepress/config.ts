@@ -35,7 +35,6 @@ const sidebar = [
             text: "Connect Four",
             collapsed: false,
             items: [
-              { text: "Overview", link: "/problems/connect-four/" },
               {
                 text: "Functional requirements",
                 link: "/problems/connect-four/functional-requirement",
@@ -147,7 +146,7 @@ export default defineConfig(({ command }) => {
         },
         {
           text: "Problems",
-          link: "/problems/connect-four/",
+          link: "/problems/connect-four/functional-requirement",
           activeMatch: "/problems/",
         },
       ],

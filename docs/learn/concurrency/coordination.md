@@ -1,8 +1,12 @@
 ---
 title: Coordination
 description: Ordering work between threads—producer–consumer and backpressure.
-prev: /learn/concurrency/correctness
-next: /learn/concurrency/scarcity
+prev:
+  text: correctness
+  link: /learn/concurrency/correctness
+next:
+  text: scarcity
+  link: /learn/concurrency/scarcity
 ---
 
 # Coordination

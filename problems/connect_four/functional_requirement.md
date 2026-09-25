@@ -1,91 +1,177 @@
-# Functional & non-functional requirements
+# Connect Four — requirements
+
+Build the object-oriented design for a two-player Connect Four game. Players take turns dropping discs into a 7-column, 6-row board. The first to align four of their own discs vertically, horizontally, or diagonally wins.
 
 ## Functional requirements
 
-### FR-1: Column-only moves
+<div class="lld-req">
+
+### FR-1: Column drop
 
 Discs are placed by choosing a column; the piece occupies the lowest empty row in that column.
 
-<details>
-<summary>Questions to ask</summary>
+<details class="lld-reveal">
+<summary><span class="lld-reveal-icon" aria-hidden="true"></span>Interview prompts</summary>
+
+<div class="lld-reveal-inner">
 
 - **Can the player choose a row?** No—column only; gravity fills the bottom slot.
 - **What if the column is full?** Reject the move; the active player tries again.
 
+</div>
 </details>
+
+</div>
+
+<div class="lld-req">
 
 ### FR-2: Win detection
 
 Four consecutive discs of the same player in a horizontal, vertical, or diagonal line wins the game.
 
-<details>
-<summary>Questions to ask</summary>
+<details class="lld-reveal">
+<summary><span class="lld-reveal-icon" aria-hidden="true"></span>Interview prompts</summary>
+
+<div class="lld-reveal-inner">
 
 - **Both diagonal directions?** Yes.
 - **Who wins on the connecting move?** The player who placed the fourth disc.
 
+</div>
 </details>
+
+</div>
+
+<div class="lld-req">
 
 ### FR-3: Draw
 
 If the board is full and no player has won, the game is a draw.
 
-<details>
-<summary>Questions to ask</summary>
+<details class="lld-reveal">
+<summary><span class="lld-reveal-icon" aria-hidden="true"></span>Interview prompts</summary>
+
+<div class="lld-reveal-inner">
 
 - **Is a draw a terminal state?** Yes—no further moves.
 
+</div>
 </details>
+
+</div>
+
+<div class="lld-req">
 
 ### FR-4: Turn order
 
 Exactly two players alternate turns while the game is in progress.
 
-<details>
-<summary>Questions to ask</summary>
+<details class="lld-reveal">
+<summary><span class="lld-reveal-icon" aria-hidden="true"></span>Interview prompts</summary>
+
+<div class="lld-reveal-inner">
 
 - **Can the same player move twice?** No.
 - **Moves after the game ends?** Rejected.
 
+</div>
 </details>
+
+</div>
+
+<div class="lld-req">
 
 ### FR-5: Invalid input
 
 Moves out of range, into a full column, or while the game is not in `PLAYING` state are rejected with an error.
 
-<details>
-<summary>Questions to ask</summary>
+<details class="lld-reveal">
+<summary><span class="lld-reveal-icon" aria-hidden="true"></span>Interview prompts</summary>
 
-- **Wrong player object in API?** This variation uses `MakeMove(col)` on behalf of the current player only.
+<div class="lld-reveal-inner">
+
+- **Wrong player in API?** This baseline uses `MakeMove(col)` for the current player only.
 - **Silent ignore vs error?** Return an error; CLI prompts again.
 
+</div>
 </details>
 
-## Out of scope (this version)
+</div>
 
-<details>
-<summary>Questions to ask (YAGNI)</summary>
+## Out of scope
+
+<div class="lld-req lld-req--scope">
+
+<details class="lld-reveal">
+<summary><span class="lld-reveal-icon" aria-hidden="true"></span>Interview prompts</summary>
+
+<div class="lld-reveal-inner">
 
 - **Undo?** No.
 - **More than two players?** Not now; registration API can be extended later.
 - **Configurable board size?** Constructor accepts dimensions; interview story uses 6×7.
 - **Configurable win rule?** Use a `Rule` strategy; default is four in a line.
 
+</div>
 </details>
+
+</div>
 
 ## Non-functional requirements
 
-| ID | Requirement |
-| --- | --- |
-| NFR-1 | Single-threaded, in-process |
-| NFR-2 | In-memory state only |
-| NFR-3 | Errors over silent failure for invalid moves |
+<div class="lld-req">
 
-## Consolidated checklist
+### NFR-1: Concurrency model
 
-1. 7 columns × 6 rows (`NewGame(6, 7)` — rows × cols in code).
-2. Two players with distinct disc colors.
-3. Alternating turns until win or draw.
-4. Gravity placement.
-5. Four in a line wins (all directions).
-6. No moves after terminal state.
+Single-threaded, in-process execution—no locking in this baseline.
+
+<details class="lld-reveal">
+<summary><span class="lld-reveal-icon" aria-hidden="true"></span>Interview prompts</summary>
+
+<div class="lld-reveal-inner">
+
+- **Multiple threads?** Not for variation 1; networked follow-up adds server-side serialization.
+- **Reentrancy?** Not required for CLI-driven play.
+
+</div>
+</details>
+
+</div>
+
+<div class="lld-req">
+
+### NFR-2: Persistence
+
+All state lives in memory for the lifetime of the game instance.
+
+<details class="lld-reveal">
+<summary><span class="lld-reveal-icon" aria-hidden="true"></span>Interview prompts</summary>
+
+<div class="lld-reveal-inner">
+
+- **Save / resume game?** Out of scope.
+- **Crash recovery?** Not required.
+
+</div>
+</details>
+
+</div>
+
+<div class="lld-req">
+
+### NFR-3: Failure handling
+
+Invalid operations surface as errors instead of silent no-ops.
+
+<details class="lld-reveal">
+<summary><span class="lld-reveal-icon" aria-hidden="true"></span>Interview prompts</summary>
+
+<div class="lld-reveal-inner">
+
+- **Return codes vs exceptions?** Go errors returned to caller.
+- **User-facing messages?** CLI prints error string; API stays domain-focused.
+
+</div>
+</details>
+
+</div>

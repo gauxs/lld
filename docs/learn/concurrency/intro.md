@@ -1,7 +1,9 @@
 ---
 title: Introduction to concurrency
 description: Shared memory, interleaving, and the three problem types you see in LLD interviews.
-next: /learn/concurrency/correctness
+next:
+  text: correctness
+  link: /learn/concurrency/correctness
 ---
 
 # Introduction to concurrency

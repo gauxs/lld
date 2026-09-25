@@ -1,7 +1,11 @@
 ---
 title: Design
-prev: /problems/connect-four/functional-requirement
-next: /problems/connect-four/codebase
+prev:
+  text: functional-requirement
+  link: /problems/connect-four/functional-requirement
+next:
+  text: codebase
+  link: /problems/connect-four/codebase
 ---
 
 ## Entities & responsibilities

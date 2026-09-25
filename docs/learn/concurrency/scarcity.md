@@ -1,8 +1,12 @@
 ---
 title: Scarcity
 description: Limited resources—pools, semaphores, and rate limits.
-prev: /learn/concurrency/coordination
-next: /problems/connect-four/
+prev:
+  text: coordination
+  link: /learn/concurrency/coordination
+next:
+  text: functional-requirement
+  link: /problems/connect-four/functional-requirement
 ---
 
 # Scarcity
@@ -31,4 +35,4 @@ defer func() { <-sem }() // release
 
 ## What's next
 
-Apply the requirement-first trail on a full problem: [Connect Four](/problems/connect-four/), then compare follow-ups and the rate limiter package when added.
+Apply the requirement-first trail on a full problem: [Connect Four](/problems/connect-four/functional-requirement), then compare follow-ups and the rate limiter package when added.
