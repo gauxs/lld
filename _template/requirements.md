@@ -1,6 +1,10 @@
-## Requirement gathering
+# Requirement gathering
 
-1. Functional requirement: What must it do? i.e. functional requirement
-2. What we won't we do (this version) and what we might extend later (YAGNI - Design with extension in mind, but only implement what's needed now)?
-3. Non-functional requirement: Assumptions & constraints (NFR)
-4. What fails and how do we handle it?
+This checklist is used when writing **`extensions/<id>/requirements.md`**. Full authoring workflow: [setup.md](../setup.md).
+
+1. **Functional:** What must this extension do?
+2. **Scope:** What is out of scope here; what belongs in a **child extension** later?
+3. **Non-functional:** Assumptions, constraints, and failure handling.
+4. **Errors:** What can fail and how the API responds.
+
+Markdown structure and CSS hooks: [`problem/extensions/baseline/requirements.md`](problem/extensions/baseline/requirements.md).

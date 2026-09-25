@@ -50,6 +50,8 @@ Requirement statement.
 
 ## Extensions from here
 
+Optional follow-ups (sibling extensions). Add a row when you create `extensions/<child_id>/` and register it in `extensions.json`.
+
 | Extension | What it adds |
 | --- | --- |
-| _(none yet)_ | Add rows when you add `extensions/<child>/` |
+| _(none yet)_ | e.g. networked play, configurable rules |
