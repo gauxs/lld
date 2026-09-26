@@ -3,8 +3,7 @@
 :root {
   --lld-content-max-width: 720px;
   --vp-layout-max-width: 1200px;
-  --vp-sidebar-width: 15vw;
-  --lld-sidebar-max-width: 320px;
+  --vp-sidebar-width: 16rem;
   --vp-c-brand-1: #ea580c;
   --vp-c-brand-2: #f97316;
   --vp-c-brand-3: #fb923c;
@@ -26,8 +25,10 @@
 @media (min-width: 960px) {
   .VPSidebar {
     width: var(--vp-sidebar-width) !important;
-    max-width: var(--lld-sidebar-max-width) !important;
+    min-width: var(--vp-sidebar-width) !important;
+    max-width: var(--vp-sidebar-width) !important;
     padding: var(--vp-nav-height) 0.75rem 4rem 1rem !important;
+    box-sizing: border-box;
   }
 
   .VPSidebar .curtain {
@@ -36,12 +37,14 @@
   }
 
   .VPSidebar .nav {
-    width: 100%;
+    width: max-content;
+    max-width: 100%;
     padding-top: 0.85rem;
   }
 
   .VPSidebar .group {
-    width: 100% !important;
+    width: max-content !important;
+    max-width: 100%;
     padding-top: 0 !important;
   }
 
@@ -68,7 +71,8 @@
 @media (min-width: 1440px) {
   .VPSidebar {
     width: var(--vp-sidebar-width) !important;
-    max-width: var(--lld-sidebar-max-width) !important;
+    min-width: var(--vp-sidebar-width) !important;
+    max-width: var(--vp-sidebar-width) !important;
     padding-left: 1rem !important;
   }
 }

@@ -3,15 +3,15 @@ import { onMounted, onUnmounted, nextTick } from "vue";
 const DESKTOP_MQ = "(min-width: 960px)";
 
 /**
- * VitePress sizes the main column from --vp-sidebar-width. Measure once using
- * the widest label at any depth (including collapsed branches) so expanding
- * sections does not change sidebar width.
+ * Set --vp-sidebar-width from the widest sidebar label (any depth, including
+ * collapsed branches). Width is fixed for the current page until viewport
+ * resize or route change — expanding sections does not remeasure.
  */
 export function useSidebarWidthSync() {
-  let resizeObserver = null;
   let mediaQuery = null;
   let raf = 0;
   let measuring = false;
+  let lockedWidthPx = null;
 
   function measureContentWidth(sidebar) {
     measuring = true;
@@ -31,6 +31,9 @@ export function useSidebarWidthSync() {
       for (const el of nav.querySelectorAll(".item")) {
         content = Math.max(content, el.scrollWidth);
       }
+      for (const el of nav.querySelectorAll(".text")) {
+        content = Math.max(content, el.scrollWidth);
+      }
       content = Math.max(content, nav.scrollWidth);
     }
 
@@ -43,7 +46,7 @@ export function useSidebarWidthSync() {
       (parseFloat(styles.paddingLeft) || 0) +
       (parseFloat(styles.paddingRight) || 0);
 
-    const width = Math.ceil(Math.max(content + pad, sidebar.scrollWidth));
+    const width = Math.ceil(content + pad);
 
     sidebar.style.removeProperty("width");
     sidebar.style.removeProperty("max-width");
@@ -51,11 +54,12 @@ export function useSidebarWidthSync() {
     return width;
   }
 
-  function sync() {
+  function sync(force = false) {
     if (typeof document === "undefined" || measuring) return;
 
     const root = document.documentElement;
     if (!window.matchMedia(DESKTOP_MQ).matches) {
+      lockedWidthPx = null;
       root.style.removeProperty("--vp-sidebar-width");
       return;
     }
@@ -63,50 +67,45 @@ export function useSidebarWidthSync() {
     const sidebar = document.querySelector(".VPSidebar");
     if (!sidebar) return;
 
-    const vw = window.innerWidth;
-    const minPx = Math.round(vw * 0.12);
-    const measured = measureContentWidth(sidebar);
-    const width = Math.max(minPx, measured);
-    root.style.setProperty("--vp-sidebar-width", `${width}px`);
+    if (!force && lockedWidthPx != null) {
+      root.style.setProperty("--vp-sidebar-width", `${lockedWidthPx}px`);
+      return;
+    }
+
+    lockedWidthPx = measureContentWidth(sidebar);
+    root.style.setProperty("--vp-sidebar-width", `${lockedWidthPx}px`);
   }
 
-  function scheduleSync() {
+  function scheduleSync(force = false) {
     if (measuring) return;
     cancelAnimationFrame(raf);
-    raf = requestAnimationFrame(sync);
-  }
-
-  function attach() {
-    const sidebar = document.querySelector(".VPSidebar");
-    if (!sidebar) return;
-
-    resizeObserver?.disconnect();
-    resizeObserver = new ResizeObserver(() => {
-      if (!measuring) scheduleSync();
-    });
-    const nav = sidebar.querySelector("#VPSidebarNav") ?? sidebar;
-    resizeObserver.observe(nav);
-
-    scheduleSync();
+    raf = requestAnimationFrame(() => sync(force));
   }
 
   function onMediaChange() {
-    nextTick(attach);
+    lockedWidthPx = null;
+    nextTick(() => scheduleSync(true));
+  }
+
+  function onWindowResize() {
+    lockedWidthPx = null;
+    scheduleSync(true);
   }
 
   onMounted(() => {
     mediaQuery = window.matchMedia(DESKTOP_MQ);
     mediaQuery.addEventListener("change", onMediaChange);
-    window.addEventListener("resize", scheduleSync);
-    nextTick(attach);
+    window.addEventListener("resize", onWindowResize);
+    nextTick(() => scheduleSync(true));
   });
 
   onUnmounted(() => {
     cancelAnimationFrame(raf);
-    resizeObserver?.disconnect();
     mediaQuery?.removeEventListener("change", onMediaChange);
-    window.removeEventListener("resize", scheduleSync);
+    window.removeEventListener("resize", onWindowResize);
   });
 
-  return { sync: scheduleSync };
+  return {
+    sync: () => scheduleSync(true),
+  };
 }

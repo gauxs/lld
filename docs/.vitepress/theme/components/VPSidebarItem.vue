@@ -94,7 +94,8 @@ function onParentClick(event) {
   display: flex;
   align-items: center;
   gap: 4px;
-  width: 100%;
+  width: max-content;
+  max-width: 100%;
   min-height: 30px;
   padding: 0 4px;
   border-radius: 6px;
@@ -128,13 +129,13 @@ function onParentClick(event) {
 .link {
   display: flex;
   align-items: center;
-  flex: 1;
+  flex: 0 1 auto;
   min-width: 0;
   text-decoration: none;
 }
 
 .text {
-  flex: 1;
+  flex: 0 1 auto;
   min-width: 0;
   margin: 0;
   padding: 4px 0;
