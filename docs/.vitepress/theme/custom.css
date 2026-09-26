@@ -452,3 +452,28 @@
     max-width: var(--lld-content-max-width);
   }
 }
+
+/* Inline Mermaid: use content width; horizontal scroll for wide flowcharts */
+.vp-doc .mermaid {
+  overflow-x: auto;
+  padding: 1.25rem 1rem;
+}
+
+.vp-doc .mermaid svg {
+  max-width: none;
+  width: auto;
+  min-width: min(100%, 36rem);
+  height: auto;
+}
+
+/* Mermaid edge labels: global light themeVariables were forcing bright pills in dark mode */
+html.dark .vp-doc .mermaid svg .edgeLabel .label,
+html.dark .vp-doc .mermaid svg .edgeLabel span,
+html.dark .vp-doc .mermaid svg .edgeLabel p {
+  color: var(--vp-c-text-1) !important;
+  background-color: var(--vp-c-bg-soft) !important;
+}
+
+html.dark .vp-doc .mermaid svg .edgeLabel rect {
+  fill: var(--vp-c-bg-soft) !important;
+}

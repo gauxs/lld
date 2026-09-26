@@ -88,6 +88,21 @@ export default defineConfig(() => {
   const base = `${BASE}/`;
 
   return withMermaid({
+    mermaid: {
+      theme: "base",
+      // Only size-related vars here — light text/edge colors fight Mermaid's `dark` theme
+      // (edge labels like "Instinct" / "Better Approach" stay readable in dark mode).
+      themeVariables: {
+        fontSize: "16px",
+      },
+      flowchart: {
+        useMaxWidth: false,
+        htmlLabels: true,
+        padding: 16,
+        nodeSpacing: 48,
+        rankSpacing: 56,
+      },
+    },
     title: "LLDZen",
     description:
       "Low-level design: concurrency theory and problem trails with Go code",
