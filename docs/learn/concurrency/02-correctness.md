@@ -279,6 +279,10 @@ The choice depends on whether the operation involves a larger invariant.
 Run this program. The final count is expected to be 100000, but it won't reliably be.
 
 Task: Fix it using one mutex.
+
+<details class="lld-reveal">
+<summary><span class="lld-reveal-icon" aria-hidden="true"></span>Template code</summary>
+
 ```go
 package main
 
@@ -310,10 +314,17 @@ func main() {
 	fmt.Println("Actual:", counter)
 }
 ```
+
+</details>
+
 ### Exercise 2: Fine-Grained Locking
 There are two independent counters. Operations on one counter should not block operations on the other.
 
 Task: Fix the program using fine-grained locking.
+
+<details class="lld-reveal">
+<summary><span class="lld-reveal-icon" aria-hidden="true"></span>Template code</summary>
+
 ```go
 package main
 
@@ -357,10 +368,17 @@ func main() {
 	fmt.Println("Counter 1:", counters[1].value)
 }
 ```
+
+</details>
+
 ### Exercise 3: Atomic Variables
 The program has a single shared counter.
 
 Task: Fix it without using a mutex. Use an atomic operation.
+
+<details class="lld-reveal">
+<summary><span class="lld-reveal-icon" aria-hidden="true"></span>Template code</summary>
+
 ```go
 package main
 
@@ -393,10 +411,15 @@ func main() {
 }
 ```
 
+</details>
+
 ### Exercise 4: Thread Confinement
 Each worker needs to process 10,000 items.
 
 Task: Avoid shared mutable state between workers. Each worker should own its counter and send its result to the main goroutine.
+
+<details class="lld-reveal">
+<summary><span class="lld-reveal-icon" aria-hidden="true"></span>Template code</summary>
 
 ```go
 package main
@@ -429,3 +452,5 @@ func main() {
 	fmt.Println("Actual:", total)
 }
 ```
+
+</details>
