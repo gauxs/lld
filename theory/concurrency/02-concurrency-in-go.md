@@ -1,16 +1,10 @@
 ---
-title: Sync in Go
+title: Concurrency in Go
+sidebar: Concurrency in Go
 description: Standard library synchronization in Go, and when to use each mechanism in LLD interviews.
-prev:
-  text: introduction
-  link: /learn/concurrency/01-introduction
-next:
-  text: correctness
-  link: /learn/concurrency/03-correctness
 ---
 
-
-# Sync in Go
+# Concurrency in Go
 
 In a low-level design interview, concurrency questions usually test one skill: can you identify **shared mutable state**, state the **invariant** it must satisfy, and choose a standard library mechanism that preserves that invariant without over-engineering the design?
 
@@ -187,7 +181,7 @@ For weighted or dynamic limits, `golang.org/x/sync/semaphore` provides `Acquire`
 | Interview concern | Chapter |
 | --- | --- |
 | Concurrent updates corrupt shared state | [Correctness](/learn/concurrency/03-correctness) |
-| Goroutines must queue work, wait, or shut down cleanly | [Coordination](/learn/concurrency/04-coordination) |
+| Goroutines must queue work, wait, or shut down cleanly | [Coordination](/learn/concurrency/04-coordination) (channels, `select`, lifecycle) |
 | Only a bounded number of operations or resources may run at once | [Scarcity](/learn/concurrency/05-scarcity) |
 
 Production designs often combine all three concerns. Separating them in your explanation helps the interviewer follow your reasoning even when the final design uses several mechanisms together.

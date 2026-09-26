@@ -2,8 +2,8 @@
 title: Correctness
 description: Shared state corruption, check-then-act, and mutual exclusion.
 prev:
-  text: sync in go
-  link: /learn/concurrency/02-sync-in-go
+  text: concurrency in go
+  link: /learn/concurrency/02-concurrency-in-go
 next:
   text: coordination
   link: /learn/concurrency/04-coordination
@@ -281,7 +281,7 @@ Run this program. The final count is expected to be 100000, but it won't reliabl
 Task: Fix it using one mutex.
 
 <details class="lld-reveal">
-<summary><span class="lld-reveal-icon" aria-hidden="true"></span>Template code</summary>
+<summary><span class="lld-reveal-icon" aria-hidden="true"></span>Problem code</summary>
 
 ```go
 package main
@@ -317,13 +317,51 @@ func main() {
 
 </details>
 
+<details class="lld-reveal">
+<summary><span class="lld-reveal-icon" aria-hidden="true"></span>Solution code</summary>
+
+```go
+package main
+
+import (
+	"fmt"
+	"sync"
+)
+
+func main() {
+	counter := 0
+
+	var wg sync.WaitGroup
+	var lock sync.Mutex
+	for i := 0; i < 100; i++ {
+		wg.Add(1)
+
+		go func() {
+			defer wg.Done()
+			defer lock.Unlock()
+			lock.Lock()	
+			for j := 0; j < 1000; j++ {
+				counter++
+			}
+		}()
+	}
+
+	wg.Wait()
+
+	fmt.Println("Expected:", 100000)
+	fmt.Println("Actual:", counter)
+}
+```
+
+</details>
+
 ### Exercise 2: Fine-Grained Locking
 There are two independent counters. Operations on one counter should not block operations on the other.
 
 Task: Fix the program using fine-grained locking.
 
 <details class="lld-reveal">
-<summary><span class="lld-reveal-icon" aria-hidden="true"></span>Template code</summary>
+<summary><span class="lld-reveal-icon" aria-hidden="true"></span>Problem code</summary>
 
 ```go
 package main
@@ -371,13 +409,64 @@ func main() {
 
 </details>
 
+<details class="lld-reveal">
+<summary><span class="lld-reveal-icon" aria-hidden="true"></span>Solution code</summary>
+
+```go
+package main
+
+import (
+	"fmt"
+	"sync"
+)
+
+type Counter struct {
+	value int
+}
+
+func main() {
+	counters := [2]Counter{}
+
+	var wg sync.WaitGroup
+	var lock1 sync.Mutex
+	var lock2 sync.Mutex
+	for i := 0; i < 100; i++ {
+		wg.Add(2)
+
+		go func() {
+			defer wg.Done()
+			defer lock1.Unlock()
+			lock1.Lock()
+			for j := 0; j < 1000; j++ {
+				counters[0].value++
+			}
+		}()
+
+		go func() {
+			defer wg.Done()
+			defer lock2.Unlock()
+			lock2.Lock()
+			for j := 0; j < 1000; j++ {
+				counters[1].value++
+			}
+		}()
+	}
+
+	wg.Wait()
+
+	fmt.Println("Counter 0:", counters[0].value)
+	fmt.Println("Counter 1:", counters[1].value)
+}
+```
+</details>
+
 ### Exercise 3: Atomic Variables
 The program has a single shared counter.
 
 Task: Fix it without using a mutex. Use an atomic operation.
 
 <details class="lld-reveal">
-<summary><span class="lld-reveal-icon" aria-hidden="true"></span>Template code</summary>
+<summary><span class="lld-reveal-icon" aria-hidden="true"></span>Problem code</summary>
 
 ```go
 package main
@@ -413,13 +502,51 @@ func main() {
 
 </details>
 
+<details class="lld-reveal">
+<summary><span class="lld-reveal-icon" aria-hidden="true"></span>Solution code</summary>
+
+```go
+package main
+
+import (
+	"fmt"
+	"sync"
+	"sync/atomic"
+)
+
+func main() {
+	var counter atomic.Int64
+
+	var wg sync.WaitGroup
+
+	for i := 0; i < 100; i++ {
+		wg.Add(1)
+
+		go func() {
+			defer wg.Done()
+
+			for j := 0; j < 1000; j++ {
+				counter.Add(1)
+			}
+		}()
+	}
+
+	wg.Wait()
+
+	fmt.Println("Expected:", 100000)
+	fmt.Println("Actual:", counter.Load())
+}
+```
+
+</details>
+
 ### Exercise 4: Thread Confinement
 Each worker needs to process 10,000 items.
 
 Task: Avoid shared mutable state between workers. Each worker should own its counter and send its result to the main goroutine.
 
 <details class="lld-reveal">
-<summary><span class="lld-reveal-icon" aria-hidden="true"></span>Template code</summary>
+<summary><span class="lld-reveal-icon" aria-hidden="true"></span>Problem code</summary>
 
 ```go
 package main
@@ -447,6 +574,51 @@ func main() {
 	}
 
 	wg.Wait()
+
+	fmt.Println("Expected:", 100000)
+	fmt.Println("Actual:", total)
+}
+```
+
+</details>
+
+<details class="lld-reveal">
+<summary><span class="lld-reveal-icon" aria-hidden="true"></span>Solution code</summary>
+
+```go
+package main
+
+import (
+	"fmt"
+	"sync"
+)
+
+func main() {
+	total := 0
+
+	var wg sync.WaitGroup
+	var countChannels []chan int
+	for i := 0; i < 10; i++ {
+		wg.Add(1)
+		countChan := make(chan int, 1)
+		countChannels = append(countChannels, countChan)
+		go func() {
+			defer wg.Done()
+			mychan := countChan
+			localCount := 0
+			for j := 0; j < 10000; j++ {
+				localCount++
+			}
+
+			mychan <- localCount
+		}()
+	}
+
+	wg.Wait()
+
+	for _, countChannel := range countChannels {
+		total += <-countChannel
+	}
 
 	fmt.Println("Expected:", 100000)
 	fmt.Println("Actual:", total)

@@ -5,8 +5,8 @@
       "link": "/learn/concurrency/01-introduction"
     },
     {
-      "text": "Sync in Go",
-      "link": "/learn/concurrency/02-sync-in-go"
+      "text": "Concurrency in Go",
+      "link": "/learn/concurrency/02-concurrency-in-go"
     },
     {
       "text": "Correctness",

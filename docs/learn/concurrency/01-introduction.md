@@ -2,8 +2,8 @@
 title: Introduction
 description: Shared memory, interleaving, and why concurrency shows up in LLD interviews.
 next:
-  text: sync in go
-  link: /learn/concurrency/02-sync-in-go
+  text: concurrency in go
+  link: /learn/concurrency/02-concurrency-in-go
 ---
 
 
