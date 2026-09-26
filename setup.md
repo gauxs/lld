@@ -1,20 +1,23 @@
 # Setup and authoring
 
-How the LLDZen site is built, how problem pages are generated, and how to add a new problem or extension.
+How the LLDZen site is built, how theory and problem pages are generated, and how to add content.
 
 ## How pages are created
 
-Source of truth for problems is **`problems/<problem_name>/`**. The `docs/problems/` tree is **generated** before dev and production builds.
+**Theory** and **problems** are authored at the repo root and synced into `docs/` before VitePress runs.
 
 ```text
-problems/<name>/extensions.json
-problems/<name>/extensions/<id>/*.md
-problems/<name>/extensions/<id>/code/     (optional)
+theory/<topic>/sections.json + *.md
+        │
+        ▼  node scripts/sync-theory-docs.mjs
+docs/learn/<topic>/                       (pages with front matter)
+docs/.vitepress/sidebar-theory.json
+
+problems/<name>/extensions.json + extensions/…
         │
         ▼  node scripts/sync-problem-docs.mjs
-docs/problems/<slug>/index.md             (overview + mermaid graph)
-docs/problems/<slug>/extensions/<id>/     (requirements, design, codebase)
-docs/.vitepress/sidebar-problems.json     (extension sidebar items)
+docs/problems/<slug>/ …
+docs/.vitepress/sidebar-problems.json
         │
         ▼  vitepress dev docs  |  vitepress build docs
 Static site (base path /lld/)
@@ -23,17 +26,20 @@ Static site (base path /lld/)
 | Command | What it does |
 | --- | --- |
 | `npm install` | Install Node dependencies (once). |
-| `npm run docs:dev` | Sync problem docs, then VitePress dev server. |
+| `npm run docs:dev` | Sync theory + problems, then VitePress dev server. |
 | `npm run docs:build` | Sync, production build, add `.nojekyll` for GitHub Pages. |
 | `npm run docs:preview` | Serve the production build locally. |
 
-**Do not hand-edit** synced pages under `docs/problems/` except when debugging the generator—they are overwritten on the next sync.
+**Do not hand-edit** synced pages under `docs/learn/` or `docs/problems/` except when debugging a generator—they are overwritten on the next sync.
 
-Theory pages under `docs/learn/` are hand-authored markdown (not synced from `problems/`).
+### Theory sync ([`scripts/sync-theory-docs.mjs`](scripts/sync-theory-docs.mjs))
 
-### What the sync script does
+1. Discovers subdirectories of **`theory/`** that contain **`sections.json`** (skip dirs starting with `_`).
+2. For each page id in **`order`**, reads **`theory/<topic>/<id>.md`** and writes **`docs/learn/<topic>/<id>.md`** with YAML (`title`, `description`, `prev` / `next` from order or per-page overrides).
+3. Removes stale `.md` files in the destination topic folder.
+4. Writes **`docs/.vitepress/sidebar-theory.json`** (imported in [`docs/.vitepress/config.ts`](docs/.vitepress/config.ts)).
 
-[`scripts/sync-problem-docs.mjs`](scripts/sync-problem-docs.mjs):
+### Problem sync ([`scripts/sync-problem-docs.mjs`](scripts/sync-problem-docs.mjs))
 
 1. Reads each problem listed in **`SLUGS`** (maps directory name → URL slug, e.g. `connect_four` → `connect-four`).
 2. Loads **`extensions.json`**: `order`, `default`, and per-extension `title` and optional **`buildsOn`**.

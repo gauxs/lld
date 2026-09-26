@@ -1,14 +1,3 @@
----
-title: Correctness
-description: Shared state corruption, check-then-act, and mutual exclusion.
-prev:
-  text: introduction
-  link: /learn/concurrency/intro
-next:
-  text: coordination
-  link: /learn/concurrency/coordination
----
-
 # Correctness
 
 <p class="lead">Correctness problems happen when two threads observe or update shared state in an order that violates your invariants—double booking, lost increments, or stale reads.</p>

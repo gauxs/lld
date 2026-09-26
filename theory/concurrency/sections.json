@@ -1,0 +1,30 @@
+{
+  "title": "Concurrency",
+  "order": ["intro", "correctness", "coordination", "scarcity"],
+  "pages": {
+    "intro": {
+      "title": "Introduction to concurrency",
+      "sidebar": "Introduction",
+      "description": "Shared memory, interleaving, and the three problem types you see in LLD interviews."
+    },
+    "correctness": {
+      "title": "Correctness",
+      "sidebar": "Correctness",
+      "description": "Shared state corruption, check-then-act, and mutual exclusion."
+    },
+    "coordination": {
+      "title": "Coordination",
+      "sidebar": "Coordination",
+      "description": "Ordering work between threads—producer–consumer and backpressure."
+    },
+    "scarcity": {
+      "title": "Scarcity",
+      "sidebar": "Scarcity",
+      "description": "Limited resources—pools, semaphores, and rate limits.",
+      "next": {
+        "text": "baseline",
+        "link": "/problems/connect-four/extensions/baseline/requirements"
+      }
+    }
+  }
+}

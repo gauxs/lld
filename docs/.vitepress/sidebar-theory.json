@@ -1,0 +1,20 @@
+{
+  "concurrency": [
+    {
+      "text": "Introduction",
+      "link": "/learn/concurrency/intro"
+    },
+    {
+      "text": "Correctness",
+      "link": "/learn/concurrency/correctness"
+    },
+    {
+      "text": "Coordination",
+      "link": "/learn/concurrency/coordination"
+    },
+    {
+      "text": "Scarcity",
+      "link": "/learn/concurrency/scarcity"
+    }
+  ]
+}

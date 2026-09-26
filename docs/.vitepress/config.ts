@@ -14,6 +14,13 @@ const sidebarProblems = fs.existsSync(sidebarProblemsPath)
   ? JSON.parse(fs.readFileSync(sidebarProblemsPath, "utf8"))
   : { connectFour: [], rateLimiter: [] };
 
+const sidebarTheoryPath = path.join(__dirname, "sidebar-theory.json");
+const sidebarTheory = fs.existsSync(sidebarTheoryPath)
+  ? JSON.parse(fs.readFileSync(sidebarTheoryPath, "utf8"))
+  : { concurrency: [] };
+
+const concurrencyTheoryItems = sidebarTheory.concurrency ?? [];
+
 const connectFourItems = [
   { text: "Overview", link: "/problems/connect-four/" },
   ...(sidebarProblems.connectFour ?? []),
@@ -35,12 +42,7 @@ const sidebar = [
           {
             text: "Concurrency",
             collapsed: false,
-            items: [
-              { text: "Introduction", link: "/learn/concurrency/intro" },
-              { text: "Correctness", link: "/learn/concurrency/correctness" },
-              { text: "Coordination", link: "/learn/concurrency/coordination" },
-              { text: "Scarcity", link: "/learn/concurrency/scarcity" },
-            ],
+            items: concurrencyTheoryItems,
           },
         ],
       },

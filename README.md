@@ -20,6 +20,7 @@ Open **`http://localhost:5173/lld/`** (port may differ). If the page is blank af
 
 ## Authoring
 
-- Problem template: [`_template/problem/`](_template/problem/)
+- Theory: [`theory/`](theory/) → synced to `docs/learn/`
+- Problems: [`_template/problem/`](_template/problem/) → [`problems/`](problems/)
 - Conventions: [`_template/CONVENTIONS.md`](_template/CONVENTIONS.md)
 - Full workflow: [setup.md](setup.md)
