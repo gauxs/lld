@@ -2,19 +2,33 @@
   "concurrency": [
     {
       "text": "Introduction",
-      "link": "/learn/concurrency/intro"
+      "link": "/learn/concurrency/01-introduction"
     },
     {
-      "text": "Correctness",
-      "link": "/learn/concurrency/correctness"
+      "text": "Problems",
+      "collapsed": false,
+      "items": [
+        {
+          "text": "Coordination",
+          "link": "/learn/concurrency/02-problems/coordination"
+        },
+        {
+          "text": "Correctness",
+          "link": "/learn/concurrency/02-problems/correctness"
+        },
+        {
+          "text": "Overview",
+          "link": "/learn/concurrency/02-problems/readme"
+        },
+        {
+          "text": "Scarcity",
+          "link": "/learn/concurrency/02-problems/scarcity"
+        }
+      ]
     },
     {
-      "text": "Coordination",
-      "link": "/learn/concurrency/coordination"
-    },
-    {
-      "text": "Scarcity",
-      "link": "/learn/concurrency/scarcity"
+      "text": "Interview approach",
+      "link": "/learn/concurrency/03-interview_approach"
     }
   ]
 }

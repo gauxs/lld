@@ -128,7 +128,7 @@ ${step.pageClass ? `pageClass: ${step.pageClass}\n` : ""}`;
     fm += `extension: ${meta.extension}\n`;
   }
   if (step.doc === "requirements.md" && meta.scarcityPrev) {
-    fm += yamlLink("prev", "scarcity", "/learn/concurrency/scarcity");
+    fm += yamlLink("prev", "scarcity", "/learn/concurrency/02-problems/scarcity");
   }
   if (step.doc === "codebase.md") {
     fm += `aside: false

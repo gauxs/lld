@@ -1,3 +1,10 @@
+---
+title: Interview approach
+sidebar: Interview approach
+description: Shared state, invariants, then pick a synchronization primitive—before reaching for a mutex.
+---
+
+# Interview approach
 
 ## The mental model for interviews
 When the interviewer introduces concurrency, don't immediately say:

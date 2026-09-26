@@ -7,7 +7,7 @@ How the LLDZen site is built, how theory and problem pages are generated, and ho
 **Theory** and **problems** are authored at the repo root and synced into `docs/` before VitePress runs.
 
 ```text
-theory/<topic>/sections.json + *.md
+theory/<topic>/**/*.md
         │
         ▼  node scripts/sync-theory-docs.mjs
 docs/learn/<topic>/                       (pages with front matter)
@@ -34,10 +34,31 @@ Static site (base path /lld/)
 
 ### Theory sync ([`scripts/sync-theory-docs.mjs`](scripts/sync-theory-docs.mjs))
 
-1. Discovers subdirectories of **`theory/`** that contain **`sections.json`** (skip dirs starting with `_`).
-2. For each page id in **`order`**, reads **`theory/<topic>/<id>.md`** and writes **`docs/learn/<topic>/<id>.md`** with YAML (`title`, `description`, `prev` / `next` from order or per-page overrides).
-3. Removes stale `.md` files in the destination topic folder.
-4. Writes **`docs/.vitepress/sidebar-theory.json`** (imported in [`docs/.vitepress/config.ts`](docs/.vitepress/config.ts)).
+Auto-discovery from the filesystem—no `sections.json`.
+
+1. Each **`theory/<topic>/`** folder with any **`*.md`** (recursive) becomes a topic. Skip paths starting with **`_`**.
+2. **Order** (sidebar + prev/next): at each level, sort **files and subfolders together** by leading **`01-`**, **`02_`**, … on the name; unnumbered names sort last, then alphabetical.
+3. **Subfolders** become sidebar groups; the group label is the folder name with the numeric prefix stripped (e.g. `02-problems` → “Problems”).
+4. **Inside a folder**, only `.md` files are sorted the same way (`01-readme.md`, `02-correctness.md`, …).
+5. **Overrides** in optional YAML at the top of a source file (stripped before publish):
+
+   ```yaml
+   ---
+   title: Custom page title
+   sidebar: Shorter nav label
+   description: SEO / lead
+   prev:
+     text: back
+     link: /learn/...
+   next:
+     text: forward
+     link: /problems/...
+   ---
+   ```
+
+   If omitted: **title** from first `# heading`, **sidebar** same as title.
+
+6. Writes **`docs/learn/<topic>/`** (mirrors relative paths) and **`docs/.vitepress/sidebar-theory.json`**.
 
 ### Problem sync ([`scripts/sync-problem-docs.mjs`](scripts/sync-problem-docs.mjs))
 

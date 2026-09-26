@@ -5,7 +5,7 @@ problem: rate_limiter
 extension: baseline
 prev:
   text: scarcity
-  link: /learn/concurrency/scarcity
+  link: /learn/concurrency/02-problems/scarcity
 next:
   text: design
   link: /problems/rate-limiter/extensions/baseline/design

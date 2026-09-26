@@ -1,3 +1,15 @@
+---
+title: Scarcity
+description: Limited resources—pools, semaphores, and rate limits.
+prev:
+  text: overview
+  link: /learn/concurrency/02-problems/readme
+next:
+  text: baseline
+  link: /problems/connect-four/extensions/baseline/requirements
+---
+
+
 # Scarcity
 
 <p class="lead">Scarcity problems appear when only N concurrent operations are allowed—DB connections, API quota, memory-heavy workers.</p>

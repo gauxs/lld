@@ -1,9 +1,7 @@
 ---
-title: Introduction to concurrency
-description: Shared memory, interleaving, and the three problem types you see in LLD interviews.
-next:
-  text: correctness
-  link: /learn/concurrency/correctness
+title: Introduction
+sidebar: Introduction
+description: Shared memory, interleaving, and why concurrency shows up in LLD interviews.
 ---
 
 # Introduction
@@ -123,77 +121,3 @@ Then:
 find available spot + claim spot  --> must effectively behave as one atomic operation.
 ```
 That's the essence of concurrency in LLD.
-
-## The 3 concurrency problems you should recognize
-Most LLD concurrency questions fall into three buckets:
-
-| Problem | Core question | Typical solution |
-| :--- | :--- | :--- |
-| **Correctness** | Can concurrent operations corrupt state? | Locks, atomics |
-| **Coordination** | How do threads communicate/wait? | Queues, conditions, channels |
-| **Scarcity** | How do we limit access to a finite resource? | Semaphores, pools |
-
-
-
-#### Correctness
-```text
-Two threads → same seat
-```
-Need to protect shared state.
-
-#### Coordination
-```text
-Producer → Queue → Consumer
-```
-Consumer may need to wait until work exists.
-
-#### Scarcity
-```text
-100 requests
-     ↓
-10 DB connections
-```
-Only 10 operations can use the resource concurrently. These categories are more useful in interviews than memorizing individual concurrency APIs.
-
-## The mental model for interviews
-When the interviewer introduces concurrency, don't immediately say:
-> I'll use a mutex.
-
-First ask:
-#### Step 1: What is shared?
-- inventory
-- parking spots
-- account balance
-- queue
-- connection pool
-
-#### Step 2: What can happen concurrently?
-- reserve()
-- cancel()
-- update()
-- read()
-
-#### Step 3: What must remain true?
-These are your invariants. Example:
-- inventory >= 0
-- one seat → at most one reservation
-
-#### Step 4: What synchronization is required?
-Only now choose:
-- atomic
-- mutex
-- RW lock
-- semaphore
-- condition variable
-- blocking queue
-
-### The key takeaway
-For LLD, don't think:
-> Concurrency = locks.
-
-Think:
-> Concurrency = unpredictable interleaving of operations on shared state.
-
-Your job is to identify the shared state + invariant, then choose the simplest mechanism that preserves that invariant.
-
-That's the foundation. The next topic should be Correctness, where we go deep into race conditions, atomicity, check-then-act, locks, atomics, and how to reason about whether a piece of code is actually thread-safe.

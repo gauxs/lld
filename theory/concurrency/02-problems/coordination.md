@@ -1,3 +1,9 @@
+---
+title: Coordination
+sidebar: Coordination
+description: Ordering work between threads—producer–consumer and backpressure.
+---
+
 # Coordination
 
 <p class="lead">Coordination problems are about who runs when: handing tasks between threads, waiting for readiness, and avoiding busy loops.</p>

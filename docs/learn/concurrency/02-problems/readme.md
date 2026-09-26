@@ -1,3 +1,15 @@
+---
+title: Three concurrency problem types
+description: Correctness, coordination, and scarcity—what breaks and typical tools.
+prev:
+  text: correctness
+  link: /learn/concurrency/02-problems/correctness
+next:
+  text: scarcity
+  link: /learn/concurrency/02-problems/scarcity
+---
+
+
 ## The 3 concurrency problems you should recognize
 Most LLD concurrency questions fall into three buckets:
 

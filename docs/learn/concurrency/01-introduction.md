@@ -1,3 +1,12 @@
+---
+title: Introduction
+description: Shared memory, interleaving, and why concurrency shows up in LLD interviews.
+next:
+  text: coordination
+  link: /learn/concurrency/02-problems/coordination
+---
+
+
 # Introduction
 
 Concurrency means multiple threads executing against the same in-memory state at overlapping times. The core problem is that the order of execution is unpredictable.
