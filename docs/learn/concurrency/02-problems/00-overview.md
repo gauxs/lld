@@ -2,11 +2,11 @@
 title: Three concurrency problem types
 description: Correctness, coordination, and scarcity—what breaks and typical tools.
 prev:
-  text: correctness
-  link: /learn/concurrency/02-problems/correctness
+  text: introduction
+  link: /learn/concurrency/01-introduction
 next:
-  text: scarcity
-  link: /learn/concurrency/02-problems/scarcity
+  text: correctness
+  link: /learn/concurrency/02-problems/01-correctness
 ---
 
 

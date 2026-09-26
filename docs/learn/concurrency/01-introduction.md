@@ -2,8 +2,8 @@
 title: Introduction
 description: Shared memory, interleaving, and why concurrency shows up in LLD interviews.
 next:
-  text: coordination
-  link: /learn/concurrency/02-problems/coordination
+  text: overview
+  link: /learn/concurrency/02-problems/00-overview
 ---
 
 

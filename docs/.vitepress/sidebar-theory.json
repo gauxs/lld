@@ -9,20 +9,20 @@
       "collapsed": false,
       "items": [
         {
-          "text": "Coordination",
-          "link": "/learn/concurrency/02-problems/coordination"
+          "text": "Overview",
+          "link": "/learn/concurrency/02-problems/00-overview"
         },
         {
           "text": "Correctness",
-          "link": "/learn/concurrency/02-problems/correctness"
+          "link": "/learn/concurrency/02-problems/01-correctness"
         },
         {
-          "text": "Overview",
-          "link": "/learn/concurrency/02-problems/readme"
+          "text": "Coordination",
+          "link": "/learn/concurrency/02-problems/02-coordination"
         },
         {
           "text": "Scarcity",
-          "link": "/learn/concurrency/02-problems/scarcity"
+          "link": "/learn/concurrency/02-problems/03-scarcity"
         }
       ]
     },
