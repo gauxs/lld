@@ -2,7 +2,7 @@ import path from "node:path";
 import fs from "node:fs";
 import { fileURLToPath } from "node:url";
 import { defineConfig, type UserConfig } from "vitepress";
-import { withMermaid } from "vitepress-plugin-mermaid";
+import { withMermaid } from "vitepress-mermaid-viewer";
 import { SITE_ICON_DARK, SITE_ICON_LIGHT } from "./site-assets";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));

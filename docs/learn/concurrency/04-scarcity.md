@@ -3,7 +3,7 @@ title: Scarcity
 description: Limited resources—pools, semaphores, and rate limits.
 prev:
   text: coordination
-  link: /learn/concurrency/02-problems/02-coordination
+  link: /learn/concurrency/03-coordination
 next:
   text: baseline
   link: /problems/connect-four/extensions/baseline/requirements

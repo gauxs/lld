@@ -70,7 +70,7 @@ Auto-discovery from the filesystem—no `sections.json`.
 6. Writes **`docs/.vitepress/sidebar-problems.json`** for VitePress to import in [`docs/.vitepress/config.ts`](docs/.vitepress/config.ts).
 7. Removes legacy flat problem pages (`functional-requirement.md`, old `variation-*` folders, etc.).
 
-Mermaid diagrams use **`vitepress-plugin-mermaid`** in the VitePress config; fenced ` ```mermaid ` blocks in synced or hand-written markdown render on the site.
+Mermaid diagrams use **`vitepress-mermaid-viewer`** in the VitePress config (click to open fullscreen, wheel/pinch zoom, pan); fenced ` ```mermaid ` blocks in synced or hand-written markdown render on the site.
 
 ---
 

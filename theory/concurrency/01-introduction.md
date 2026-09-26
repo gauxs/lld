@@ -121,3 +121,13 @@ Then:
 find available spot + claim spot  --> must effectively behave as one atomic operation.
 ```
 That's the essence of concurrency in LLD.
+
+## Three concurrency problem types
+
+| Problem | Core question | Typical solution |
+| :--- | :--- | :--- |
+| **[Correctness](/learn/concurrency/02-correctness)** | Can concurrent operations corrupt state? | Locks, atomics |
+| **[Coordination](/learn/concurrency/03-coordination)** | How do threads communicate/wait? | Queues, conditions, channels |
+| **[Scarcity](/learn/concurrency/04-scarcity)** | How do we limit access to a finite resource? | Semaphores, pools |
+
+The following sections cover each type in detail.

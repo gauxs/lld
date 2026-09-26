@@ -3,10 +3,10 @@ title: Coordination
 description: Ordering work between threads—producer–consumer and backpressure.
 prev:
   text: correctness
-  link: /learn/concurrency/02-problems/01-correctness
+  link: /learn/concurrency/02-correctness
 next:
   text: scarcity
-  link: /learn/concurrency/02-problems/03-scarcity
+  link: /learn/concurrency/04-scarcity
 ---
 
 
