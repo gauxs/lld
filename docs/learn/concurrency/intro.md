@@ -6,44 +6,194 @@ next:
   link: /learn/concurrency/correctness
 ---
 
-# Introduction to concurrency
+# Introduction
 
-<p class="lead">Concurrency is what happens when multiple execution paths make progress at the same time and touch shared state. In low-level design interviews you usually stay inside one process—threads, locks, and in-memory structures—not distributed systems.</p>
+Concurrency means multiple threads executing against the same in-memory state at overlapping times. The core problem is that the order of execution is unpredictable.
 
-Concurrency does not appear in every interview, but for senior roles it often shows up as a follow-up: two clients book the same seat, two goroutines update a counter, or ten requests hit a cache while it refreshes. The interviewer wants to see whether you can name what breaks when actions overlap and fix it without over-engineering.
+## Why do we care?
+Consider a parking lot with one empty spot:
+```mermaid
+sequenceDiagram
+    autonumber
+    actor A as Thread A
+    actor B as Thread B
+    participant S as Spot
 
-## Concurrency fundamentals
+    A->>S: check spot
+    S-->>A: available
+    B->>S: check spot
+    S-->>B: available
+    A->>S: occupy spot
+    B->>S: occupy spot
+```
+Both threads saw the same state. The resulting system state is invalid: two cars believe they own one spot. The important interview question is therefore:
+> What happens if two operations execute concurrently?
 
-A **process** is an isolated container with its own address space. Inside it, the runtime creates **threads** (or goroutines) that share the heap and globals but have their own stacks and program counters.
+That's the lens you should apply to almost every LLD problem.
 
-On multiple cores, threads may run in parallel. On one core, the scheduler **interleaves** instructions. Either way, operations from different threads can interleave in ways your source code does not make obvious—especially when one logical step is several machine instructions.
+## Concurrency vs Parallelism
+These are related but different.
+Concurrency = multiple tasks can make progress independently and their operations can interleave.
+Parallelism = multiple tasks are literally executing at the same time, typically on different CPU cores.
 
-Assume concurrency whenever **shared mutable state** exists. Java, Go, C++, and Rust all face this in production code. User-facing JavaScript is mostly single-threaded with an event loop; LLD concurrency there is usually modeled as async handoff rather than shared-memory threads.
+For LLD interviews, concurrency is the important concept. The operations can interleave unpredictably. On multiple cores, they can actually execute simultaneously. Either way, the problem is the same:
+> Multiple execution paths are accessing shared state.
 
-## The toolbox (quick reference)
+```mermaid
+sequenceDiagram
+    box #fafafa CONCURRENCY (Single Core)
+    participant C1 as CPU Core 1
+    end
+    
+    box #e6f5ff PARALLELISM (Multi-Core)
+    participant C2 as CPU Core 2
+    participant C3 as CPU Core 3
+    end
 
-| Primitive | Use when |
-| --- | --- |
-| **Atomics** | Single variable read-modify-write (counters, flags) |
-| **Mutex / lock** | Critical sections; multi-field updates; check-then-act |
-| **Semaphore** | Cap concurrent operations (pool size, rate budget) |
-| **Condition variable** | Wait until a predicate becomes true |
-| **Blocking queue / channel** | Producer–consumer handoff between threads |
+    %% Concurrency Flow
+    Note over C1: 1 Core Context-Switching
+    C1->>C1: RUNNING: Task A <br> (Task B is PAUSED)
+    C1->>C1: RUNNING: Task B <br> (Task A is PAUSED)
+    
+    %% Parallelism Flow
+    Note over C2, C3: 2 Cores Running Simultaneously
+    par True Parallelism
+        C2->>C2: RUNNING: Task A
+        C3->>C3: RUNNING: Task B
+    end
 
-Go idioms: protect shared structs with `sync.Mutex` or confine mutation to one goroutine; use **channels** for coordination. See the language-specific pages in later articles.
+```
 
-## Three problem types
+## The real source of concurrency bugs
+Most concurrency bugs come from shared mutable state.
+```mermaid
+sequenceDiagram
+    autonumber
+    actor A as Thread A
+    actor B as Thread B
+    participant State as Shared State: [inventory = 1]
 
-Most interview concurrency questions fall into three buckets:
+    Note over A, B: "Check-Then-Act" Concurrency Bug
 
-| Type | What breaks | Typical tools |
-| --- | --- | --- |
-| [Correctness](/learn/concurrency/correctness) | Lost updates, double booking, torn reads | Locks, atomics, confinement |
-| [Coordination](/learn/concurrency/coordination) | Producers/consumers out of sync | Queues, channels, condition vars |
-| [Scarcity](/learn/concurrency/scarcity) | Too many concurrent users of a limited resource | Semaphores, pools |
+    %% Phase 1: Interleaved Reads
+    A->>State: READ inventory (returns 1)
+    B->>State: READ inventory (returns 1)
+    
+    %% Phase 2: Independent Checks
+    Note over A: CHECK: 1 > 0 ? (True)
+    Note over B: CHECK: 1 > 0 ? (True)
 
-Real systems often mix all three. Separating them helps you pick the smallest fix for each part.
+    %% Phase 3: Double Overwrite
+    rect #ffdee2
+        Note over A, B: Race Condition: Overwriting without synchronization
+        A->>State: WRITE inventory - 1 (sets to 0)
+        B->>State: WRITE inventory - 1 (sets to 0)
+    end
 
-## What's next
+    Note over State: Final State: inventory = 0 <br> [BUG: 1 item was consumed twice!]
 
-Start with **Correctness**—how shared state gets corrupted and how to guard it—then **Coordination** and **Scarcity** for handoff and resource limits.
+```
+One item was consumed twice. This pattern is called check-then-act and will show up constantly in LLD interviews.
+
+## What concurrency adds to an LLD problem
+Normally you might design:
+```text
+ParkingLot
+    └── ParkingSpot
+
+park(car)
+unpark(car)
+```
+
+Then the interviewer asks:
+> What if two cars try to take the same spot simultaneously?
+
+Now you need to answer:
+1. What state is shared?
+2. What operations can overlap?
+3. What invariant must never be violated?
+4. How do we protect that invariant?
+
+For example:
+```text
+Invariant: A parking spot can belong to at most one car.
+```
+Then:
+```text
+find available spot + claim spot  --> must effectively behave as one atomic operation.
+```
+That's the essence of concurrency in LLD.
+
+## The 3 concurrency problems you should recognize
+Most LLD concurrency questions fall into three buckets:
+
+| Problem | Core question | Typical solution |
+| :--- | :--- | :--- |
+| **Correctness** | Can concurrent operations corrupt state? | Locks, atomics |
+| **Coordination** | How do threads communicate/wait? | Queues, conditions, channels |
+| **Scarcity** | How do we limit access to a finite resource? | Semaphores, pools |
+
+
+
+#### Correctness
+```text
+Two threads → same seat
+```
+Need to protect shared state.
+
+#### Coordination
+```text
+Producer → Queue → Consumer
+```
+Consumer may need to wait until work exists.
+
+#### Scarcity
+```text
+100 requests
+     ↓
+10 DB connections
+```
+Only 10 operations can use the resource concurrently. These categories are more useful in interviews than memorizing individual concurrency APIs.
+
+## The mental model for interviews
+When the interviewer introduces concurrency, don't immediately say:
+> I'll use a mutex.
+
+First ask:
+#### Step 1: What is shared?
+- inventory
+- parking spots
+- account balance
+- queue
+- connection pool
+
+#### Step 2: What can happen concurrently?
+- reserve()
+- cancel()
+- update()
+- read()
+
+#### Step 3: What must remain true?
+These are your invariants. Example:
+- inventory >= 0
+- one seat → at most one reservation
+
+#### Step 4: What synchronization is required?
+Only now choose:
+- atomic
+- mutex
+- RW lock
+- semaphore
+- condition variable
+- blocking queue
+
+### The key takeaway
+For LLD, don't think:
+> Concurrency = locks.
+
+Think:
+> Concurrency = unpredictable interleaving of operations on shared state.
+
+Your job is to identify the shared state + invariant, then choose the simplest mechanism that preserves that invariant.
+
+That's the foundation. The next topic should be Correctness, where we go deep into race conditions, atomicity, check-then-act, locks, atomics, and how to reason about whether a piece of code is actually thread-safe.
