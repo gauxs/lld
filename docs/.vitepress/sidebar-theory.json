@@ -5,20 +5,24 @@
       "link": "/learn/concurrency/01-introduction"
     },
     {
+      "text": "Sync in Go",
+      "link": "/learn/concurrency/02-sync-in-go"
+    },
+    {
       "text": "Correctness",
-      "link": "/learn/concurrency/02-correctness"
+      "link": "/learn/concurrency/03-correctness"
     },
     {
       "text": "Coordination",
-      "link": "/learn/concurrency/03-coordination"
+      "link": "/learn/concurrency/04-coordination"
     },
     {
       "text": "Scarcity",
-      "link": "/learn/concurrency/04-scarcity"
+      "link": "/learn/concurrency/05-scarcity"
     },
     {
       "text": "Interview approach",
-      "link": "/learn/concurrency/05-interview_approach"
+      "link": "/learn/concurrency/06-interview_approach"
     }
   ]
 }

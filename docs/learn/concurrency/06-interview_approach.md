@@ -3,7 +3,7 @@ title: Interview approach
 description: Shared state, invariants, then pick a synchronization primitive—before reaching for a mutex.
 prev:
   text: scarcity
-  link: /learn/concurrency/04-scarcity
+  link: /learn/concurrency/05-scarcity
 ---
 
 

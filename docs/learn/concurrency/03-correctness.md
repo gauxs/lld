@@ -2,11 +2,11 @@
 title: Correctness
 description: Shared state corruption, check-then-act, and mutual exclusion.
 prev:
-  text: introduction
-  link: /learn/concurrency/01-introduction
+  text: sync in go
+  link: /learn/concurrency/02-sync-in-go
 next:
   text: coordination
-  link: /learn/concurrency/03-coordination
+  link: /learn/concurrency/04-coordination
 ---
 
 
