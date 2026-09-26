@@ -37,7 +37,7 @@ Theory pages under `docs/learn/` are hand-authored markdown (not synced from `pr
 
 1. Reads each problem listed in **`SLUGS`** (maps directory name → URL slug, e.g. `connect_four` → `connect-four`).
 2. Loads **`extensions.json`**: `order`, `default`, and per-extension `title` and optional **`buildsOn`**.
-3. Writes **`docs/problems/<slug>/index.md`**: extension table, dependency links, and a **mermaid** flowchart (`buildsOn` → edges).
+3. Writes **`docs/problems/<slug>/index.md`**: intro plus a **mermaid** flowchart (child `-->|BuildsOn|` parent).
 4. For each extension, copies **`requirements.md`** and **`design.md`** into the docs tree with front matter (`prev` / `next` trail, `pageClass` for requirement styling).
 5. If **`extensions/<id>/code/`** is non-empty, generates **`codebase.md`** with `<ProblemCodebase problem="…" extension="…" />` (reads files from disk at build/dev time).
 6. Writes **`docs/.vitepress/sidebar-problems.json`** for VitePress to import in [`docs/.vitepress/config.ts`](docs/.vitepress/config.ts).

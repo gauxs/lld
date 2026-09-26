@@ -73,7 +73,7 @@ function mermaidExtensionGraph(extensions) {
   }
   for (const ext of extensions) {
     if (ext.buildsOn) {
-      lines.push(`  ${ext.buildsOn} --> ${ext.id}`);
+      lines.push(`  ${ext.id} -->|BuildsOn| ${ext.buildsOn}`);
     }
   }
   return ["```mermaid", ...lines, "```"].join("\n");
@@ -164,24 +164,10 @@ function syncExtensionProblem(problemId, slug) {
   const hubLines = [
     `# ${title}`,
     "",
-    "Extensions are **siblings** in the sidebar (baseline first). Use **Builds on** or the graph to see dependencies.",
+    "Extensions are **siblings** in the sidebar (baseline first). Dependencies:",
     "",
     mermaidExtensionGraph(extensions),
-    "",
-    "| Extension | Builds on |",
-    "| --- | --- |",
   ];
-
-  for (const ext of extensions) {
-    const extSlug = extensionSlug(ext.id);
-    const buildsOn =
-      ext.buildsOn == null
-        ? "—"
-        : `[${extensions.find((e) => e.id === ext.buildsOn)?.title ?? ext.buildsOn}](/problems/${slug}/extensions/${extensionSlug(ext.buildsOn)}/requirements)`;
-    hubLines.push(
-      `| [${ext.title}](/problems/${slug}/extensions/${extSlug}/requirements) | ${buildsOn} |`,
-    );
-  }
 
   fs.writeFileSync(
     path.join(destRoot, "index.md"),
