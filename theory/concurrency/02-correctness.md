@@ -6,7 +6,7 @@ description: Shared state corruption, check-then-act, and mutual exclusion.
 
 # Correctness
 
-<p class="lead">Correctness problems happen when two threads observe or update shared state in an order that violates your invariants—double booking, lost increments, or stale reads.</p>
+<p class="lead">Correctness problems happen when two threads observe or update shared state in an order that violates your invariants—double booking, lost increments, or stale reads</p>
 
 ## Failure modes
 
