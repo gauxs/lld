@@ -326,16 +326,18 @@ func main() {
 	counter := 0
 
 	var wg sync.WaitGroup
-	var lock sync.Mutex
+	var mu sync.Mutex
+
 	for i := 0; i < 100; i++ {
 		wg.Add(1)
 
 		go func() {
 			defer wg.Done()
-			defer lock.Unlock()
-			lock.Lock()	
+
 			for j := 0; j < 1000; j++ {
+				mu.Lock()
 				counter++
+				mu.Unlock()
 			}
 		}()
 	}
@@ -415,6 +417,7 @@ import (
 )
 
 type Counter struct {
+	mu    sync.Mutex
 	value int
 }
 
@@ -422,26 +425,27 @@ func main() {
 	counters := [2]Counter{}
 
 	var wg sync.WaitGroup
-	var lock1 sync.Mutex
-	var lock2 sync.Mutex
+
 	for i := 0; i < 100; i++ {
 		wg.Add(2)
 
 		go func() {
 			defer wg.Done()
-			defer lock1.Unlock()
-			lock1.Lock()
+
 			for j := 0; j < 1000; j++ {
+				counters[0].mu.Lock()
 				counters[0].value++
+				counters[0].mu.Unlock()
 			}
 		}()
 
 		go func() {
 			defer wg.Done()
-			defer lock2.Unlock()
-			lock2.Lock()
+
 			for j := 0; j < 1000; j++ {
+				counters[1].mu.Lock()
 				counters[1].value++
+				counters[1].mu.Unlock()
 			}
 		}()
 	}
@@ -588,34 +592,262 @@ import (
 )
 
 func main() {
-	total := 0
-
 	var wg sync.WaitGroup
-	var countChannels []chan int
+	results := make(chan int, 10)
+
 	for i := 0; i < 10; i++ {
 		wg.Add(1)
-		countChan := make(chan int, 1)
-		countChannels = append(countChannels, countChan)
+
 		go func() {
 			defer wg.Done()
-			mychan := countChan
+
 			localCount := 0
 			for j := 0; j < 10000; j++ {
 				localCount++
 			}
-
-			mychan <- localCount
+			results <- localCount
 		}()
 	}
 
 	wg.Wait()
+	close(results)
 
-	for _, countChannel := range countChannels {
-		total += <-countChannel
+	total := 0
+	for partial := range results {
+		total += partial
 	}
 
 	fmt.Println("Expected:", 100000)
 	fmt.Println("Actual:", total)
+}
+```
+
+</details>
+
+## Challenges (no solutions)
+
+These mirror common LLD failure modes. Run the starter code, observe incorrect behavior under load, then fix the race without changing the outward API more than necessary.
+
+### Challenge 1: Check-then-act (seat hold)
+
+Two goroutines can both pass `IsAvailable` and mark the same seat as taken. Preserve the invariant: **each seat is held by at most one customer at a time.**
+
+<details class="lld-reveal">
+<summary><span class="lld-reveal-icon" aria-hidden="true"></span>Problem code</summary>
+
+```go
+package main
+
+import (
+	"fmt"
+	"sync"
+)
+
+type Seat struct {
+	held bool
+}
+
+func (s *Seat) TryHold() bool {
+	if s.held {
+		return false
+	}
+
+	// to bring out the impact of race
+	time.Sleep(1 * time.Millisecond)
+
+	s.held = true
+	return true
+}
+
+func main() {
+	var seat Seat
+	var wg sync.WaitGroup
+	holds := 0
+
+	for i := 0; i < 1000; i++ {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			if seat.TryHold() {
+				holds++
+			}
+		}()
+	}
+
+	wg.Wait()
+	fmt.Println("Expected holds:", 1)
+	fmt.Println("Actual holds:", holds)
+}
+```
+
+</details>
+
+<details class="lld-reveal">
+<summary><span class="lld-reveal-icon" aria-hidden="true"></span>Solution code</summary>
+
+```go
+package main
+
+import (
+	"fmt"
+	"sync"
+	"time"
+)
+
+type Seat struct {
+	mu   sync.Mutex
+	held bool
+}
+
+func (s *Seat) TryHold() bool {
+	defer s.mu.Unlock()
+	s.mu.Lock()
+	if s.held {
+		return false
+	}
+
+	// to bring out the impact of race
+	time.Sleep(1 * time.Millisecond)
+
+	s.held = true
+	return true
+}
+
+func main() {
+	var seat Seat
+	var wg sync.WaitGroup
+	holds := 0
+
+	for i := 0; i < 1000; i++ {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			if seat.TryHold() {
+				holds++
+			}
+		}()
+	}
+
+	wg.Wait()
+	fmt.Println("Expected holds:", 1)
+	fmt.Println("Actual holds:", holds)
+}
+```
+
+</details>
+
+### Challenge 2: Read-modify-write (transfer)
+
+Each account update is a load, add/subtract, and store. Concurrent transfers can **lose updates** or leave **total money inconsistent** if both accounts are not updated atomically as a unit.
+
+<details class="lld-reveal">
+<summary><span class="lld-reveal-icon" aria-hidden="true"></span>Problem code</summary>
+
+```go
+package main
+
+import (
+	"fmt"
+	"sync"
+)
+
+type Account struct {
+	balance int64
+}
+
+func transfer(from, to *Account, amount int64) bool {
+	if from.balance < amount {
+		return false
+	}
+	from.balance -= amount
+
+	// to bring out the race issue
+	time.Sleep(1 * time.Microsecond)
+
+	to.balance += amount
+	return true
+}
+
+func main() {
+	a := Account{balance: 1000}
+	b := Account{balance: 1000}
+
+	var wg sync.WaitGroup
+	for i := 0; i < 500; i++ {
+		wg.Add(2)
+		go func() {
+			defer wg.Done()
+			transfer(&a, &b, 1)
+		}()
+		go func() {
+			defer wg.Done()
+			transfer(&b, &a, 1)
+		}()
+	}
+
+	wg.Wait()
+	total := a.balance + b.balance
+	fmt.Println("Expected total:", 2000)
+	fmt.Println("Actual total:", total)
+}
+```
+
+</details>
+
+<details class="lld-reveal">
+<summary><span class="lld-reveal-icon" aria-hidden="true"></span>Solution code</summary>
+
+```go
+package main
+
+import (
+	"fmt"
+	"sync"
+	"time"
+)
+
+type Account struct {
+	balance int64
+}
+
+func transfer(from, to *Account, amount int64, mu *sync.Mutex) bool {
+	mu.Lock()
+	defer mu.Unlock()
+
+	if from.balance < amount {
+		return false
+	}
+	from.balance -= amount
+
+	// to bring out the race issue
+	time.Sleep(1 * time.Microsecond)
+
+	to.balance += amount
+	return true
+}
+
+func main() {
+	a := Account{balance: 1000}
+	b := Account{balance: 1000}
+
+	var wg sync.WaitGroup
+	var mu sync.Mutex
+	for i := 0; i < 500; i++ {
+		wg.Add(2)
+		go func() {
+			defer wg.Done()
+			transfer(&a, &b, 1, &mu)
+		}()
+		go func() {
+			defer wg.Done()
+			transfer(&b, &a, 1, &mu)
+		}()
+	}
+
+	wg.Wait()
+	total := a.balance + b.balance
+	fmt.Println("Expected total:", 2000)
+	fmt.Println("Actual total:", total)
 }
 ```
 
