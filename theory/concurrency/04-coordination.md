@@ -608,6 +608,110 @@ func main() {
 <summary><span class="lld-reveal-icon" aria-hidden="true"></span>Solution code</summary>
 
 ```go
+package main
+
+import (
+	"errors"
+	"fmt"
+	"sync"
+	"time"
+)
+
+type Email struct {
+	To      string
+	Subject string
+}
+
+type EmailService struct {
+	mu           sync.Mutex
+	wg           sync.WaitGroup
+	closed       bool
+	emailChannel chan Email
+}
+
+func NewEmailService(workerCount int) *EmailService {
+	es := &EmailService{
+		mu:           sync.Mutex{},
+		wg:           sync.WaitGroup{},
+		closed:       false,
+		emailChannel: make(chan Email, 10),
+	}
+
+	es.startEmailProcessor(workerCount)
+	return es
+}
+
+func (s *EmailService) SendEmail(email Email) error {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	if s.closed {
+		return errors.New("channel already closed")
+	}
+
+	if len(s.emailChannel) == cap(s.emailChannel) {
+		return errors.New("email service full")
+	}
+
+	s.emailChannel <- email
+	return nil
+}
+
+func (s *EmailService) Shutdown() {
+	s.mu.Lock()
+	if s.closed {
+		s.mu.Unlock()
+		return
+	}
+
+	s.closed = true
+	s.mu.Unlock()
+
+	close(s.emailChannel)
+	s.wg.Wait()
+}
+
+func (s *EmailService) startEmailProcessor(workerCount int) {
+	for i := 0; i < workerCount; i++ {
+		s.wg.Add(1)
+		go emailWorker(s.emailChannel, &s.wg)
+	}
+}
+
+func emailWorker(emailChannel chan Email, wg *sync.WaitGroup) {
+	for email := range emailChannel {
+		processEmail(email)
+	}
+
+	wg.Done()
+}
+
+func processEmail(email Email) {
+	fmt.Printf("Sending email to %s: %s\n", email.To, email.Subject)
+	time.Sleep(200 * time.Millisecond)
+}
+
+func main() {
+	service := NewEmailService(10)
+
+	for i := 1; i <= 20; i++ {
+		err := service.SendEmail(Email{
+			To:      fmt.Sprintf("user%d@example.com", i),
+			Subject: fmt.Sprintf("Email %d", i),
+		})
+
+		if err != nil {
+			fmt.Println("Rejected:", i)
+		}
+	}
+
+	fmt.Println("All requests submitted")
+
+	service.Shutdown()
+
+	fmt.Println("Service stopped")
+}
+
 ```
 
 </details>
