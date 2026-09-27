@@ -229,6 +229,33 @@ func main() {
 <summary><span class="lld-reveal-icon" aria-hidden="true"></span>Solution code</summary>
 
 ```go
+package main
+
+import (
+	"fmt"
+	"sync"
+	"time"
+)
+
+func worker(id int, wg *sync.WaitGroup) {
+	defer wg.Done()
+
+	fmt.Println("Worker", id, "started")
+	time.Sleep(100 * time.Millisecond)
+	fmt.Println("Worker", id, "finished")
+}
+
+func main() {
+	var wg sync.WaitGroup
+	for i := 1; i <= 3; i++ {
+		wg.Add(1)
+		go worker(i, &wg)
+	}
+
+	wg.Wait()
+
+	fmt.Println("Done")
+}
 ```
 </details>
 
@@ -287,6 +314,46 @@ func main() {
 <summary><span class="lld-reveal-icon" aria-hidden="true"></span>Solution code</summary>
 
 ```go
+package main
+
+import (
+	"fmt"
+	"sync"
+	"time"
+)
+
+type Job struct {
+	ID int
+}
+
+func worker(id int, jobs <-chan Job, wg *sync.WaitGroup) {
+	defer wg.Done()
+
+	for job := range jobs {
+		fmt.Printf("Worker %d processing job %d\n", id, job.ID)
+		time.Sleep(100 * time.Millisecond)
+	}
+}
+
+func main() {
+	jobs := make(chan Job)
+
+	var wg sync.WaitGroup
+	for i := 1; i <= 3; i++ {
+		wg.Add(1)
+		go worker(i, jobs, &wg)
+	}
+
+	for i := 1; i <= 10; i++ {
+		jobs <- Job{ID: i}
+	}
+
+	close(jobs)
+	wg.Wait()
+
+	fmt.Println("Done")
+}
+
 ```
 
 </details>
@@ -371,6 +438,100 @@ func main() {
 <summary><span class="lld-reveal-icon" aria-hidden="true"></span>Solution code</summary>
 
 ```go
+package main
+
+import (
+	"fmt"
+	"sync"
+	"time"
+)
+
+type Queue struct {
+	mu         sync.Mutex
+	qFullCond  *sync.Cond
+	qEmptyCond *sync.Cond
+	capacity   int
+	arr        []int
+	backIdx    int
+	frontIdx   int
+	len        int
+}
+
+func NewQueue(capacity int) *Queue {
+	q := &Queue{
+		mu:       sync.Mutex{},
+		capacity: capacity,
+		arr:      make([]int, capacity),
+		backIdx:  0,
+		frontIdx: 0,
+		len:      0,
+	}
+
+	q.qFullCond = sync.NewCond(&q.mu)
+	q.qEmptyCond = sync.NewCond(&q.mu)
+	return q
+}
+
+func (q *Queue) Put(item int) {
+	q.mu.Lock()
+	defer q.mu.Unlock()
+	for q.len == q.capacity {
+		q.qFullCond.Wait()
+	}
+
+	q.arr[q.backIdx] = item
+	q.backIdx = (q.backIdx + 1) % q.capacity
+	q.len++
+	q.qEmptyCond.Signal()
+}
+
+func (q *Queue) Get() int {
+	q.mu.Lock()
+	defer q.mu.Unlock()
+	for q.len == 0 {
+		q.qEmptyCond.Wait()
+	}
+
+	t := q.arr[q.frontIdx]
+	q.frontIdx = (q.frontIdx + 1) % q.capacity
+	q.len--
+	q.qFullCond.Signal()
+	return t
+}
+
+func main() {
+	q := NewQueue(3)
+
+	var wg sync.WaitGroup
+
+	// Producer
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+
+		for i := 1; i <= 10; i++ {
+			fmt.Println("Producing:", i)
+			q.Put(i)
+		}
+	}()
+
+	// Consumer
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+
+		for i := 0; i < 10; i++ {
+			item := q.Get()
+			fmt.Println("Consumed:", item)
+			time.Sleep(200 * time.Millisecond)
+		}
+	}()
+
+	wg.Wait()
+
+	fmt.Println("Done")
+}
+
 ```
 
 </details>
