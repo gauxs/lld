@@ -180,7 +180,6 @@ Coordination is about how concurrent workers cooperate.
 Remember these two models:
 ```text
 Shared state    ->  Mutex / RWMutex / Atomic / Cond
-
 Message passing ->  Channels / Queues
 ```
 

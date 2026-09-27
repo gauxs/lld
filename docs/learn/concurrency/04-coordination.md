@@ -186,10 +186,475 @@ Coordination is about how concurrent workers cooperate.
 Remember these two models:
 ```text
 Shared state    ->  Mutex / RWMutex / Atomic / Cond
-
 Message passing ->  Channels / Queues
 ```
 
 For LLD interviews, focus less on memorizing primitives and more on the behavior:
 
 > Who produces work, who consumes it, what happens when consumers are busy, and what happens when the system is overloaded?
+
+## Exercises
+### Exercise 1: Worker Pool
+Three workers process jobs concurrently.
+Task: Make main wait until all workers have finished before printing "Done".
+<details class="lld-reveal">
+<summary><span class="lld-reveal-icon" aria-hidden="true"></span>Problem code</summary>
+
+```go
+package main
+
+import (
+	"fmt"
+	"time"
+)
+
+func worker(id int) {
+	fmt.Println("Worker", id, "started")
+	time.Sleep(100 * time.Millisecond)
+	fmt.Println("Worker", id, "finished")
+}
+
+func main() {
+	for i := 1; i <= 3; i++ {
+		go worker(i)
+	}
+
+	fmt.Println("Done")
+}
+```
+
+</details>
+
+<details class="lld-reveal">
+<summary><span class="lld-reveal-icon" aria-hidden="true"></span>Solution code</summary>
+
+```go
+```
+</details>
+
+### Exercise 2: Producer-Consumer
+A producer generates jobs and consumers process them.
+
+Task: Use a channel to coordinate the producer and workers.
+
+Requirements:
+- Start 3 workers.
+- Submit 10 jobs.
+- Workers should process jobs as they become available.
+- Workers should stop after all jobs have been processed.
+- main should wait for all workers to finish.
+
+<details class="lld-reveal">
+<summary><span class="lld-reveal-icon" aria-hidden="true"></span>Problem code</summary>
+
+```go
+package main
+
+import (
+	"fmt"
+	"time"
+)
+
+type Job struct {
+	ID int
+}
+
+func worker(id int, jobs <-chan Job) {
+	for job := range jobs {
+		fmt.Printf("Worker %d processing job %d\n", id, job.ID)
+		time.Sleep(100 * time.Millisecond)
+	}
+}
+
+func main() {
+	jobs := make(chan Job)
+
+	for i := 1; i <= 3; i++ {
+		go worker(i, jobs)
+	}
+
+	for i := 1; i <= 10; i++ {
+		jobs <- Job{ID: i}
+	}
+
+	fmt.Println("Done")
+}
+```
+
+</details>
+
+<details class="lld-reveal">
+<summary><span class="lld-reveal-icon" aria-hidden="true"></span>Solution code</summary>
+
+```go
+```
+
+</details>
+
+### Exercise 3: Bounded Queue
+A queue has a fixed capacity.
+
+Task: Implement a thread-safe queue using sync.Mutex and sync.Cond.
+
+Requirements:
+- Capacity = 3.
+- Put blocks when the queue is full.
+- Get blocks when the queue is empty.
+- Multiple producers and consumers must be supported.
+
+<details class="lld-reveal">
+<summary><span class="lld-reveal-icon" aria-hidden="true"></span>Starter code</summary>
+
+```go
+package main
+
+import (
+	"fmt"
+	"sync"
+	"time"
+)
+
+type Queue struct {
+	// TODO
+}
+
+func NewQueue(capacity int) *Queue {
+	// TODO
+	return nil
+}
+
+func (q *Queue) Put(item int) {
+	// TODO
+}
+
+func (q *Queue) Get() int {
+	// TODO
+	return 0
+}
+
+func main() {
+	q := NewQueue(3)
+
+	var wg sync.WaitGroup
+
+	// Producer
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+
+		for i := 1; i <= 10; i++ {
+			fmt.Println("Producing:", i)
+			q.Put(i)
+		}
+	}()
+
+	// Consumer
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+
+		for i := 0; i < 10; i++ {
+			item := q.Get()
+			fmt.Println("Consumed:", item)
+			time.Sleep(200 * time.Millisecond)
+		}
+	}()
+
+	wg.Wait()
+
+	fmt.Println("Done")
+}
+```
+</details>
+
+<details class="lld-reveal">
+<summary><span class="lld-reveal-icon" aria-hidden="true"></span>Solution code</summary>
+
+```go
+```
+
+</details>
+
+### Exercise 4: Asynchronous Email Service
+Build an email service that processes emails in the background.
+
+Requirements:
+- 5 workers.
+- Maximum 10 pending emails.
+- SendEmail should return immediately if the queue has capacity.
+- If the queue is full, SendEmail should return an error immediately.
+- Shutdown should wait for accepted emails to finish.
+- No email accepted by the service should be lost during graceful shutdown.
+
+<details class="lld-reveal">
+<summary><span class="lld-reveal-icon" aria-hidden="true"></span>Starter code</summary>
+
+```go
+package main
+
+import (
+	"fmt"
+	"sync"
+	"time"
+)
+
+type Email struct {
+	To      string
+	Subject string
+}
+
+type EmailService struct {
+	// TODO
+}
+
+func NewEmailService() *EmailService {
+	// TODO
+	return nil
+}
+
+func (s *EmailService) SendEmail(email Email) error {
+	// TODO
+	return nil
+}
+
+func (s *EmailService) Shutdown() {
+	// TODO
+}
+
+func processEmail(email Email) {
+	fmt.Printf("Sending email to %s: %s\n", email.To, email.Subject)
+	time.Sleep(200 * time.Millisecond)
+}
+
+func main() {
+	service := NewEmailService()
+
+	for i := 1; i <= 20; i++ {
+		err := service.SendEmail(Email{
+			To:      fmt.Sprintf("user%d@example.com", i),
+			Subject: fmt.Sprintf("Email %d", i),
+		})
+
+		if err != nil {
+			fmt.Println("Rejected:", i)
+		}
+	}
+
+	fmt.Println("All requests submitted")
+
+	service.Shutdown()
+
+	fmt.Println("Service stopped")
+}
+```
+
+</details>
+<details class="lld-reveal">
+<summary><span class="lld-reveal-icon" aria-hidden="true"></span>Solution code</summary>
+
+```go
+```
+
+</details>
+
+## Challenges (No solutions)
+
+### Challenge 1: Worker Pool with Results
+You have 100 jobs and 5 workers.
+
+Each job produces a result:
+```go
+type Result struct {
+	JobID int
+	Value int
+}
+```
+
+Task:
+- Process all jobs concurrently.
+- Collect every result.
+- Print the sum of all results.
+- main must not exit before every result has been received.
+- Avoid shared mutable state for the result collection.
+
+<details class="lld-reveal">
+<summary><span class="lld-reveal-icon" aria-hidden="true"></span>Starter code</summary>
+
+```go
+package main
+
+import (
+	"fmt"
+	"sync"
+)
+
+type Job struct {
+	ID int
+}
+
+type Result struct {
+	JobID int
+	Value int
+}
+
+func process(job Job) Result {
+	return Result{
+		JobID: job.ID,
+		Value: job.ID * 10,
+	}
+}
+
+func worker(
+	jobs <-chan Job,
+	results chan<- Result,
+	wg *sync.WaitGroup,
+) {
+	// TODO
+}
+
+func main() {
+	jobs := make(chan Job)
+	results := make(chan Result)
+
+	var wg sync.WaitGroup
+
+	// TODO: start 5 workers
+
+	// TODO: submit 100 jobs
+
+	// TODO: close jobs
+
+	// TODO: wait for workers and close results
+
+	total := 0
+
+	// TODO: collect results
+
+	fmt.Println("Total:", total)
+}
+```
+</details>
+
+### Challenge 2: Backpressure
+An API receives requests faster than workers can process them.
+
+Requirements:
+- 3 workers.
+- Queue capacity = 5.
+- Submit must never block.
+- If the queue is full, reject the request immediately.
+- Every accepted request must eventually be processed.
+
+Task: Implement the worker pool and Submit.
+
+<details class="lld-reveal">
+<summary><span class="lld-reveal-icon" aria-hidden="true"></span>Starter code</summary>
+
+```go
+package main
+
+import (
+	"fmt"
+	"time"
+)
+
+type Request struct {
+	ID int
+}
+
+type Server struct {
+	// TODO
+}
+
+func NewServer() *Server {
+	// TODO
+	return nil
+}
+
+func (s *Server) Submit(req Request) bool {
+	// TODO
+	return false
+}
+
+func (s *Server) worker(id int) {
+	// TODO
+}
+
+func main() {
+	server := NewServer()
+
+	for i := 1; i <= 20; i++ {
+		accepted := server.Submit(Request{ID: i})
+
+		if accepted {
+			fmt.Println("Accepted:", i)
+		} else {
+			fmt.Println("Rejected:", i)
+		}
+	}
+
+	time.Sleep(2 * time.Second)
+}
+```
+</details>
+
+### Challenge 3: Graceful Shutdown
+You have a worker pool processing requests. The server receives a shutdown signal while requests are still being processed.
+
+Task:
+- Implement Shutdown() such that:
+- No new work is accepted after shutdown begins.
+- Already queued work is processed.
+- Workers exit after the queue is drained.
+- Shutdown() returns only after all work is complete.
+
+<details class="lld-reveal">
+<summary><span class="lld-reveal-icon" aria-hidden="true"></span>Starter code</summary>
+
+```go
+package main
+
+import (
+	"fmt"
+	"sync"
+	"time"
+)
+
+type Server struct {
+	// TODO
+}
+
+func NewServer() *Server {
+	// TODO
+	return nil
+}
+
+func (s *Server) Submit(id int) bool {
+	// TODO
+	return false
+}
+
+func (s *Server) Shutdown() {
+	// TODO
+}
+
+func (s *Server) worker(id int) {
+	// TODO
+}
+
+func main() {
+	server := NewServer()
+
+	for i := 1; i <= 10; i++ {
+		server.Submit(i)
+	}
+
+	time.Sleep(300 * time.Millisecond)
+
+	fmt.Println("Shutting down...")
+	server.Shutdown()
+
+	fmt.Println("Server stopped")
+}
+```
+</details>
