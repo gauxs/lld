@@ -309,6 +309,219 @@ The general goal is:
 
 ## Exercises
 ### Exercise 1: Concurrency Limit
+A service calls a downstream API that allows at most 3 concurrent requests.
+
+Task: Use a semaphore to enforce the limit.
+Requirements:
+1. Process 10 requests concurrently.
+2. Never have more than 3 requests in flight.
+3. Wait for all requests to finish.
+4. Always release the permit, even if processing fails.
+
+<details class="lld-reveal">
+<summary><span class="lld-reveal-icon" aria-hidden="true"></span>Problem code</summary>
+
+```go
+package main
+
+import (
+	"fmt"
+	"sync"
+	"time"
+)
+
+func callDownstream(id int) {
+	fmt.Println("Starting request:", id)
+	time.Sleep(200 * time.Millisecond)
+	fmt.Println("Finished request:", id)
+}
+
+func main() {
+	var wg sync.WaitGroup
+
+	for i := 1; i <= 10; i++ {
+		wg.Add(1)
+
+		go func(id int) {
+			defer wg.Done()
+			callDownstream(id)
+		}(i)
+	}
+
+	wg.Wait()
+	fmt.Println("Done")
+}
+```
+</details>
+
+<details class="lld-reveal">
+<summary><span class="lld-reveal-icon" aria-hidden="true"></span>Solution code</summary>
+```go
+```
+</details>
+
 ### Exercise 2: Resource Pool
+A service has 3 expensive database connections that should be reused.
+
+Task: Implement a thread-safe connection pool.
+
+Requirements:
+1. The pool starts with 3 connections.
+2. Get() returns an available connection.
+3. Get() blocks when all connections are in use.
+4. Put() returns the connection to the pool.
+5. Multiple goroutines can use the pool concurrently.
+
+<details class="lld-reveal">
+<summary><span class="lld-reveal-icon" aria-hidden="true"></span>Starter code</summary>
+
+```go
+package main
+
+import (
+	"fmt"
+	"sync"
+	"time"
+)
+
+type Connection struct {
+	ID int
+}
+
+type ConnectionPool struct {
+	// TODO
+}
+
+func NewConnectionPool(size int) *ConnectionPool {
+	// TODO
+	return nil
+}
+
+func (p *ConnectionPool) Get() *Connection {
+	// TODO
+	return nil
+}
+
+func (p *ConnectionPool) Put(conn *Connection) {
+	// TODO
+}
+
+func main() {
+	pool := NewConnectionPool(3)
+
+	var wg sync.WaitGroup
+
+	for i := 1; i <= 10; i++ {
+		wg.Add(1)
+
+		go func(id int) {
+			defer wg.Done()
+
+			conn := pool.Get()
+			fmt.Printf("Request %d using connection %d\n", id, conn.ID)
+
+			time.Sleep(200 * time.Millisecond)
+
+			pool.Put(conn)
+		}(i)
+	}
+
+	wg.Wait()
+	fmt.Println("Done")
+}
+```
+</details>
+
+<details class="lld-reveal">
+<summary><span class="lld-reveal-icon" aria-hidden="true"></span>Solution code</summary>
+
+```go
+```
+</details>
+
 ### Exercise 3: Weighted Capacity
-### Exercise 4: Resource Pool with Failure
+A service has a maximum 100 MB memory budget for concurrent jobs. Each job requires a different amount of memory.
+
+Task: Implement a weighted limiter.
+
+Requirements:
+1. Total acquired memory must never exceed 100 MB.
+2. A job blocks when insufficient memory is available.
+3. Releasing memory allows waiting jobs to proceed.
+4. Multiple goroutines must be supported.
+
+<details class="lld-reveal">
+<summary><span class="lld-reveal-icon" aria-hidden="true"></span>Starter code</summary>
+
+```go
+package main
+
+import (
+	"fmt"
+	"sync"
+	"time"
+)
+
+type MemoryLimiter struct {
+	// TODO
+}
+
+func NewMemoryLimiter(capacity int) *MemoryLimiter {
+	// TODO
+	return nil
+}
+
+func (l *MemoryLimiter) Acquire(amount int) {
+	// TODO
+}
+
+func (l *MemoryLimiter) Release(amount int) {
+	// TODO
+}
+
+func processJob(id, memory int) {
+	fmt.Printf("Job %d using %d MB\n", id, memory)
+	time.Sleep(200 * time.Millisecond)
+}
+
+func main() {
+	limiter := NewMemoryLimiter(100)
+
+	jobs := []struct {
+		id     int
+		memory int
+	}{
+		{1, 40},
+		{2, 30},
+		{3, 50},
+		{4, 20},
+	}
+
+	var wg sync.WaitGroup
+
+	for _, job := range jobs {
+		wg.Add(1)
+
+		go func(id, memory int) {
+			defer wg.Done()
+
+			limiter.Acquire(memory)
+			defer limiter.Release(memory)
+
+			processJob(id, memory)
+		}(job.id, job.memory)
+	}
+
+	wg.Wait()
+	fmt.Println("Done")
+}
+```
+
+</details>
+
+<details class="lld-reveal">
+<summary><span class="lld-reveal-icon" aria-hidden="true"></span>Solution code</summary>
+
+```go
+```
+</details>
