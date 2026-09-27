@@ -682,60 +682,6 @@ func main() {
 
 </details>
 
-<details class="lld-reveal">
-<summary><span class="lld-reveal-icon" aria-hidden="true"></span>Solution code</summary>
-
-```go
-package main
-
-import (
-	"fmt"
-	"sync"
-	"time"
-)
-
-type Seat struct {
-	mu   sync.Mutex
-	held bool
-}
-
-func (s *Seat) TryHold() bool {
-	defer s.mu.Unlock()
-	s.mu.Lock()
-	if s.held {
-		return false
-	}
-
-	// to bring out the impact of race
-	time.Sleep(1 * time.Millisecond)
-
-	s.held = true
-	return true
-}
-
-func main() {
-	var seat Seat
-	var wg sync.WaitGroup
-	holds := 0
-
-	for i := 0; i < 1000; i++ {
-		wg.Add(1)
-		go func() {
-			defer wg.Done()
-			if seat.TryHold() {
-				holds++
-			}
-		}()
-	}
-
-	wg.Wait()
-	fmt.Println("Expected holds:", 1)
-	fmt.Println("Actual holds:", holds)
-}
-```
-
-</details>
-
 ### Challenge 2: Read-modify-write (transfer)
 
 Each account update is a load, add/subtract, and store. Concurrent transfers can **lose updates** or leave **total money inconsistent** if both accounts are not updated atomically as a unit.
@@ -782,65 +728,6 @@ func main() {
 		go func() {
 			defer wg.Done()
 			transfer(&b, &a, 1)
-		}()
-	}
-
-	wg.Wait()
-	total := a.balance + b.balance
-	fmt.Println("Expected total:", 2000)
-	fmt.Println("Actual total:", total)
-}
-```
-
-</details>
-
-<details class="lld-reveal">
-<summary><span class="lld-reveal-icon" aria-hidden="true"></span>Solution code</summary>
-
-```go
-package main
-
-import (
-	"fmt"
-	"sync"
-	"time"
-)
-
-type Account struct {
-	balance int64
-}
-
-func transfer(from, to *Account, amount int64, mu *sync.Mutex) bool {
-	mu.Lock()
-	defer mu.Unlock()
-
-	if from.balance < amount {
-		return false
-	}
-	from.balance -= amount
-
-	// to bring out the race issue
-	time.Sleep(1 * time.Microsecond)
-
-	to.balance += amount
-	return true
-}
-
-func main() {
-	a := Account{balance: 1000}
-	b := Account{balance: 1000}
-
-	var wg sync.WaitGroup
-	var mu sync.Mutex
-	for i := 0; i < 500; i++ {
-		wg.Add(2)
-		go func() {
-			defer wg.Done()
-			transfer(&a, &b, 1, &mu)
-		}()
-		go func() {
-			defer wg.Done()
-			transfer(&b, &a, 1, &mu)
 		}()
 	}
 
