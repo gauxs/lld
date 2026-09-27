@@ -356,7 +356,59 @@ func main() {
 
 <details class="lld-reveal">
 <summary><span class="lld-reveal-icon" aria-hidden="true"></span>Solution code</summary>
+
 ```go
+package main
+
+import (
+	"fmt"
+	"sync"
+	"time"
+)
+
+type Semaphore struct {
+	permit chan struct{}
+}
+
+func NewSemaphore(n int) *Semaphore {
+	return &Semaphore{
+		permit: make(chan struct{}, n),
+	}
+}
+
+func (s *Semaphore) Acquire() {
+	s.permit <- struct{}{}
+}
+
+func (s *Semaphore) Release() {
+	<-s.permit
+}
+
+func callDownstream(id int) {
+	fmt.Println("Starting request:", id)
+	time.Sleep(200 * time.Millisecond)
+	fmt.Println("Finished request:", id)
+}
+
+func main() {
+	sem := NewSemaphore(3)
+	var wg sync.WaitGroup
+
+	for i := 1; i <= 10; i++ {
+		wg.Add(1)
+
+		go func(id int) {
+			defer wg.Done()
+			sem.Acquire()
+			defer sem.Release()
+
+			callDownstream(id)
+		}(i)
+	}
+
+	wg.Wait()
+	fmt.Println("Done")
+}
 ```
 </details>
 
@@ -436,6 +488,66 @@ func main() {
 <summary><span class="lld-reveal-icon" aria-hidden="true"></span>Solution code</summary>
 
 ```go
+package main
+
+import (
+	"fmt"
+	"sync"
+	"time"
+)
+
+type Connection struct {
+	ID int
+}
+
+type ConnectionPool struct {
+	pool chan *Connection
+}
+
+func NewConnectionPool(size int) *ConnectionPool {
+	cp := &ConnectionPool{
+		pool: make(chan *Connection, size),
+	}
+
+	for i := 0; i < size; i++ {
+		cp.pool <- &Connection{ID: i}
+	}
+
+	return cp
+}
+
+func (p *ConnectionPool) Get() *Connection {
+	return <-p.pool
+}
+
+func (p *ConnectionPool) Put(conn *Connection) {
+	p.pool <- conn
+}
+
+func main() {
+	pool := NewConnectionPool(3)
+
+	var wg sync.WaitGroup
+
+	for i := 1; i <= 10; i++ {
+		wg.Add(1)
+
+		go func(id int) {
+			defer wg.Done()
+
+			conn := pool.Get()
+			fmt.Printf("Request %d using connection %d\n", id, conn.ID)
+
+			time.Sleep(200 * time.Millisecond)
+
+			pool.Put(conn)
+		}(i)
+	}
+
+	wg.Wait()
+	fmt.Println("Done")
+}
+
 ```
 </details>
 
@@ -523,5 +635,88 @@ func main() {
 <summary><span class="lld-reveal-icon" aria-hidden="true"></span>Solution code</summary>
 
 ```go
+package main
+
+import (
+	"fmt"
+	"sync"
+	"time"
+)
+
+type MemoryLimiter struct {
+	mu       sync.Mutex
+	capCond  *sync.Cond
+	capacity int
+	current  int
+}
+
+func NewMemoryLimiter(capacity int) *MemoryLimiter {
+	ml := &MemoryLimiter{
+		mu:       sync.Mutex{},
+		capacity: capacity,
+		current:  0,
+	}
+
+	ml.capCond = sync.NewCond(&ml.mu)
+	return ml
+}
+
+func (l *MemoryLimiter) Acquire(amount int) {
+	l.mu.Lock()
+	defer l.mu.Unlock()
+
+	for (l.current + amount) > l.capacity {
+		l.capCond.Wait()
+	}
+
+	l.current += amount
+}
+
+func (l *MemoryLimiter) Release(amount int) {
+	l.mu.Lock()
+	defer l.mu.Unlock()
+
+	l.current -= amount
+	l.capCond.Broadcast()
+}
+
+func processJob(id, memory int) {
+	fmt.Printf("Job %d using %d MB\n", id, memory)
+	time.Sleep(200 * time.Millisecond)
+}
+
+func main() {
+	limiter := NewMemoryLimiter(100)
+
+	jobs := []struct {
+		id     int
+		memory int
+	}{
+		{1, 40},
+		{2, 30},
+		{3, 50},
+		{4, 20},
+	}
+
+	var wg sync.WaitGroup
+
+	for _, job := range jobs {
+		wg.Add(1)
+
+		go func(id, memory int) {
+			defer wg.Done()
+
+			limiter.Acquire(memory)
+			defer limiter.Release(memory)
+
+			processJob(id, memory)
+		}(job.id, job.memory)
+	}
+
+	wg.Wait()
+	fmt.Println("Done")
+}
+
+
 ```
 </details>
