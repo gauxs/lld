@@ -125,4 +125,4 @@ find available spot + claim spot  --> must effectively behave as one atomic oper
 ```
 That's the essence of concurrency in LLD.
 
-Before the deep dives, read [Sync in Go](/learn/concurrency/02-sync-in-go) for the standard library mechanisms you are expected to name and apply in your design.
+Before the deep dives, read [Concurrency in Go](/learn/concurrency/02-concurrency-in-go) for the standard library mechanisms you are expected to name and apply in your design.
