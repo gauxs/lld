@@ -56,8 +56,11 @@ func Execute() {
 			startTime := time.Now().Add(time.Duration(startOffset) * time.Minute)
 			endTime := time.Now().Add(time.Duration(endOffset) * time.Minute)
 
-			count := activityTracker.GetActivityCountForUserInTimerange(startTime, endTime, userID, enum.Activity(activityID))
-			fmt.Printf("Resulting Count: %d\n", count)
+			if count, err := activityTracker.GetActivityCountForUserInTimerange(startTime, endTime, userID, enum.Activity(activityID)); err != nil {
+				fmt.Println(err.Error())
+			} else {
+				fmt.Printf("Resulting Count: %d\n", count)
+			}
 
 		case 3: // GetActivityRateForUserInTimerange
 			var startOffset, endOffset int
@@ -72,8 +75,11 @@ func Execute() {
 			startTime := time.Now().Add(time.Duration(startOffset) * time.Minute)
 			endTime := time.Now().Add(time.Duration(endOffset) * time.Minute)
 
-			rate := activityTracker.GetActivityRateForUserInTimerange(startTime, endTime, userID, enum.Activity(activityID))
-			fmt.Printf("Resulting Rate: %.4f\n", rate)
+			if rate, err := activityTracker.GetActivityRateForUserInTimerange(startTime, endTime, userID, enum.Activity(activityID)); err != nil {
+				fmt.Println(err.Error())
+			} else {
+				fmt.Printf("Resulting Rate: %.4f\n", rate)
+			}
 
 		case 4: // GetDistinctUserCountByActivityInTimerange
 			var startOffset, endOffset int
@@ -87,8 +93,11 @@ func Execute() {
 			startTime := time.Now().Add(time.Duration(startOffset) * time.Minute)
 			endTime := time.Now().Add(time.Duration(endOffset) * time.Minute)
 
-			distinctCount := activityTracker.GetDistinctUserCountByActivityInTimerange(startTime, endTime, enum.Activity(activityID))
-			fmt.Printf("Distinct User Count: %d\n", distinctCount)
+			if distinctCount, err := activityTracker.GetDistinctUserCountByActivityInTimerange(startTime, endTime, enum.Activity(activityID)); err != nil {
+				fmt.Println(err.Error())
+			} else {
+				fmt.Printf("Distinct User Count: %d\n", distinctCount)
+			}
 
 		case 5: // GetUsersByActivityInTimerange
 			var startOffset, endOffset int
@@ -102,8 +111,11 @@ func Execute() {
 			startTime := time.Now().Add(time.Duration(startOffset) * time.Minute)
 			endTime := time.Now().Add(time.Duration(endOffset) * time.Minute)
 
-			users := activityTracker.GetUsersByActivityInTimerange(startTime, endTime, enum.Activity(activityID))
-			fmt.Printf("Matching User IDs: %v\n", users)
+			if users, err := activityTracker.GetUsersByActivityInTimerange(startTime, endTime, enum.Activity(activityID)); err != nil {
+				fmt.Println(err.Error())
+			} else {
+				fmt.Printf("Matching User IDs: %v\n", users)
+			}
 
 		case 6: // GetTopKUsersForActivityInTimerange
 			var startOffset, endOffset int
@@ -118,8 +130,11 @@ func Execute() {
 			startTime := time.Now().Add(time.Duration(startOffset) * time.Minute)
 			endTime := time.Now().Add(time.Duration(endOffset) * time.Minute)
 
-			topUsers := activityTracker.GetTopKUsersForActivityInTimerange(startTime, endTime, enum.Activity(activityID), k)
-			fmt.Printf("Top %d Users: %v\n", k, topUsers)
+			if topUsers, err := activityTracker.GetTopKUsersForActivityInTimerange(startTime, endTime, enum.Activity(activityID), k); err != nil {
+				fmt.Println(err.Error())
+			} else {
+				fmt.Printf("Top %d Users: %v\n", k, topUsers)
+			}
 
 		case 7: // GetUsersActivitySummaryInTimerange
 			var startOffset, endOffset int
@@ -133,8 +148,11 @@ func Execute() {
 			startTime := time.Now().Add(time.Duration(startOffset) * time.Minute)
 			endTime := time.Now().Add(time.Duration(endOffset) * time.Minute)
 
-			summary := activityTracker.GetUsersActivitySummaryInTimerange(startTime, endTime, userID)
-			fmt.Printf("Activity History Summary: %v\n", summary)
+			if summary, err := activityTracker.GetUsersActivitySummaryInTimerange(startTime, endTime, userID); err != nil {
+				fmt.Println(err.Error())
+			} else {
+				fmt.Printf("Activity History Summary: %v\n", summary)
+			}
 
 		case 8: // Exit
 			fmt.Println("Exiting application...")

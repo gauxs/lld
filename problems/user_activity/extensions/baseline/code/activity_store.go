@@ -106,7 +106,7 @@ func (as *ActivityStore) GetDistinctCountInTimerange(startTimeInMin time.Time, e
 	startUnixMin := UnixMinute(startTimeInMin)
 	endUnixMin := UnixMinute(endTimeInMin)
 
-	totalCount := uint(0)
+	distinctUserMap := make(map[uint]struct{})
 	for curTimeInMin := startUnixMin; curTimeInMin <= endUnixMin; curTimeInMin++ {
 		curWindowMin := as.convertTimeTowindowMinute(curTimeInMin)
 		if as.window[curWindowMin].unixMinute != curTimeInMin {
@@ -116,10 +116,13 @@ func (as *ActivityStore) GetDistinctCountInTimerange(startTimeInMin time.Time, e
 			continue
 		}
 
-		totalCount += uint(len(as.window[curWindowMin].byActivity[activity]))
+		for userID, _ := range as.window[curWindowMin].byActivity[activity] {
+			distinctUserMap[userID] = struct{}{}
+		}
+
 	}
 
-	return totalCount
+	return uint(len(distinctUserMap))
 }
 
 func (as *ActivityStore) GetInTimerangeByActivityID(startTimeInMin time.Time, endTimeInMin time.Time, activity enum.Activity) []uint {
