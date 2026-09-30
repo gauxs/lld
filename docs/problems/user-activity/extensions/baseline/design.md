@@ -30,9 +30,9 @@ next:
 | GetCountInTimerange(startTimestamp, endTimestamp, userID, activityID) | Get the count of record in time range by userID and activityID |
 | GetRateInTimerange(startTimestamp, endTimestamp, userID, activityID) | Get the rate in time range by userID and activityID |
 | GetDistinctCountInTimerange(startTimestamp, endTimestamp, activityID) | Get the distinct count of record in time range by activityID |
-| GetInTimerange(startTimestamp, endTimestamp, activityID) | Get records in time range by activityID |
+| GetInTimerangeByActivityID(startTimestamp, endTimestamp, activityID) | Get records in time range by activityID |
 | GetTopKInTimerange(startTimestamp, endTimestamp, activityID) | Get top K frequency records by userID in time range for activityID |
-| GetInTimerange(startTimestamp, endTimestamp, userID) | Get records in time range by userID |
+| GetInTimerangeByUserID(startTimestamp, endTimestamp, userID) | Get records in time range by userID |
 
 
 ### ActivityTracker
