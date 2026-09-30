@@ -135,6 +135,10 @@
         {
           "text": "Design",
           "link": "/problems/user-activity/extensions/baseline/design"
+        },
+        {
+          "text": "Codebase",
+          "link": "/problems/user-activity/extensions/baseline/codebase"
         }
       ]
     }
