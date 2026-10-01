@@ -1,0 +1,10 @@
+{
+    "default": "baseline",
+    "order": ["baseline"],
+    "extensions": {
+      "baseline": {
+        "title": "User Activity Rate Tracker"
+      }
+    }
+  }
+  

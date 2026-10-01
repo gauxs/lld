@@ -122,5 +122,25 @@
         }
       ]
     }
+  ],
+  "userActivity": [
+    {
+      "text": "User Activity Rate Tracker",
+      "collapsed": true,
+      "items": [
+        {
+          "text": "Requirements",
+          "link": "/problems/user-activity/extensions/baseline/requirements"
+        },
+        {
+          "text": "Design",
+          "link": "/problems/user-activity/extensions/baseline/design"
+        },
+        {
+          "text": "Codebase",
+          "link": "/problems/user-activity/extensions/baseline/codebase"
+        }
+      ]
+    }
   ]
 }
