@@ -2,6 +2,7 @@ package code
 
 import (
 	"cmp"
+	"fmt"
 	"slices"
 	"sync"
 	"time"
@@ -33,7 +34,19 @@ func NewActivityStore(windowLength uint) *ActivityStore {
 	}
 }
 
-func (as *ActivityStore) Store(timeInMin time.Time, userID uint, activity enum.Activity) {
+func (as *ActivityStore) Store(timeInMin time.Time, userID uint, activity enum.Activity) error {
+	if timeInMin.After(time.Now()) {
+		return ErrInvalidTime
+	}
+
+	if userID == 0 {
+		return fmt.Errorf("%w %d", ErrInvalidUser, userID)
+	}
+
+	if activity == enum.UNDEFINED_ACTIVITY {
+		return fmt.Errorf("%w %d", ErrInvalidActivity, activity)
+	}
+
 	windowMinute := as.convertTimeTowindowMinute(UnixMinute(timeInMin))
 	as.windowMux[windowMinute].Lock()
 	defer as.windowMux[windowMinute].Unlock()
@@ -55,6 +68,7 @@ func (as *ActivityStore) Store(timeInMin time.Time, userID uint, activity enum.A
 	}
 
 	as.window[windowMinute].byUserID[userID][activity]++
+	return nil
 }
 
 func (as *ActivityStore) GetCountInTimerange(startTimeInMin time.Time, endTimeInMin time.Time, userID uint, activity enum.Activity) uint {
