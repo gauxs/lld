@@ -1,15 +1,47 @@
 package code
 
-import "sync"
+import (
+	"strings"
+	"sync"
+)
+
+const (
+	LetterAASCIIValue = int('a')
+)
 
 // SearchDB is the in memeory datastore and retrieval entity
 type SearchDB struct {
 	mu   *sync.Mutex // we cant use per SearchNode mutex because it can cause deadlock
-	root []*SearchNode
+	root *SearchNode
+}
+
+func NewSearchDB() *SearchDB {
+	return &SearchDB{
+		mu:   &sync.Mutex{},
+		root: NewSearchNode("", false),
+	}
 }
 
 // AddEntry adds an entry in the DB
-func (sdb *SearchDB) AddEntry(word string) error {
+func (sdb *SearchDB) AddEntry(entry string) error {
+	if len(entry) == 0 {
+		return ErrInvalidEntryLength
+	}
+
+	entry = strings.ToLower(entry)
+	curSearchNode := sdb.root
+	for wIdx := 0; wIdx < len(entry); wIdx++ {
+		charIdx := int(entry[wIdx]) - LetterAASCIIValue
+		if curSearchNode.childrens[charIdx] == nil {
+			curSearchNode.childrens[charIdx] = NewSearchNode(string(entry[wIdx]), false)
+		}
+
+		curSearchNode = curSearchNode.childrens[charIdx]
+	}
+
+	curSearchNode.isLastLetter = true
+	curSearchNode.entryFrequency++
+
 	return nil
 }
 
@@ -18,15 +50,19 @@ func (sdb *SearchDB) SearchNSimilarByFrequency(searchWord string, n int) ([]stri
 	return nil, nil
 }
 
-// SearchNSimilarByLex searches similar entity priortizing by lex order
-func (sdb *SearchDB) SearchNSimilarByLex(searchWord string, n int) ([]string, error) {
-	return nil, nil
-}
-
 // SearchNode represents a single character of a word
 type SearchNode struct {
-	letter        string
-	isWord        bool
-	wordFrequency int
-	childrens     []*SearchNode
+	letter         string
+	isLastLetter   bool
+	entryFrequency int
+	childrens      []*SearchNode
+}
+
+func NewSearchNode(letter string, isWord bool) *SearchNode {
+	return &SearchNode{
+		letter:         letter,
+		isLastLetter:   isWord,
+		entryFrequency: 0,
+		childrens:      make([]*SearchNode, 26),
+	}
 }
