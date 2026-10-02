@@ -1,7 +1,10 @@
 package code
 
+import "sync"
+
 // SearchDB is the in memeory datastore and retrieval entity
 type SearchDB struct {
+	mu   *sync.Mutex // we cant use per SearchNode mutex because it can cause deadlock
 	root []*SearchNode
 }
 
