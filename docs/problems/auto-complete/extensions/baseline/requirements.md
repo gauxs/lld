@@ -17,23 +17,7 @@ Design and implement a Search Autocomplete System
 ## Functional requirements
 <div class="lld-req">
 
-### FR-1: Support inserting words into an internal dictionary.
-
-English alphabetic characters (a-z) only, with case-insensitive input
-
-<details class="lld-reveal">
-<summary><span class="lld-reveal-icon" aria-hidden="true"></span>Interview prompts</summary>
-
-<div class="lld-reveal-inner">
-
-- **What languages as input are supported? Is it case-sensitive?**
-
-</div>
-</details>
-
-### FR-2: Return suggestions when a user types a prefix.
-
-The number of suggestions should be configurable.
+### FR-1: Return suggestions when a user types a prefix. The number of suggestions should be configurable.
 
 ### FR-3: Words are explicitly added to the system. Search queries do not automatically add new words.
 
@@ -50,19 +34,6 @@ The number of suggestions should be configurable.
 </div>
 
 ## Out of scope (this extension)
-<div class="lld-req lld-req--scope">
-
-<details class="lld-reveal">
-<summary><span class="lld-reveal-icon" aria-hidden="true"></span>Interview prompts</summary>
-
-<div class="lld-reveal-inner">
-
-- **<>** <>
-
-</div>
-</details>
-
-</div>
 
 ## Non-functional requirements
 <div class="lld-req">
