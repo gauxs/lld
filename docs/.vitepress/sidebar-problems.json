@@ -143,18 +143,18 @@
       ]
     }
   ],
-  "autocomplete": [
+  "autoComplete": [
     {
       "text": "Auto complete",
       "collapsed": true,
       "items": [
         {
           "text": "Requirements",
-          "link": "/problems/autocomplete/extensions/baseline/requirements"
+          "link": "/problems/auto-complete/extensions/baseline/requirements"
         },
         {
           "text": "Design",
-          "link": "/problems/autocomplete/extensions/baseline/design"
+          "link": "/problems/auto-complete/extensions/baseline/design"
         }
       ]
     }
