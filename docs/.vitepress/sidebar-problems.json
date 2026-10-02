@@ -155,6 +155,10 @@
         {
           "text": "Design",
           "link": "/problems/auto-complete/extensions/baseline/design"
+        },
+        {
+          "text": "Codebase",
+          "link": "/problems/auto-complete/extensions/baseline/codebase"
         }
       ]
     }
