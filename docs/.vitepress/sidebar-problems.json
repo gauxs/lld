@@ -142,5 +142,21 @@
         }
       ]
     }
+  ],
+  "autocomplete": [
+    {
+      "text": "Auto complete",
+      "collapsed": true,
+      "items": [
+        {
+          "text": "Requirements",
+          "link": "/problems/autocomplete/extensions/baseline/requirements"
+        },
+        {
+          "text": "Design",
+          "link": "/problems/autocomplete/extensions/baseline/design"
+        }
+      ]
+    }
   ]
 }

@@ -36,6 +36,12 @@ const userActivityItems = [
   ...(sidebarProblems.userActivity ?? []),
 ];
 
+const autoCompleteItems = [
+  { text: "Overview", link: "/problems/autocomplete/" },
+  ...(sidebarProblems.autoComplete ?? []),
+];
+
+
 const sidebar = [
   {
     items: [
@@ -69,6 +75,11 @@ const sidebar = [
             text: "User Activity",
             collapsed: false,
             items: userActivityItems,
+          },
+          {
+            text: "Auto Complete",
+            collapsed: false,
+            items: autoCompleteItems,
           }
         ],
       },
