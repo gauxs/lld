@@ -30,6 +30,9 @@ func (sdb *SearchDB) AddEntry(entry string) error {
 		return ErrInvalidEntryLength
 	}
 
+	sdb.mu.Lock()
+	defer sdb.mu.Unlock()
+
 	entry = strings.ToLower(entry)
 	curSearchNode := sdb.root
 	for wIdx := 0; wIdx < len(entry); wIdx++ {
@@ -51,6 +54,9 @@ func (sdb *SearchDB) AddEntry(entry string) error {
 // SearchNSimilarByFrequency searches similar entity priortizing by frequency
 func (sdb *SearchDB) SearchNSimilarByFrequency(searchEntry string, n int) ([]string, error) {
 	searchEntry = strings.ToLower(searchEntry)
+
+	sdb.mu.Lock()
+	defer sdb.mu.Unlock()
 
 	curSearchNode := sdb.root
 	for wIdx := 0; wIdx < len(searchEntry); wIdx++ {

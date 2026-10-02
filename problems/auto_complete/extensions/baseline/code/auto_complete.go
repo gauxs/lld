@@ -34,8 +34,6 @@ func (ac *Autocomplete) SetSearchOrder(newSearchOrder enum.SearchOrder) error {
 
 // AddWord adds a word to the underlying datastore
 func (ac *Autocomplete) AddWord(word string) error {
-	ac.rwMu.RLock()
-	defer ac.rwMu.RUnlock()
 	return ac.sdb.AddEntry(word)
 }
 
