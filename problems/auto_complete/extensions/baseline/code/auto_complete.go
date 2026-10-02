@@ -16,6 +16,7 @@ type Autocomplete struct {
 
 func NewAutocomplete() *Autocomplete {
 	return &Autocomplete{
+		rwMu:            &sync.RWMutex{},
 		similarMaxCount: 3,
 		sdb:             NewSearchDB(),
 		order:           enum.SEARCHORDER_FREQUENCY,
@@ -35,7 +36,7 @@ func (ac *Autocomplete) SetSearchOrder(newSearchOrder enum.SearchOrder) error {
 func (ac *Autocomplete) AddWord(word string) error {
 	ac.rwMu.RLock()
 	defer ac.rwMu.RUnlock()
-	return ac.AddWord(word)
+	return ac.sdb.AddEntry(word)
 }
 
 // SearchSimilar provides the seach functionality
