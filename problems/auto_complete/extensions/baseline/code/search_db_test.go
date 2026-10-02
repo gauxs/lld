@@ -46,4 +46,45 @@ func TestSearchNSimilarByFrequency(t *testing.T) {
 			t.Errorf("at index %d: expected %q, got %q", i, expectedOrder[i], entry)
 		}
 	}
+
+	searchEntry = ""
+	retEntries, err = sdb.SearchNSimilarByFrequency(searchEntry, threshold)
+	if err != nil {
+		t.Fatalf("failed to search entry %q: %v", searchEntry, err)
+	}
+
+	// 3. Assert results match expected length and content
+	// Note: Adjust the expected order slice based on how you simulated frequencies in your setup!
+	expectedOrder = []string{"apple", "appleone", "appletwo"}
+
+	if len(retEntries) != len(expectedOrder) {
+		t.Errorf("expected %d results, got %d", len(expectedOrder), len(retEntries))
+	}
+
+	for i, entry := range retEntries {
+		if i < len(expectedOrder) && entry != expectedOrder[i] {
+			t.Errorf("at index %d: expected %q, got %q", i, expectedOrder[i], entry)
+		}
+	}
+
+	searchEntry = ""
+	threshold = 2
+	retEntries, err = sdb.SearchNSimilarByFrequency(searchEntry, threshold)
+	if err != nil {
+		t.Fatalf("failed to search entry %q: %v", searchEntry, err)
+	}
+
+	// 3. Assert results match expected length and content
+	// Note: Adjust the expected order slice based on how you simulated frequencies in your setup!
+	expectedOrder = []string{"apple", "appleone"}
+
+	if len(retEntries) != len(expectedOrder) {
+		t.Errorf("expected %d results, got %d", len(expectedOrder), len(retEntries))
+	}
+
+	for i, entry := range retEntries {
+		if i < len(expectedOrder) && entry != expectedOrder[i] {
+			t.Errorf("at index %d: expected %q, got %q", i, expectedOrder[i], entry)
+		}
+	}
 }
