@@ -28,7 +28,7 @@ func (mrh *MeetingRoomsHandler) AddMeetingRoom(name string) error {}
 
 func (mrh *MeetingRoomsHandler) GetMeetingRoom(name string) error {}
 
-func (mrh *MeetingRoomsHandler) ReserveMeetingRoom(name string, startTime time.Time, endTime time.Time) error {}
+func (mrh *MeetingRoomsHandler) ReserveMeetingRoom(name string, meetingID string, startTime time.Time, endTime time.Time) error {}
 
 type Meeting struct{
     rwMu *sync.RWMutex
@@ -54,15 +54,9 @@ func (ms *MeetingsHandler) UpdateTitle(meetingID string, newTitle string) error 
 
 func (ms *MeetingsHandler) UpdateParticipants(meetingID string, newparticipants []string) error {}
 
-func (ms *MeetingsHandler) UpdateSchedule(meetingID string, newStartTime time.Time, endTime time.Time) error {
-    // 1 - Try to reserve the room's slots
-    // 2 - If room reserved, update the meeting 
-}
+func (ms *MeetingsHandler) UpdateSchedule(meetingID string, newStartTime time.Time, endTime time.Time) error {}
 
-func (ms *MeetingsHandler) Cancel(meetingID string) error {
-    // 1 - Free up the room's slots
-    // 2 - Update the meeting with CANCELLED state
-}
+func (ms *MeetingsHandler) Cancel(meetingID string) error {}
 
 type MeetingScheduler struct{
     mrhandler *MeetingRoomsHandler
@@ -101,19 +95,9 @@ func (ns *NotificationService) NotifyUser(userName string, msg string){}
 
 ## Main flow
 
-1. Validate the request.
-2. Read or update the relevant state.
-3. Return the result.
-
 ## Invariants and concurrency
 
-Explain shared state, invariants, and synchronization.
-
 ## Complexity
-
-- Write: `O(?)`
-- Read: `O(?)`
-- Space: `O(?)`
 
 ## Trade-offs
 
