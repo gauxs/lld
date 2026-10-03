@@ -1,7 +1,7 @@
 # Goal
 
 #### LEVEL = "Staff / L6"
-#### PROBLEM = "Connect Four"
+#### PROBLEM = "Search Autocomplete System"
 
 Use the values of `LEVEL` and `PROBLEM` throughout this prompt.
 Do not treat `{LEVEL}` or `{PROBLEM}` as literal text.

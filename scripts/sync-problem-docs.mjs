@@ -13,12 +13,14 @@ const SLUGS = {
   connect_four: "connect-four",
   rate_limiter: "rate-limiter",
   user_activity: "user-activity",
+  auto_complete: "auto-complete"
 };
 
 const PROBLEM_TITLES = {
   connect_four: "Connect Four",
   rate_limiter: "Rate limiter",
   user_activity: "User Activity",
+  auto_complete: "Auto Complete"
 };
 
 function problemTitle(problemId) {

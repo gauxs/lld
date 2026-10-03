@@ -12,7 +12,7 @@ const BASE = "/lld";
 const sidebarProblemsPath = path.join(__dirname, "sidebar-problems.json");
 const sidebarProblems = fs.existsSync(sidebarProblemsPath)
   ? JSON.parse(fs.readFileSync(sidebarProblemsPath, "utf8"))
-  : { connectFour: [], rateLimiter: [], userActivity: [] };
+  : { connectFour: [], rateLimiter: [], userActivity: [],  autoComplete:[]};
 
 const sidebarTheoryPath = path.join(__dirname, "sidebar-theory.json");
 const sidebarTheory = fs.existsSync(sidebarTheoryPath)
@@ -35,6 +35,12 @@ const userActivityItems = [
   { text: "Overview", link: "/problems/user-activity/" },
   ...(sidebarProblems.userActivity ?? []),
 ];
+
+const autoCompleteItems = [
+  { text: "Overview", link: "/problems/auto-complete/" },
+  ...(sidebarProblems.autoComplete ?? []),
+];
+
 
 const sidebar = [
   {
@@ -69,6 +75,11 @@ const sidebar = [
             text: "User Activity",
             collapsed: false,
             items: userActivityItems,
+          },
+          {
+            text: "Auto Complete",
+            collapsed: false,
+            items: autoCompleteItems,
           }
         ],
       },
