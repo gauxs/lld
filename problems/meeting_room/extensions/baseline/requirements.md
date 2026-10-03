@@ -6,6 +6,7 @@ Design and implement a Meeting Room Scheduler.
 
 ### FR-1: Meeting room details
  - There can be multiple meeting rooms; the exact number should be configurable.
+ - Meeting rooms have capacity
 
 > **Interview prompts**
 >
@@ -15,6 +16,8 @@ Design and implement a Meeting Room Scheduler.
  - A booking can be made up to 30 days in advance.
  - A room can be booked for a minimum of 30 minutes and a maximum of 4 hours. 
  - Bookings can start at arbitrary times, such as 2:13 PM. There is no requirement to align bookings to 15/30-minute boundaries.
+ - Time intervals cannot overlap.
+ - A room cannot be booked if number of participants cannot fit.
 
 > **Interview prompts**
 >
