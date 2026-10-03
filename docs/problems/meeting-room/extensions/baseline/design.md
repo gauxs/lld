@@ -5,6 +5,9 @@ extension: baseline
 prev:
   text: requirements
   link: /problems/meeting-room/extensions/baseline/requirements
+next:
+  text: codebase
+  link: /problems/meeting-room/extensions/baseline/codebase
 ---
 
 ## Approach

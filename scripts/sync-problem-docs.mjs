@@ -495,7 +495,7 @@ function buildSidebarExtensionItems(problemId, slug) {
       { text: "Design", link: `${base}/design` },
     ];
     if (hasCode(problemId, ext.id)) {
-      items.push({ text: "Codebase", link: `${base}/codebase` });
+      items.push({ text: "Code", link: `${base}/codebase` });
     }
     return {
       text: ext.title,
