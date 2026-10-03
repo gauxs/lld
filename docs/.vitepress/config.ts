@@ -31,17 +31,17 @@ const sidebar = [
       { text: "Home", link: "/" },
       {
         text: "Theory",
-        collapsed: false,
+        collapsed: true,
         items: sidebarTheory.items ?? [],
       },
       {
         text: "Problems",
-        collapsed: false,
+        collapsed: true,
         items: sidebarProblems.items ?? [],
       },
       {
         text: "Practice with AI",
-        collapsed: false,
+        collapsed: true,
         items: sidebarPractice.items ?? [],
       },
     ],

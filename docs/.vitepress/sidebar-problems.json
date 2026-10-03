@@ -2,7 +2,7 @@
   "items": [
     {
       "text": "Auto Complete",
-      "collapsed": false,
+      "collapsed": true,
       "items": [
         {
           "text": "Overview",
@@ -30,7 +30,7 @@
     },
     {
       "text": "Connect Four",
-      "collapsed": false,
+      "collapsed": true,
       "items": [
         {
           "text": "Overview",
@@ -100,7 +100,7 @@
     },
     {
       "text": "Meeting Room",
-      "collapsed": false,
+      "collapsed": true,
       "items": [
         {
           "text": "Overview",
@@ -124,7 +124,7 @@
     },
     {
       "text": "Rate Limiter",
-      "collapsed": false,
+      "collapsed": true,
       "items": [
         {
           "text": "Overview",
@@ -194,7 +194,7 @@
     },
     {
       "text": "User Activity",
-      "collapsed": false,
+      "collapsed": true,
       "items": [
         {
           "text": "Overview",

@@ -230,7 +230,7 @@ function buildSidebar(topicId, allRelPaths, pagesById, rootEntries) {
     }
     items.push({
       text: humanizeDir(entry.name),
-      collapsed: false,
+      collapsed: true,
       items: sortRelPaths(groupFiles).map((rel) => {
         const p = pagesById.get(pageIdFromRel(rel));
         return {
@@ -343,7 +343,7 @@ function discoverTopics() {
 const topics = discoverTopics().sort((a, b) => a.localeCompare(b));
 const topicItems = topics.map((topicId) => ({
   text: humanizeName(topicId),
-  collapsed: false,
+  collapsed: true,
   items: syncTopic(topicId),
 }));
 
