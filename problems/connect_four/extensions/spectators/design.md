@@ -4,16 +4,29 @@
 
 ## Delta from networked
 
-- **Subscribe** — Split into `SubscribePlayer` vs `SubscribeSpectator`, or one stream with role in session
-- **Authorization** — `MakeMove` checks `RolePlayer`; spectators get `403`
-- **Broadcast** — Same `GameEvent` payload; optional redaction (hidden until start) is out of scope
+Split `Subscribe` into `SubscribePlayer` versus `SubscribeSpectator`, or use one stream with the role in the session. For authorization, `MakeMove` checks `RolePlayer`; spectators get `403`. Broadcasts use the same `GameEvent` payload; optional redaction (hidden until start) is out of scope.
 
-## API (sketch)
+## Go design sketch
 
-```text
-WatchMatch(gameID, spectatorID) (<-chan GameEvent, error)
-  Read-only stream
+Method bodies are intentionally omitted. This shows only the design delta.
 
-MakeMove(...)
-  Unchanged; rejects non-players
+```go
+// SpectatorGameService preserves the networked operations while making every
+// subscription role-aware. There is no unauthenticated base Subscribe method.
+type SpectatorGameService interface {
+	CreateMatch() (gameID string, err error)
+	JoinMatch(gameID, playerID string) error
+	MakeMove(gameID, playerID string, col int) error
+	SubscribePlayer(
+		ctx context.Context,
+		gameID, playerID string,
+	) (<-chan GameEvent, error)
+	SubscribeSpectator(
+		ctx context.Context,
+		gameID, spectatorID string,
+	) (<-chan GameEvent, error)
+}
 ```
+
+Spectator channels use the same bounded, nonblocking snapshot policy as player
+subscriptions, so fan-out cannot stall the room's single-writer command loop.

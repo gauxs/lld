@@ -31,6 +31,10 @@ Extend status beyond bare enum where needed (e.g. result struct with `Status`, `
 >
 > - **Wrapper vs new method?** `HandleWithMetadata` vs enriched return type—pick one and document migration.
 
+## Out of scope (this extension)
+
+- None stated.
+
 ## Non-functional requirements
 
 ### NFR-1: Clock consistency
@@ -39,4 +43,4 @@ Reset time uses the same clock source as window alignment in baseline (wall cloc
 
 ## Extensions from here
 
-See baseline for other follow-ups.
+- See [baseline](/problems/rate-limiter/extensions/baseline/requirements) for other follow-ups.

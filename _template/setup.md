@@ -72,18 +72,25 @@ automatically.
 
 Keep `requirements.md` solution-free:
 
-- Goal and functional requirements
-- Constraints and out-of-scope behavior
-- Clarifications as standard Markdown blockquotes
+- Functional requirements numbered `FR-*`
+- Out-of-scope behavior
+- Non-functional requirements numbered `NFR-*`
+- Child extensions as links
+- Existing interviewer questions in an **Interview prompts** blockquote; omit
+  the block when no prompts exist
 
 Use `design.md` for the solution:
 
-- Approach, core types, and API signatures
-- Data structures and main flows
-- Concurrency, complexity, and trade-offs
+- Start with a brief approach
+- Use one `go` design sketch for structs, important fields, interfaces, and
+  public method signatures
+- Put ownership, responsibilities, and invariants in comments above types and
+  methods
+- Omit method bodies; keep implementation on the Codebase page
+- Follow with main flows, concurrency, complexity, and trade-offs when present
 
 Headings, bullets, blockquotes, fenced code, and Mermaid all render directly.
-Tables and custom HTML are optional.
+Avoid tables and custom HTML.
 
 ### Adding code
 

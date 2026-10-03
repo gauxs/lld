@@ -1,60 +1,70 @@
 # Connect Four — local two-player (design)
 
-## Entities & responsibilities
+## Approach
 
-- **Game** — Player registration, game lifecycle (`NOT_PLAYING` → `PLAYING` → `WON` \| `DRAW`), turn order, orchestrates `MakeMove`
-- **Board** — Grid storage, column validity, gravity placement, directional line counting from last move
-- **Player** — Display name and disc color
-- **Rule** — Whether the last placement satisfies the win condition (pluggable)
+`Game` orchestrates player registration, the game lifecycle, turn order, and `MakeMove`. `Board` owns grid storage, column validity, gravity placement, and directional line counting from the last move. A pluggable `Rule` decides whether the last placement satisfies the win condition.
 
-## API
+## Go design sketch
 
-### Game
+Method bodies are intentionally omitted. Comments describe responsibilities and invariants.
 
-```text
-NewGame(rows, cols int) *Game
-  Empty board, default `FourRule`
+```go
+// Game owns player registration, turn order, and the game lifecycle:
+// NOT_PLAYING → PLAYING → WON | DRAW. It orchestrates MakeMove.
+type Game struct {
+	board         *Board
+	players       [2]*Player
+	currentPlayer int
+	state         enum.GameState
+	winner        *Player
+	rule          Rule
+}
 
-AddPlayer(name string, d enum.Disc) error
-  Register before start; unique disc colors
+// Board owns grid storage, column validity, gravity placement, and
+// directional line counting from the last move.
+type Board struct {
+	grid [][]enum.Disc
+}
 
-StartGame() error
-  Requires two players
+// Player has a display name and disc color.
+type Player struct {
+	name string
+	disc enum.Disc
+}
 
-MakeMove(col int) error
-  Current player drops in `col`; updates state / turn
+// Rule determines whether the last placement satisfies the win condition.
+type Rule interface {
+	Satisfied(b *Board, row, col int) bool
+}
 
-GetGameState() enum.GameState
+// NewGame creates an empty board with the default FourRule.
+func NewGame(rows, cols int) *Game
 
-GetCurrentPlayer() *Player
+// AddPlayer registers a player before start; disc colors must be unique.
+func (g *Game) AddPlayer(name string, d enum.Disc) error
 
-GetWinner() *Player
-  Set when state is `WON`
-```
+// StartGame requires two players.
+func (g *Game) StartGame() error
 
-### Board
+// MakeMove drops the current player's disc in col, then updates state and turn.
+func (g *Game) MakeMove(col int) error
 
-```text
-PlaceDisk(d enum.Disc, col int) (row int, error)
-  Lowest free row in column
+func (g *Game) GetGameState() enum.GameState
 
-IsFull() bool
+func (g *Game) GetCurrentPlayer() *Player
 
-CountInDirection(row, col, dir, count int) int
-  Used by rules
-```
+// GetWinner is set when the state is WON.
+func (g *Game) GetWinner() *Player
 
-### Rule
+// PlaceDisk places the disc in the lowest free row in the column.
+func (b *Board) PlaceDisk(d enum.Disc, col int) (row int, err error)
 
-```text
-Satisfied(b *Board, row, col int) bool
-  Win check after a placement
-```
+func (b *Board) IsFull() bool
 
-### Player
+// CountInDirection is used by rules.
+func (b *Board) CountInDirection(row, col int, dir enum.Direction, count int) int
 
-```text
-GetName() string
+func (p *Player) GetName() string
 
-GetDisk() enum.Disc
+func (p *Player) GetDisk() enum.Disc
 ```

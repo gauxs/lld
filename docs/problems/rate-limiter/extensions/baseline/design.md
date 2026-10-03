@@ -12,52 +12,74 @@ next:
 
 Reference implementation: [`problems/rate_limiter/extensions/baseline/code/`](https://github.com/gauxs/lld/tree/main/problems/rate_limiter/extensions/baseline/code) (package `ratelimiter`).
 
-## Entities & responsibilities
+## Approach
 
-- **RateLimiter** — Facade: resolve resource from request, delegate to active `RLAlgorithm`, optional algorithm swap under lock
-- **ResourceIDGenerator** — Map `Request` (client id + API) → `Resource` id string
-- **Resource** — Opaque limit key identity
-- **RLAlgorithm** — Policy: given resource + storage, return accept/reject
-- **FixedWindowAlgorithm** — Per-resource config (max count, window duration, version), clock-aligned window index, storage keys
-- **Storage** — In-memory map of counter entries; compare-and-increment under limit; schedule key deletion after window expiry
+`RateLimiter` is a facade that resolves a resource from each request and delegates to the active `RLAlgorithm`. The fixed-window policy keeps versioned per-resource configuration, while in-memory storage atomically compares and increments counters and removes keys after window expiry.
 
-## API
+## Go design sketch
 
-### RateLimiter
+Method bodies are intentionally omitted. Comments describe ownership,
+responsibilities, and invariants.
 
-```text
-Handle(req *Request) RLStatus
-  Accept or reject for this request
+```go
+// RateLimiter resolves the resource from a request, delegates to the active
+// RLAlgorithm, and supports an optional algorithm swap under lock.
+type RateLimiter struct {
+    mu        sync.RWMutex
+    storage   *Storage
+    algorithm RLAlgorithm
+    generator ResourceIDGenerator
+}
 
-UpdateRLAlgorithm(newAlg RLAlgorithm)
-  Point new traffic at a different algorithm; old buckets age out
-```
+// ResourceIDGenerator maps a Request (client id + API) to a Resource id string.
+type ResourceIDGenerator interface {
+    GetResource(req *pkg.Request) *Resource
+}
 
-### Request (`pkg`)
+// Resource is an opaque limit key identity.
+type Resource struct {
+    id string
+}
 
-- `clientID`, `api` — Inputs to resource key generation
+// RLAlgorithm is the policy that returns accept or reject for a resource and
+// storage.
+type RLAlgorithm interface {
+    HandleResource(res *Resource, storage *Storage) enum.RLStatus
+}
 
-### FixedWindowAlgorithm
+// FixedWindowAlgorithm owns per-resource configuration: maximum count, window
+// duration, and version. It derives clock-aligned window indexes and storage keys.
+type FixedWindowAlgorithm struct {
+    config sync.Map
+}
 
-```text
-HandleResource(res *Resource, s *Storage) RLStatus
-  Increment counter for current window or reject
+// Storage owns an in-memory map of counter entries. Compare-and-increment runs
+// under the limit and key deletion is scheduled after window expiry.
+type Storage struct {
+    counters sync.Map
+}
 
-UpdateWindowDuration(res *Resource, d time.Duration)
-  Bump config version; new windows use new duration
+// Handle accepts or rejects this request.
+func (rl *RateLimiter) Handle(req *pkg.Request) enum.RLStatus
 
-UpdateMaxResourceCount(res *Resource, n int)
-  Bump config version; new windows use new cap
-```
+// UpdateRLAlgorithm points new traffic at a different algorithm; old buckets age out.
+func (rl *RateLimiter) UpdateRLAlgorithm(newAlg RLAlgorithm)
 
-### Storage
+// HandleResource increments the counter for the current window or rejects.
+func (fwa *FixedWindowAlgorithm) HandleResource(res *Resource, storage *Storage) enum.RLStatus
 
-```text
-CompareAndIncrement(key string, lessThan int, expiry time.Duration) bool
-  Create or increment counter if below cap; schedule cleanup
+// UpdateWindowDuration bumps the config version; new windows use the new duration.
+func (fwa *FixedWindowAlgorithm) UpdateWindowDuration(res *Resource, duration time.Duration)
 
-NewStorage() *Storage
-  Empty backing map
+// UpdateMaxResourceCount bumps the config version; new windows use the new cap.
+func (fwa *FixedWindowAlgorithm) UpdateMaxResourceCount(res *Resource, count int)
+
+// CompareAndIncrement creates or increments a counter if below the cap and
+// schedules cleanup.
+func (s *Storage) CompareAndIncrement(key string, lessThan int, expiry time.Duration) bool
+
+// NewStorage returns storage with an empty backing map.
+func NewStorage() *Storage
 ```
 
 ## Concurrency notes

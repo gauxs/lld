@@ -4,15 +4,39 @@
 
 ## Delta from baseline
 
-- **RateLimiter** — Already holds `RLAlgorithm`; this extension specifies registration, swap semantics, and testing strategy for multiple implementations
-- **RLAlgorithm** — Document expected side effects on `Storage` and key naming conventions per algorithm
-- **New types** — e.g. `TokenBucketAlgorithm`, `SlidingWindowLogAlgorithm`—each owns config map shape analogous to `FixedWindowAlgorithm`
+- **RateLimiter** — Already holds `RLAlgorithm`; this extension specifies registration, swap semantics, and testing strategy for multiple implementations.
+- **RLAlgorithm** — Document expected side effects on `Storage` and key naming conventions per algorithm.
 
-## API (additions)
+## Go design sketch
 
-```text
-UpdateRLAlgorithm(newAlg RLAlgorithm)
-  (baseline) Atomic pointer swap under write lock; document happens-before for readers
+Method bodies are intentionally omitted. Comments describe the design delta.
+
+```go
+// New types—e.g. TokenBucketAlgorithm and SlidingWindowLogAlgorithm—each own a
+// config map shape analogous to FixedWindowAlgorithm.
+type TokenBucketAlgorithm struct {
+    config sync.Map
+}
+
+func (a *TokenBucketAlgorithm) HandleResource(
+    resource *Resource,
+    storage *Storage,
+) enum.RLStatus
+
+// SlidingWindowLogAlgorithm owns a config map shape analogous to
+// FixedWindowAlgorithm.
+type SlidingWindowLogAlgorithm struct {
+    config sync.Map
+}
+
+func (a *SlidingWindowLogAlgorithm) HandleResource(
+    resource *Resource,
+    storage *Storage,
+) enum.RLStatus
+
+// UpdateRLAlgorithm is the baseline atomic pointer swap under a write lock;
+// document happens-before for readers.
+func (rl *RateLimiter) UpdateRLAlgorithm(newAlg RLAlgorithm)
 ```
 
 ## Algorithm comparison (sketch)

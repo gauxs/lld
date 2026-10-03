@@ -2,34 +2,30 @@
 
 One-paragraph interview prompt.
 
-## Goal
-
-What must the system accomplish?
-
 ## Functional requirements
 
 ### FR-1: Short title
 
-Describe one observable capability.
+Requirement statement.
 
-> **Clarification:** Record the interviewer question and agreed answer.
+> **Interview prompts**
+>
+> - **Question?** Agreed answer.
 
 ### FR-2: Short title
 
-Describe another capability.
+Requirement statement.
 
-## Constraints
+## Out of scope (this extension)
 
-- Expected scale
-- Runtime and storage constraints
-- Concurrency expectations
-- Important limits
+- Deferred capability.
 
-## Out of scope
+## Non-functional requirements
 
-- Deferred capability
-- Infrastructure not required in this round
+### NFR-1: Short title
 
-## Open questions
+Constraint or quality requirement.
 
-- Question that still needs an answer
+## Extensions from here
+
+- [Child extension](/problems/problem-name/extensions/child/requirements) — What it adds

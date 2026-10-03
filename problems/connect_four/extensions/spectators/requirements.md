@@ -23,6 +23,10 @@ Spectators authenticate or receive a guest token so rate limits and room caps ca
 >
 > - **Anonymous ok?** Yes for interviews; mention abuse/capacity if probed.
 
+## Out of scope (this extension)
+
+- None stated.
+
 ## Non-functional requirements
 
 ### NFR-1: Fan-out

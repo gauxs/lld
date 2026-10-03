@@ -24,6 +24,10 @@ Win detection is delegated to a `Rule` implementation (default: four in a line).
 > - **Connect five?** New `Rule` type; `Game` unchanged except injected dependency.
 > - **Custom patterns?** Same interface; swap implementation.
 
+## Out of scope (this extension)
+
+- None stated.
+
 ## Non-functional requirements
 
 ### NFR-1: Testability

@@ -1,68 +1,96 @@
-# User activity
+# User activity tracker — baseline (design)
 
-## Core types
+## Approach
 
-- `Activitystore` — Store all the activities with time as the first class dimensions
-- `Record` — A single record present in Activitystore. This holds the users activity data
-- `User` — An user.
-- `Activity` — An activity. This will be simple enum.
-- `ActivityTracker` — Holds ActivityStore and provides activity tracking functionality.
+`ActivityTracker` is the public facade over a rolling array of minute buckets.
+Each bucket indexes counts both by activity and by user, while independent
+locks keep concurrent reads and writes scoped to the affected minute.
 
-## API
+## Go design sketch
 
-### ActivityStore
+Method bodies are intentionally omitted. Comments describe ownership,
+responsibilities, and invariants.
 
-```text
-Store(timestamp, userID, activityID)
-  Store record for timestamp, user and activity
+```go
+import (
+    "sync"
+    "time"
 
-GetCountInTimerange(startTimestamp, endTimestamp, userID, activityID)
-  Get the count of record in time range by userID and activityID
+    "github.com/gauxs/lld/problems/user_activity/extensions/baseline/code/enum"
+)
 
-GetRateInTimerange(startTimestamp, endTimestamp, userID, activityID)
-  Get the rate in time range by userID and activityID
+// Activitystore — Store all the activities with time as the first class dimensions.
+// Activitystore stores Record.
+type ActivityStore struct {
+    windowMux []*sync.RWMutex
+    window    []*Record
+}
 
-GetDistinctCountInTimerange(startTimestamp, endTimestamp, activityID)
-  Get the distinct count of record in time range by activityID
+// Record is one minute bucket indexed both by activity and by user.
+type Record struct {
+    unixMinute int64
+    byActivity map[enum.Activity]map[uint]uint
+    byUserID   map[uint]map[enum.Activity]uint
+}
 
-GetInTimerangeByActivityID(startTimestamp, endTimestamp, activityID)
-  Get records in time range by activityID
+// User — An user.
+// User represents a user.
+type User struct {
+    ID uint
+}
 
-GetTopKInTimerange(startTimestamp, endTimestamp, activityID)
-  Get top K frequency records by userID in time range for activityID
+// ActivityTracker — Holds ActivityStore and provides activity tracking functionality.
+// ActivityTracker holds ActivityStore.
+type ActivityTracker struct {
+    windowLenInMin time.Duration
+    store          *ActivityStore
+}
 
-GetInTimerangeByUserID(startTimestamp, endTimestamp, userID)
-  Get records in time range by userID
+// Store record for timestamp, user and activity.
+func (s *ActivityStore) Store(timestamp time.Time, userID uint, activityID enum.Activity) error
+
+// Get the count of record in time range by userID and activityID.
+func (s *ActivityStore) GetCountInTimerange(startTimestamp, endTimestamp time.Time, userID uint, activityID enum.Activity) uint
+
+// Get the rate in time range by userID and activityID.
+func (s *ActivityStore) GetRateInTimerange(startTimestamp, endTimestamp time.Time, userID uint, activityID enum.Activity) float64
+
+// Get the distinct count of record in time range by activityID.
+func (s *ActivityStore) GetDistinctCountInTimerange(startTimestamp, endTimestamp time.Time, activityID enum.Activity) uint
+
+// Get user IDs that performed activityID in the time range.
+func (s *ActivityStore) GetInTimerangeByActivityID(startTimestamp, endTimestamp time.Time, activityID enum.Activity) []uint
+
+// Get top K frequency records by userID in time range for activityID.
+func (s *ActivityStore) GetTopKInTimerange(startTimestamp, endTimestamp time.Time, activityID enum.Activity, k uint) []uint
+
+// Get activity counts for userID in the time range.
+func (s *ActivityStore) GetInTimerangeByUserID(startTimestamp, endTimestamp time.Time, userID uint) map[enum.Activity]uint
+
+// Store users activity for timestamp.
+func (t *ActivityTracker) StoreUserActivity(timestamp time.Time, userID uint, activityID enum.Activity) error
+
+// Get activity count for user in time range.
+func (t *ActivityTracker) GetActivityCountForUserInTimerange(startTimestamp, endTimestamp time.Time, userID uint, activityID enum.Activity) (uint, error)
+
+// Get activity rate for user in time range.
+func (t *ActivityTracker) GetActivityRateForUserInTimerange(startTimestamp, endTimestamp time.Time, userID uint, activityID enum.Activity) (float64, error)
+
+// Get distinct user count by activity in time range.
+func (t *ActivityTracker) GetDistinctUserCountByActivityInTimerange(startTimestamp, endTimestamp time.Time, activityID enum.Activity) (uint, error)
+
+// Get users by activity in time range.
+func (t *ActivityTracker) GetUsersByActivityInTimerange(startTimestamp, endTimestamp time.Time, activityID enum.Activity) ([]uint, error)
+
+// Get topK users for activity in time range.
+func (t *ActivityTracker) GetTopKUsersForActivityInTimerange(startTimestamp, endTimestamp time.Time, activityID enum.Activity, k uint) ([]uint, error)
+
+// Get users activity counts grouped by activity type in time range.
+func (t *ActivityTracker) GetUsersActivitySummaryInTimerange(startTimestamp, endTimestamp time.Time, userID uint) (map[enum.Activity]uint, error)
 ```
 
-### ActivityTracker
+## Implementation note
 
-```text
-StoreUserActivity(timestamp, userID, activityID)
-  Store users activity for timestamp
-
-GetActivityCountForUserInTimerange(startTimestamp, endTimestamp, userID, activityID)
-  Get activity count for user in time range
-
-GetActivityRateForUserInTimerange(startTimestamp, endTimestamp, userID, activityID)
-  Get activity rate for user in time range
-
-GetDistinctUserCountByActivityInTimerange(startTimestamp, endTimestamp, activityID)
-  Get distinct user count by activity in time range
-
-GetUsersByActivityInTimerange(startTimestamp, endTimestamp, activityID)
-  Get users by activity in time range
-
-GetTopKUsersForActivityInTimerange(startTimestamp, endTimestamp, activityID)
-  Get topK users for activity in time range
-
-GetUsersActivitySummaryInTimerange(startTimestamp, endTimestamp, userID)
-  Get users activity summary in time range
-```
-
-## Relationships
-
-1. Activitystore stores Record
-2. User represents a user
-3. Activity will be an enum representing an activity
-4. ActivityTracker holds ActivityStore.
+The design returns counts grouped by activity, as required. The current
+reference implementation returns only `[]enum.Activity`; it must be updated to
+match this contract.

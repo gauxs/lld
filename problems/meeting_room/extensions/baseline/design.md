@@ -1,14 +1,16 @@
-# Problem name — baseline (design)
+# Meeting room — baseline (design)
 
 For **child extensions**, start the design doc with **Builds on:** (link to parent requirements) and document only **changes** to entities/API—not a full duplicate of baseline.
 
-## Entities & responsibilities
+## Go design sketch
 
-- **Example** — …
+Method bodies are intentionally omitted. Comments describe ownership,
+responsibilities, and invariants.
 
-## API
+```go
+// Example — …
+type Example struct{}
 
-```text
-Example()
-  …
+// Example — …
+func (e *Example) Example()
 ```

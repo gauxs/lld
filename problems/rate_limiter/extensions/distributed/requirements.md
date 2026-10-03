@@ -21,7 +21,13 @@ Per client + API limits, configurable windows, and allow/reject semantics match 
 
 ### FR-3: Failure modes
 
-Define behavior when the store is unavailable (fail open vs fail closed) and document operational choice.
+When the shared store is unavailable, default to **fail open** so an
+infrastructure outage does not block all application traffic. Emit an
+operational signal so the degraded enforcement is visible.
+
+## Out of scope (this extension)
+
+- None stated.
 
 ## Non-functional requirements
 
@@ -31,4 +37,4 @@ Each `Handle` adds at most one round trip to shared storage on the happy path un
 
 ## Extensions from here
 
-See baseline for algorithm and metadata extensions; combine with **pluggable algorithms** when policies differ per route.
+- See [baseline](/problems/rate-limiter/extensions/baseline/requirements) for algorithm and metadata extensions; combine with [**pluggable algorithms**](/problems/rate-limiter/extensions/pluggable-algorithms/requirements) when policies differ per route.

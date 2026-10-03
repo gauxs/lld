@@ -6,29 +6,53 @@ Reference implementation not checked in for this extension—use the design delt
 
 ## Delta from baseline
 
-- **Game** — Unchanged domain logic; wrapped by a server-side `Match` or `Room` that owns one `*Game`
-- **Transport** — `GameService` with `Join`, `MakeMove(gameID, playerID, col)`, `Subscribe(gameID)`
-- **Clients** — Thin: render snapshots; call RPC for moves
-- **Ordering** — Monotonic `sequence` per match on every broadcast
+`Game` keeps unchanged domain logic and is wrapped by a server-side `Match` or `Room` that owns one `*Game`. The transport is a `GameService` with `Join`, `MakeMove(gameID, playerID, col)`, and `Subscribe(gameID)`. Clients stay thin: they render snapshots and call RPC for moves. Every broadcast has a monotonic `sequence` per match.
 
-## New entities
+## Go design sketch
 
-- **MatchRegistry** — Map `gameID` → room; create/join lifecycle
-- **Room** — Single writer queue, holds `*Game`, fans out events
-- **GameEvent** — Snapshot or `{ sequence, state, lastMove }` for clients
+Method bodies are intentionally omitted. This shows only the design delta.
 
-## API (sketch)
+```go
+// MatchRegistry maps gameID to room and owns the create/join lifecycle.
+type MatchRegistry struct {
+	mu    sync.RWMutex
+	rooms map[string]*Room
+}
 
-```text
-CreateMatch() (gameID, error)
-  New baseline game, two slots
+// Room is the single writer queue for a match. It holds one baseline Game and
+// fans out events.
+type Room struct {
+	game        *Game
+	sequence    uint64
+	commands    chan roomCommand
+	subscribers map[string]chan GameEvent
+}
 
-JoinMatch(gameID, playerID) error
-  Bind player; start when full
+// GameEvent is a snapshot or {sequence, state, lastMove} for clients.
+type GameEvent struct {
+	Snapshot Snapshot
+	Sequence uint64
+	State    enum.GameState
+	LastMove *Move
+}
 
-MakeMove(gameID, playerID, col) error
-  Validate identity + turn; delegate to `Game.MakeMove`
+// GameService is the transport for creating and joining matches, making moves,
+// and subscribing to match events.
+type GameService interface {
+	// CreateMatch creates a new baseline game with two slots.
+	CreateMatch() (gameID string, err error)
 
-Subscribe(gameID) <-chan GameEvent
-  Blocking stream for players (spectators extension narrows permissions)
+	// JoinMatch binds a player and starts the game when full.
+	JoinMatch(gameID, playerID string) error
+
+	// MakeMove validates identity and turn, then delegates to Game.MakeMove.
+	MakeMove(gameID, playerID string, col int) error
+
+	// Subscribe returns a buffered stream. Cancelling ctx removes the
+	// subscription so disconnected clients do not leak.
+	Subscribe(ctx context.Context, gameID string) (<-chan GameEvent, error)
+}
 ```
+
+Room broadcasts immutable snapshots without blocking the command loop. A slow
+subscriber keeps only the latest buffered snapshot or is disconnected.

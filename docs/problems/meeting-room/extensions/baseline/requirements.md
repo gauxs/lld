@@ -1,5 +1,5 @@
 ---
-title: Problem name — baseline
+title: Meeting room — baseline
 pageClass: lld-req-page
 problem: meeting_room
 extension: baseline

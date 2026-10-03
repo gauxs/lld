@@ -36,6 +36,10 @@ Operators or code can replace the active algorithm instance. Requests after the 
 
 Document at least two alternatives beyond fixed window and when each is appropriate (burst tolerance, smoothness, memory).
 
+## Out of scope (this extension)
+
+- None stated.
+
 ## Non-functional requirements
 
 ### NFR-1: Backward compatibility
@@ -44,4 +48,4 @@ Fixed-window behavior from baseline must remain available as one registered impl
 
 ## Extensions from here
 
-No further siblings defined from this extension; see baseline for **rejection metadata** and **distributed limits**.
+- No further siblings defined from this extension; see baseline for [**rejection metadata**](/problems/rate-limiter/extensions/rejection-metadata/requirements) and [**distributed limits**](/problems/rate-limiter/extensions/distributed/requirements).

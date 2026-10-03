@@ -4,15 +4,25 @@
 
 ## Delta from baseline
 
-- **Return type** — Replace or wrap `enum.RLStatus` with `LimitResult { Status, RetryAfter time.Duration }` (names illustrative)
-- **FixedWindowAlgorithm** — Reuse `currentWindowExpiry` logic when returning reject
-- **RateLimiter.Handle** — Populate metadata on reject path only
+- **Return type** — Replace or wrap `enum.RLStatus` with `LimitResult` (names illustrative).
+- **FixedWindowAlgorithm** — Reuse `currentWindowExpiry` logic when returning reject.
+- **RateLimiter.Handle** — Populate metadata on reject path only.
 
-## API (additions)
+## Go design sketch
 
-```text
-Handle(req *Request) LimitResult
-  Accept/reject plus optional retry hint
+Method bodies are intentionally omitted. Comments describe the design delta.
+
+```go
+// LimitResult replaces or wraps enum.RLStatus with accept/reject plus an
+// optional retry hint. Names are illustrative.
+type LimitResult struct {
+    Status     enum.RLStatus
+    RetryAfter time.Duration
+}
+
+// Handle returns accept/reject plus an optional retry hint and populates
+// metadata on the reject path only.
+func (rl *RateLimiter) Handle(req *pkg.Request) LimitResult
 ```
 
 Baseline `FixedWindowAlgorithm` already computes window expiry internally—surface that value on reject instead of discarding it.

@@ -1,4 +1,4 @@
-# Problem name — baseline
+# Meeting room — baseline
 
 One-paragraph problem statement (interview prompt for this extension only).
 

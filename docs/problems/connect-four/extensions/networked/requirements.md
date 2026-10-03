@@ -41,6 +41,10 @@ After each accepted move (and on join), subscribers receive enough state to rend
 > - **Full snapshot vs delta?** Start with full snapshot + monotonic sequence id.
 > - **Transport?** WebSockets or SSE; interview choice either way if ordering is clear.
 
+## Out of scope (this extension)
+
+- None stated.
+
 ## Non-functional requirements
 
 ### NFR-1: Concurrency

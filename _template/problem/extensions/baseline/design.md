@@ -4,22 +4,31 @@
 
 Summarize the design and why it fits the requirements.
 
-## Core types
+## Go design sketch
 
-- `TypeName` — responsibility
-- `AnotherType` — responsibility
+Method bodies are intentionally omitted. Comments describe ownership,
+responsibilities, and invariants.
 
-## API
+```go
+// Example owns the state and coordinates the main workflow.
+type Example struct {
+    repository *Repository
+}
 
-```text
-Create(input) Result
-Get(id) Result
+// Repository owns storage and the access patterns over it.
+type Repository struct {
+    records map[string]Record
+}
+
+// NewExample creates an initialized Example.
+func NewExample(repository *Repository) *Example
+
+// Create validates and stores a record.
+func (e *Example) Create(input Input) (Record, error)
+
+// Get returns a record by id.
+func (e *Example) Get(id string) (Record, error)
 ```
-
-## Data structures
-
-- Structure → what it stores and why
-- Index → which access pattern it supports
 
 ## Main flow
 
@@ -27,7 +36,7 @@ Get(id) Result
 2. Read or update the relevant state.
 3. Return the result.
 
-## Concurrency
+## Invariants and concurrency
 
 Explain shared state, invariants, and synchronization.
 
