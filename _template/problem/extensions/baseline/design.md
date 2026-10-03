@@ -4,10 +4,7 @@
 
 Summarize the design and why it fits the requirements.
 
-## Go design sketch
-
-Method bodies are intentionally omitted. Comments describe ownership,
-responsibilities, and invariants.
+## Class design & Relationships
 
 ```go
 // Example owns the state and coordinates the main workflow.

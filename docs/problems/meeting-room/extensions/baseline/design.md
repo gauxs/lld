@@ -11,30 +11,49 @@ prev:
 
 Summarize the design and why it fits the requirements.
 
-## Go design sketch
-
-Method bodies are intentionally omitted. Comments describe ownership,
-responsibilities, and invariants.
+## Class design & Relationships
 
 ```go
-// Example owns the state and coordinates the main workflow.
-type Example struct {
-    repository *Repository
+
+type TimeSlot struct{
+    startTime time.Time
+    endTime time.Time
+    isBusy bool
 }
 
-// Repository owns storage and the access patterns over it.
-type Repository struct {
-    records map[string]Record
+type MeetingRoom struct {
+    name string
+    // 15 min slots refreshed for next 30 days
+    slots []*TimeSlot
 }
 
-// NewExample creates an initialized Example.
-func NewExample(repository *Repository) *Example
+type MeetingRoomsHandler struct{
+    rooms []*MeetingRoom
+}
 
-// Create validates and stores a record.
-func (e *Example) Create(input Input) (Record, error)
+func (mrh *MeetingRoomsHandler) AddMeetingRoom(name string) error {}
 
-// Get returns a record by id.
-func (e *Example) Get(id string) (Record, error)
+type Meeting struct{
+    title string
+    roomName string
+    slots []*TimeSlot
+    participants []string
+}
+
+type MeetingScheduler struct{
+    mrhandler *MeetingRoomsHandler
+}
+
+func (ms *MeetingScheduler) ScheduleMeeting(startTime time.Time, endTime time.Time, participants []string) *Meeting {}
+
+func (ms *MeetingScheduler) UpdateMeetingTitle(meeting *Meeting, newTitle string) error {}
+
+func (ms *MeetingScheduler) UpdateMeetingParticipants(meeting *Meeting, newparticipants []string) error {}
+
+func (ms *MeetingScheduler) UpdateMeetingSchedule(meeting *Meeting, newStartTime time.Time, endTime time.Time) error {}
+
+func (ms *MeetingScheduler) CancelMeeting(meeting *Meeting) error {}
+
 ```
 
 ## Main flow
