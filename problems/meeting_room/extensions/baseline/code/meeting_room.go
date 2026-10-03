@@ -46,7 +46,7 @@ func (mr *MeetingRoom) IsAvailaible(startTime time.Time, endTime time.Time, part
 	// check slot availability
 	// NOTE: use binary search for optimization
 	for _, slot := range mr.bookedslots {
-		if (slot.startTime.After(startTime) && slot.endTime.Before(startTime)) || (slot.startTime.After(endTime) && slot.endTime.Before(endTime)) {
+		if slot.startTime.Before(endTime) && startTime.Before(slot.endTime) {
 			return false
 		}
 	}
