@@ -234,6 +234,25 @@ func (ms *MeetingScheduler) ScheduleMeeting(meetingTitle string, roomName string
 }
 
 func (ms *MeetingScheduler) UpdateMeetingTitle(meetingID string, newTitle string) error {
+	err := ms.mh.UpdateTitle(meetingID, newTitle)
+	if err != nil {
+		return err
+	}
+
+	participants, err := ms.mh.GetMeetingParticipants(meetingID)
+	if err != nil {
+		return nil
+	}
+
+	title, err := ms.mh.GetMeetingTitle(meetingID)
+	if err != nil {
+		return nil
+	}
+
+	for _, participant := range participants {
+		ms.notification.NotifyUser(participant, title)
+	}
+
 	return nil
 }
 
@@ -262,6 +281,8 @@ package code
 import (
 	"sync"
 	"time"
+
+	"github.com/gauxs/lld/problems/meeting_room/extensions/baseline/code/enum"
 )
 
 type MeetingsHandler struct {
@@ -277,19 +298,99 @@ func (ms *MeetingsHandler) AddMeeting(meeting *Meeting) error {
 	return nil
 }
 
+func (ms *MeetingsHandler) getMeeting(meetingID string) (*Meeting, error) {
+	val, ok := ms.meetings.Load(meetingID)
+	if ok {
+		return nil, nil
+	}
+
+	meeting, ok := val.(*Meeting)
+	if !ok {
+		return nil, nil
+	}
+
+	return meeting, nil
+}
+
+func (ms *MeetingsHandler) GetMeetingParticipants(meetingID string) ([]*User, error) {
+	m, err := ms.getMeeting(meetingID)
+	if err != nil {
+		return nil, err
+	}
+
+	m.rwMu.Lock()
+	defer m.rwMu.Unlock()
+
+	// Create a copy so the caller gets a safe snapshot
+	copied := make([]*User, len(m.participants))
+	copy(copied, m.participants)
+
+	return copied, nil
+}
+
+func (ms *MeetingsHandler) GetMeetingTitle(meetingID string) (string, error) {
+	m, err := ms.getMeeting(meetingID)
+	if err != nil {
+		return "", err
+	}
+
+	m.rwMu.Lock()
+	defer m.rwMu.Unlock()
+
+	return m.title, nil
+}
+
 func (ms *MeetingsHandler) UpdateTitle(meetingID string, newTitle string) error {
+	meeting, err := ms.getMeeting(meetingID)
+	if err != nil {
+		return err
+	}
+
+	meeting.rwMu.Lock()
+	defer meeting.rwMu.Unlock()
+
+	meeting.title = newTitle
 	return nil
 }
 
-func (ms *MeetingsHandler) UpdateParticipants(meetingID string, newparticipants []string) error {
+func (ms *MeetingsHandler) UpdateParticipants(meetingID string, newparticipants []*User) error {
+	meeting, err := ms.getMeeting(meetingID)
+	if err != nil {
+		return err
+	}
+
+	meeting.rwMu.Lock()
+	defer meeting.rwMu.Unlock()
+
+	meeting.participants = newparticipants
 	return nil
 }
 
-func (ms *MeetingsHandler) UpdateSchedule(meetingID string, newStartTime time.Time, endTime time.Time) error {
+func (ms *MeetingsHandler) UpdateSchedule(meetingID string, newStartTime time.Time, newEndTime time.Time) error {
+	meeting, err := ms.getMeeting(meetingID)
+	if err != nil {
+		return err
+	}
+
+	meeting.rwMu.Lock()
+	defer meeting.rwMu.Unlock()
+
+	meeting.startTime = newStartTime
+	meeting.endTime = newEndTime
+
 	return nil
 }
 
 func (ms *MeetingsHandler) Cancel(meetingID string) error {
+	meeting, err := ms.getMeeting(meetingID)
+	if err != nil {
+		return err
+	}
+
+	meeting.rwMu.Lock()
+	defer meeting.rwMu.Unlock()
+
+	meeting.state = enum.MEETINGSTATE_CANCELLED
 	return nil
 }
 ```
@@ -303,8 +404,8 @@ import "fmt"
 
 type NotificationService struct{}
 
-func (ns *NotificationService) NotifyUser(user *User, meeting *Meeting) {
-	fmt.Printf("%v, meeting %v is updated", user.name, meeting.id)
+func (ns *NotificationService) NotifyUser(user *User, meetingTitle string) {
+	fmt.Printf("%v, meeting %v is updated", user.name, meetingTitle)
 }
 ```
 

@@ -4,6 +4,6 @@ import "fmt"
 
 type NotificationService struct{}
 
-func (ns *NotificationService) NotifyUser(user *User, meeting *Meeting) {
-	fmt.Printf("%v, meeting %v is updated", user.name, meeting.id)
+func (ns *NotificationService) NotifyUser(user *User, meetingTitle string) {
+	fmt.Printf("%v, meeting %v is updated", user.name, meetingTitle)
 }

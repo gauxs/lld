@@ -26,6 +26,25 @@ func (ms *MeetingScheduler) ScheduleMeeting(meetingTitle string, roomName string
 }
 
 func (ms *MeetingScheduler) UpdateMeetingTitle(meetingID string, newTitle string) error {
+	err := ms.mh.UpdateTitle(meetingID, newTitle)
+	if err != nil {
+		return err
+	}
+
+	participants, err := ms.mh.GetMeetingParticipants(meetingID)
+	if err != nil {
+		return nil
+	}
+
+	title, err := ms.mh.GetMeetingTitle(meetingID)
+	if err != nil {
+		return nil
+	}
+
+	for _, participant := range participants {
+		ms.notification.NotifyUser(participant, title)
+	}
+
 	return nil
 }
 
