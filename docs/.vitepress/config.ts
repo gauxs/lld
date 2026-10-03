@@ -20,6 +20,10 @@ const sidebarTheory = fs.existsSync(sidebarTheoryPath)
   ? JSON.parse(fs.readFileSync(sidebarTheoryPath, "utf8"))
   : { items: [], firstLink: "/", articleCount: 0, topicCount: 0 };
 
+const sidebarPracticePath = path.join(__dirname, "sidebar-practice.json");
+const sidebarPractice = fs.existsSync(sidebarPracticePath)
+  ? JSON.parse(fs.readFileSync(sidebarPracticePath, "utf8"))
+  : { items: [], firstLink: "/", pageCount: 0 };
 
 const sidebar = [
   {
@@ -34,6 +38,11 @@ const sidebar = [
         text: "Problems",
         collapsed: false,
         items: sidebarProblems.items ?? [],
+      },
+      {
+        text: "Practice with AI",
+        collapsed: false,
+        items: sidebarPractice.items ?? [],
       },
     ],
   },
@@ -60,8 +69,10 @@ function devRootRedirectPlugin() {
 function authoringSyncPlugin() {
   const theoryRoot = path.join(ROOT, "theory");
   const problemsRoot = path.join(ROOT, "problems");
+  const practiceRoot = path.join(ROOT, "practice_with_ai");
   const theoryScript = path.join(ROOT, "scripts", "sync-theory-docs.mjs");
   const problemsScript = path.join(ROOT, "scripts", "sync-problem-docs.mjs");
+  const practiceScript = path.join(ROOT, "scripts", "sync-practice-docs.mjs");
   let timer: ReturnType<typeof setTimeout> | undefined;
   const pendingScripts = new Set<string>();
   let syncQueue = Promise.resolve();
@@ -110,12 +121,14 @@ function authoringSyncPlugin() {
           });
       }
 
-      server.watcher.add([theoryRoot, problemsRoot]);
+      server.watcher.add([theoryRoot, problemsRoot, practiceRoot]);
       server.watcher.on("all", (_event, file) => {
         const script = file.startsWith(theoryRoot)
           ? theoryScript
           : file.startsWith(problemsRoot)
             ? problemsScript
+            : file.startsWith(practiceRoot)
+              ? practiceScript
             : null;
         if (!script) {
           return;
@@ -150,7 +163,7 @@ export default defineConfig(() => {
     },
     title: "LLDZen",
     description:
-      "Low-level design: concurrency theory and problem trails with Go code",
+      "Low-level design theory, problem trails, and AI interview practice",
     base,
     cleanUrls: true,
     head: [
@@ -182,30 +195,6 @@ export default defineConfig(() => {
         needsInterop: ["fastdom"],
         include: ["fastdom", "mermaid"],
       },
-      resolve: {
-        alias: [
-          {
-            find: path.resolve(
-              __dirname,
-              "../../node_modules/vitepress/dist/client/theme-default/components/VPSidebarItem.vue",
-            ),
-            replacement: path.join(
-              __dirname,
-              "theme/components/VPSidebarItem.vue",
-            ),
-          },
-          {
-            find: path.resolve(
-              __dirname,
-              "../../node_modules/vitepress/dist/client/theme-default/components/VPNavBarTitle.vue",
-            ),
-            replacement: path.join(
-              __dirname,
-              "theme/components/VPNavBarTitle.vue",
-            ),
-          },
-        ],
-      },
     },
     themeConfig: {
       logo: {
@@ -224,6 +213,11 @@ export default defineConfig(() => {
           text: "Problems",
           link: sidebarProblems.firstLink,
           activeMatch: "/problems/",
+        },
+        {
+          text: "Practice with AI",
+          link: sidebarPractice.firstLink,
+          activeMatch: "/practice-with-ai/",
         },
       ],
       sidebar,

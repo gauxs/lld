@@ -99,6 +99,11 @@ skipped; `.gitignore` and `.env.example` are included.
 3. Set `buildsOn` when it extends another extension.
 4. Optionally add an `extensions/<extension_id>/code/` directory.
 
+## Add an AI practice guide
+
+Add Markdown under `practice_with_ai/`. Files are published under
+`/practice-with-ai/` and added to the third sidebar section automatically.
+
 ## Verify
 
 ```bash

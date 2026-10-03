@@ -17,12 +17,13 @@ Open `http://localhost:5173/lld/`.
 
 - `theory/` — source Markdown for theory trails
 - `problems/` — problem requirements, designs, extensions, and code
+- `practice_with_ai/` — prompts for chatbot-guided interview practice
 - `_template/problem/` — starting point for a new problem
 - `docs/` — generated VitePress site and theme
 
-Theory and problems are discovered automatically from their directory
-structure. Do not edit generated pages under `docs/learn/` or
-`docs/problems/`.
+Theory, problems, and practice guides are discovered automatically from their
+directory structure. Do not edit generated pages under `docs/learn/`,
+`docs/problems/`, or `docs/practice-with-ai/`.
 
 See **[Add study content](_template/setup.md)** for the authoring workflow.
 

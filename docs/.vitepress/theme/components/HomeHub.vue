@@ -1,6 +1,7 @@
 <script setup>
 import { computed } from "vue";
 import { useData } from "vitepress";
+import practiceNavigation from "../../sidebar-practice.json";
 import problemNavigation from "../../sidebar-problems.json";
 import theoryNavigation from "../../sidebar-theory.json";
 
@@ -29,6 +30,13 @@ const cards = [
     link: withBase(problemNavigation.firstLink),
     meta: `${problemNavigation.problemCount} problems`,
   },
+  {
+    title: "Practice with AI",
+    description:
+      "Turn a chatbot into a structured low-level design interviewer.",
+    link: withBase(practiceNavigation.firstLink),
+    meta: `${practiceNavigation.pageCount} prompt${practiceNavigation.pageCount === 1 ? "" : "s"}`,
+  },
 ];
 </script>
 
@@ -44,7 +52,7 @@ const cards = [
       />
       <h1 class="zen-home-title">LLDZen</h1>
       <p class="zen-home-tagline">
-        Low-level design notes—multi-page theory trails and problem walkthroughs.
+        Low-level design notes, problem walkthroughs, and guided AI practice.
       </p>
     </header>
 
