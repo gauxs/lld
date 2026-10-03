@@ -68,6 +68,30 @@ problems/concurrency/meeting_room/
 The directory hierarchy, overview, sidebar, and extension pages are generated
 automatically.
 
+### Writing the two phases
+
+Keep `requirements.md` solution-free:
+
+- Goal and functional requirements
+- Constraints and out-of-scope behavior
+- Clarifications as standard Markdown blockquotes
+
+Use `design.md` for the solution:
+
+- Approach, core types, and API signatures
+- Data structures and main flows
+- Concurrency, complexity, and trade-offs
+
+Headings, bullets, blockquotes, fenced code, and Mermaid all render directly.
+Tables and custom HTML are optional.
+
+### Adding code
+
+Place text-based source files anywhere under an extension's `code/` directory.
+The generated Codebase page preserves the directory tree and selects syntax
+highlighting from each filename. Binary and potentially sensitive dotfiles are
+skipped; `.gitignore` and `.env.example` are included.
+
 ## Add a problem extension
 
 1. Create `extensions/<extension_id>/requirements.md` and `design.md`.

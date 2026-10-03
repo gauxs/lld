@@ -101,9 +101,213 @@ function extensionDir(problemId, extId) {
   return path.join(PROBLEMS, problemId, "extensions", extId);
 }
 
+const LANGUAGE_BY_EXTENSION = {
+  ".c": "c",
+  ".cc": "cpp",
+  ".cjs": "javascript",
+  ".cpp": "cpp",
+  ".cs": "csharp",
+  ".cts": "typescript",
+  ".css": "css",
+  ".dart": "dart",
+  ".go": "go",
+  ".gradle": "groovy",
+  ".graphql": "graphql",
+  ".h": "c",
+  ".hpp": "cpp",
+  ".html": "html",
+  ".java": "java",
+  ".js": "javascript",
+  ".json": "json",
+  ".jsx": "jsx",
+  ".kt": "kotlin",
+  ".kts": "kotlin",
+  ".md": "markdown",
+  ".mjs": "javascript",
+  ".mts": "typescript",
+  ".php": "php",
+  ".proto": "protobuf",
+  ".py": "python",
+  ".rb": "ruby",
+  ".rs": "rust",
+  ".scss": "scss",
+  ".sh": "bash",
+  ".sql": "sql",
+  ".swift": "swift",
+  ".toml": "toml",
+  ".ts": "typescript",
+  ".tsx": "tsx",
+  ".vue": "vue",
+  ".xml": "xml",
+  ".yaml": "yaml",
+  ".yml": "yaml",
+};
+
+const LANGUAGE_BY_FILENAME = {
+  Dockerfile: "dockerfile",
+  Makefile: "makefile",
+  "go.mod": "go",
+  "go.sum": "text",
+};
+
+const INCLUDED_DOTFILES = new Set([".env.example", ".gitignore"]);
+const UTF8_DECODER = new TextDecoder("utf-8", { fatal: true });
+
+function isTextFile(buffer) {
+  if (buffer.includes(0)) {
+    return false;
+  }
+  let controlBytes = 0;
+  for (const byte of buffer) {
+    if (byte < 7 || (byte > 13 && byte < 32)) {
+      controlBytes++;
+    }
+  }
+  if (buffer.length > 0 && controlBytes / buffer.length >= 0.1) {
+    return false;
+  }
+  try {
+    UTF8_DECODER.decode(buffer);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+function collectCodeFiles(dir, prefix = "") {
+  if (!fs.existsSync(dir)) {
+    return [];
+  }
+  const files = [];
+  for (const entry of fs
+    .readdirSync(dir, { withFileTypes: true })
+    .sort((a, b) => a.name.localeCompare(b.name))) {
+    if (entry.name.startsWith(".") && !INCLUDED_DOTFILES.has(entry.name)) {
+      continue;
+    }
+    const fullPath = path.join(dir, entry.name);
+    const relativePath = prefix ? `${prefix}/${entry.name}` : entry.name;
+    if (entry.isDirectory()) {
+      files.push(...collectCodeFiles(fullPath, relativePath));
+      continue;
+    }
+    if (!entry.isFile()) {
+      continue;
+    }
+    const buffer = fs.readFileSync(fullPath);
+    if (isTextFile(buffer)) {
+      files.push({ path: relativePath, content: buffer.toString("utf8") });
+    }
+  }
+  return files;
+}
+
+const codeFileCache = new Map();
+
+function codeFiles(problemId, extId) {
+  const key = `${problemId}:${extId}`;
+  if (!codeFileCache.has(key)) {
+    codeFileCache.set(
+      key,
+      collectCodeFiles(path.join(extensionDir(problemId, extId), "code")),
+    );
+  }
+  return codeFileCache.get(key);
+}
+
 function hasCode(problemId, extId) {
-  const dir = path.join(extensionDir(problemId, extId), "code");
-  return fs.existsSync(dir) && fs.readdirSync(dir).length > 0;
+  return codeFiles(problemId, extId).length > 0;
+}
+
+function codeLanguage(filePath) {
+  const filename = path.basename(filePath);
+  return (
+    LANGUAGE_BY_FILENAME[filename] ??
+    LANGUAGE_BY_EXTENSION[path.extname(filename).toLowerCase()] ??
+    "text"
+  );
+}
+
+function codeFence(content) {
+  const longestRun = Math.max(
+    0,
+    ...(content.match(/`+/g) ?? []).map((run) => run.length),
+  );
+  return "`".repeat(Math.max(3, longestRun + 1));
+}
+
+function inlineCode(value) {
+  const normalized = value.replace(/[\r\n]+/g, " ");
+  const longestRun = Math.max(
+    0,
+    ...(normalized.match(/`+/g) ?? []).map((run) => run.length),
+  );
+  const delimiter = "`".repeat(longestRun + 1);
+  return `${delimiter} ${normalized} ${delimiter}`;
+}
+
+function directoryTree(files) {
+  const root = new Map();
+  for (const file of files) {
+    let children = root;
+    for (const [index, segment] of file.path.split("/").entries()) {
+      if (!children.has(segment)) {
+        children.set(segment, {
+          file: index === file.path.split("/").length - 1,
+          children: new Map(),
+        });
+      }
+      children = children.get(segment).children;
+    }
+  }
+
+  const lines = ["code/"];
+  function render(children, prefix) {
+    const entries = [...children.entries()].sort(
+      ([nameA, nodeA], [nameB, nodeB]) =>
+        Number(nodeA.file) - Number(nodeB.file) || nameA.localeCompare(nameB),
+    );
+    entries.forEach(([name, node], index) => {
+      const last = index === entries.length - 1;
+      const displayName = name.replace(/[\r\n]+/g, " ");
+      lines.push(
+        `${prefix}${last ? "└──" : "├──"} ${displayName}${node.file ? "" : "/"}`,
+      );
+      if (!node.file) {
+        render(node.children, `${prefix}${last ? "    " : "│   "}`);
+      }
+    });
+  }
+  render(root, "");
+  return lines.join("\n");
+}
+
+function codebaseMarkdown(files, codeRel, codeUrl) {
+  const tree = directoryTree(files);
+  const treeFence = codeFence(tree);
+  const sections = files.map((file) => {
+    const fence = codeFence(file.content);
+    const content = file.content.endsWith("\n")
+      ? file.content
+      : `${file.content}\n`;
+    return `## ${inlineCode(file.path)}
+
+${fence}${codeLanguage(file.path)}
+${content}${fence}`;
+  });
+
+  return `# Codebase
+
+[View source: \`${codeRel}\`](${codeUrl})
+
+## Directory structure
+
+${treeFence}text
+${tree}
+${treeFence}
+
+${sections.join("\n\n")}
+`;
 }
 
 function trailSteps(problemId, extId) {
@@ -115,7 +319,7 @@ function trailSteps(problemId, extId) {
     steps.push({
       doc: "codebase.md",
       label: "codebase",
-      pageClass: "lld-codebase-page",
+      pageClass: "",
     });
   }
   return steps;
@@ -144,11 +348,6 @@ ${step.pageClass ? `pageClass: ${step.pageClass}\n` : ""}`;
   }
   if (meta.extension) {
     fm += `extension: ${meta.extension}\n`;
-  }
-  if (step.doc === "codebase.md") {
-    fm += `aside: false
-outline: false
-`;
   }
   if (prev) {
     fm += yamlLink(
@@ -205,6 +404,7 @@ ${hubLines.join("\n")}
 
     for (const step of steps) {
       if (step.doc === "codebase.md") {
+        const files = codeFiles(problemId, ext.id);
         writeExtensionPage(
           destDir,
           slug,
@@ -215,12 +415,7 @@ ${hubLines.join("\n")}
             title: `${ext.title} — codebase`,
             problem: problemId,
             extension: ext.id,
-            content: `# Codebase
-
-[${codeRel}](${codeUrl})
-
-<ProblemCodebase problem="${problemId}" extension="${ext.id}" />
-`,
+            content: codebaseMarkdown(files, codeRel, codeUrl),
           },
         );
         continue;
