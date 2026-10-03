@@ -1,6 +1,5 @@
 :root {
-  --lld-content-max-width: 720px;
-  --vp-layout-max-width: 1200px;
+  --vp-layout-max-width: 1600px;
   --vp-c-brand-1: #ea580c;
   --vp-c-brand-2: #f97316;
   --vp-c-brand-3: #fb923c;
@@ -229,13 +228,9 @@
   font-size: 0.9375rem;
 }
 
-@media (min-width: 960px) {
-  .VPDoc .container {
-    max-width: 1200px;
-  }
-
-  .VPDoc .content {
-    max-width: var(--lld-content-max-width);
+@media (min-width: 1440px) {
+  .VPDoc.has-aside .content-container {
+    max-width: 860px;
   }
 }
 

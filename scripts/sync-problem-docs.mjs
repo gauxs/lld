@@ -510,7 +510,7 @@ function buildProblemSidebar(problemId) {
   const slug = problemSlug(problemId);
   return {
     text: problemTitle(problemId, loaded.title),
-    collapsed: false,
+    collapsed: true,
     items: [
       { text: "Overview", link: `/problems/${slug}/` },
       ...buildSidebarExtensionItems(problemId, slug),
@@ -541,7 +541,7 @@ function buildSidebarTree(problemIds) {
       .sort(([a], [b]) => compareText(a, b))
       .map(([name, child]) => ({
         text: humanizeName(name),
-        collapsed: false,
+        collapsed: true,
         items: render(child),
       }));
     const problems = node.problems

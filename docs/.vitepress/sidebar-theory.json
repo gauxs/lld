@@ -2,7 +2,7 @@
   "items": [
     {
       "text": "Concurrency",
-      "collapsed": false,
+      "collapsed": true,
       "items": [
         {
           "text": "Introduction",
