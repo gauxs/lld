@@ -1,26 +1,34 @@
 # LLDZen
 
-Personal **low-level design** notes and Go reference code for system-design and OOD interviews. Each problem is broken into **extensions** (baseline first, then optional follow-ups) with requirements, design, and optional implementation.
+Low-level design theory, interview problems, and reference implementations.
+Problems progress through a baseline and optional extensions, each with
+requirements, design, and optional code.
 
-The browsable site is built with VitePress from this repo. To run it locally or add a new problem, see **[setup.md](setup.md)**.
+## Run locally
 
 ```bash
 npm install
 npm run docs:dev
 ```
 
-Open **`http://localhost:5173/lld/`** (port may differ). If the page is blank after dependency changes, clear the cache: `rm -rf docs/.vitepress/cache` and restart.
+Open `http://localhost:5173/lld/`.
 
-## Reference implementations
+## Repository
 
-| Problem | Go package |
-| --- | --- |
-| Connect Four (baseline) | `problems/connect_four/extensions/baseline/code` — `go run .` from repo root |
-| Rate limiter (baseline) | `problems/rate_limiter/extensions/baseline/code` |
+- `theory/` — source Markdown for theory trails
+- `problems/` — problem requirements, designs, extensions, and code
+- `_template/problem/` — starting point for a new problem
+- `docs/` — generated VitePress site and theme
 
-## Authoring
+Theory and problems are discovered automatically from their directory
+structure. Do not edit generated pages under `docs/learn/` or
+`docs/problems/`.
 
-- Theory: [`theory/`](theory/) → synced to `docs/learn/`
-- Problems: [`_template/problem/`](_template/problem/) → [`problems/`](problems/)
-- Conventions: [`_template/CONVENTIONS.md`](_template/CONVENTIONS.md)
-- Full workflow: [setup.md](setup.md)
+See **[Add study content](_template/setup.md)** for the authoring workflow.
+
+## Build
+
+```bash
+npm run docs:build
+npm run docs:preview
+```

@@ -340,10 +340,36 @@ function discoverTopics() {
     .filter((id) => collectMarkdownFiles(path.join(THEORY, id)).length > 0);
 }
 
-const sidebarPayload = {};
-for (const topicId of discoverTopics()) {
-  sidebarPayload[topicId] = syncTopic(topicId);
+const topics = discoverTopics().sort((a, b) => a.localeCompare(b));
+const topicItems = topics.map((topicId) => ({
+  text: humanizeName(topicId),
+  collapsed: false,
+  items: syncTopic(topicId),
+}));
+
+function firstItemLink(items) {
+  for (const item of items) {
+    if (item.link) {
+      return item.link;
+    }
+    const nestedLink = firstItemLink(item.items ?? []);
+    if (nestedLink) {
+      return nestedLink;
+    }
+  }
+  return null;
 }
+
+const sidebarPayload = {
+  items: topicItems,
+  firstLink: firstItemLink(topicItems) ?? "/",
+  articleCount: topics.reduce(
+    (total, topicId) =>
+      total + collectMarkdownFiles(path.join(THEORY, topicId)).length,
+    0,
+  ),
+  topicCount: topics.length,
+};
 
 const sidebarOut = path.join(ROOT, "docs", ".vitepress", "sidebar-theory.json");
 fs.writeFileSync(sidebarOut, JSON.stringify(sidebarPayload, null, 2));

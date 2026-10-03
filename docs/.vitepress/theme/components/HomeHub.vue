@@ -1,6 +1,8 @@
 <script setup>
 import { computed } from "vue";
 import { useData } from "vitepress";
+import problemNavigation from "../../sidebar-problems.json";
+import theoryNavigation from "../../sidebar-theory.json";
 
 const { site, isDark } = useData();
 const base = site.value.base;
@@ -8,20 +10,24 @@ const logoSrc = computed(
   () => `${base}icons/${isDark.value ? "site-dark" : "site"}.svg`,
 );
 
+function withBase(link) {
+  return `${base}${link.replace(/^\//, "")}`;
+}
+
 const cards = [
   {
     title: "Theory",
     description:
-      "Concurrency fundamentals—shared memory, correctness, coordination, and scarcity.",
-    link: `${base}learn/concurrency/intro`,
-    meta: "4 articles",
+      "Concept trails covering the foundations behind low-level design.",
+    link: withBase(theoryNavigation.firstLink),
+    meta: `${theoryNavigation.articleCount} articles`,
   },
   {
     title: "Problems",
     description:
       "Requirement-first extensions with optional Go reference code.",
-    link: `${base}problems/connect-four/`,
-    meta: "Connect Four · Rate limiter",
+    link: withBase(problemNavigation.firstLink),
+    meta: `${problemNavigation.problemCount} problems`,
   },
 ];
 </script>

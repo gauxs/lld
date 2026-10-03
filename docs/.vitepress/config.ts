@@ -1,5 +1,6 @@
 import path from "node:path";
 import fs from "node:fs";
+import { execFile } from "node:child_process";
 import { fileURLToPath } from "node:url";
 import { defineConfig, type UserConfig } from "vitepress";
 import { withMermaid } from "vitepress-mermaid-viewer";
@@ -12,34 +13,12 @@ const BASE = "/lld";
 const sidebarProblemsPath = path.join(__dirname, "sidebar-problems.json");
 const sidebarProblems = fs.existsSync(sidebarProblemsPath)
   ? JSON.parse(fs.readFileSync(sidebarProblemsPath, "utf8"))
-  : { connectFour: [], rateLimiter: [], userActivity: [],  autoComplete:[]};
+  : { items: [], firstLink: "/", problemCount: 0 };
 
 const sidebarTheoryPath = path.join(__dirname, "sidebar-theory.json");
 const sidebarTheory = fs.existsSync(sidebarTheoryPath)
   ? JSON.parse(fs.readFileSync(sidebarTheoryPath, "utf8"))
-  : { concurrency: [] };
-
-const concurrencyTheoryItems = sidebarTheory.concurrency ?? [];
-
-const connectFourItems = [
-  { text: "Overview", link: "/problems/connect-four/" },
-  ...(sidebarProblems.connectFour ?? []),
-];
-
-const rateLimiterItems = [
-  { text: "Overview", link: "/problems/rate-limiter/" },
-  ...(sidebarProblems.rateLimiter ?? []),
-];
-
-const userActivityItems = [
-  { text: "Overview", link: "/problems/user-activity/" },
-  ...(sidebarProblems.userActivity ?? []),
-];
-
-const autoCompleteItems = [
-  { text: "Overview", link: "/problems/auto-complete/" },
-  ...(sidebarProblems.autoComplete ?? []),
-];
+  : { items: [], firstLink: "/", articleCount: 0, topicCount: 0 };
 
 
 const sidebar = [
@@ -49,39 +28,12 @@ const sidebar = [
       {
         text: "Theory",
         collapsed: false,
-        items: [
-          {
-            text: "Concurrency",
-            collapsed: false,
-            items: concurrencyTheoryItems,
-          },
-        ],
+        items: sidebarTheory.items ?? [],
       },
       {
         text: "Problems",
         collapsed: false,
-        items: [
-          {
-            text: "Connect Four",
-            collapsed: false,
-            items: connectFourItems,
-          },
-          {
-            text: "Rate limiter",
-            collapsed: false,
-            items: rateLimiterItems,
-          },
-          {
-            text: "User Activity",
-            collapsed: false,
-            items: userActivityItems,
-          },
-          {
-            text: "Auto Complete",
-            collapsed: false,
-            items: autoCompleteItems,
-          }
-        ],
+        items: sidebarProblems.items ?? [],
       },
     ],
   },
@@ -100,6 +52,78 @@ function devRootRedirectPlugin() {
           return;
         }
         next();
+      });
+    },
+  };
+}
+
+function authoringSyncPlugin() {
+  const theoryRoot = path.join(ROOT, "theory");
+  const problemsRoot = path.join(ROOT, "problems");
+  const theoryScript = path.join(ROOT, "scripts", "sync-theory-docs.mjs");
+  const problemsScript = path.join(ROOT, "scripts", "sync-problem-docs.mjs");
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  const pendingScripts = new Set<string>();
+  let syncQueue = Promise.resolve();
+
+  return {
+    name: "lld-authoring-sync",
+    configureServer(server) {
+      function runScript(script: string) {
+        return new Promise<void>((resolve, reject) => {
+          execFile(process.execPath, [script], (error, stdout, stderr) => {
+            if (stdout) {
+              server.config.logger.info(stdout.trim());
+            }
+            if (stderr) {
+              server.config.logger.warn(stderr.trim());
+            }
+            if (error) {
+              reject(error);
+              return;
+            }
+            resolve();
+          });
+        });
+      }
+
+      function flushPendingScripts() {
+        const scripts = [...pendingScripts];
+        pendingScripts.clear();
+        syncQueue = syncQueue
+          .then(async () => {
+            let completed = false;
+            for (const script of scripts) {
+              try {
+                await runScript(script);
+                completed = true;
+              } catch (error) {
+                server.config.logger.error(error.message);
+              }
+            }
+            if (completed) {
+              await server.restart();
+            }
+          })
+          .catch((error) => {
+            server.config.logger.error(error.message);
+          });
+      }
+
+      server.watcher.add([theoryRoot, problemsRoot]);
+      server.watcher.on("all", (_event, file) => {
+        const script = file.startsWith(theoryRoot)
+          ? theoryScript
+          : file.startsWith(problemsRoot)
+            ? problemsScript
+            : null;
+        if (!script) {
+          return;
+        }
+
+        pendingScripts.add(script);
+        clearTimeout(timer);
+        timer = setTimeout(flushPendingScripts, 100);
       });
     },
   };
@@ -150,7 +174,7 @@ export default defineConfig(() => {
       ],
     ],
     vite: {
-      plugins: [devRootRedirectPlugin()],
+      plugins: [devRootRedirectPlugin(), authoringSyncPlugin()],
       server: {
         fs: { allow: [ROOT] },
       },
@@ -193,12 +217,12 @@ export default defineConfig(() => {
       nav: [
         {
           text: "Theory",
-          link: "/learn/concurrency/intro",
+          link: sidebarTheory.firstLink,
           activeMatch: "/learn/",
         },
         {
           text: "Problems",
-          link: "/problems/connect-four/extensions/baseline/requirements",
+          link: sidebarProblems.firstLink,
           activeMatch: "/problems/",
         },
       ],

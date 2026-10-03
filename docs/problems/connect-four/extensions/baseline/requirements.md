@@ -3,9 +3,6 @@ title: Connect Four — local two-player
 pageClass: lld-req-page
 problem: connect_four
 extension: baseline
-prev:
-  text: scarcity
-  link: /learn/concurrency/02-problems/scarcity
 next:
   text: design
   link: /problems/connect-four/extensions/baseline/design

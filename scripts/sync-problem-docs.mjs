@@ -5,33 +5,18 @@ import { fileURLToPath } from "node:url";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, "..");
 const PROBLEMS = path.join(ROOT, "problems");
+const DOCS_PROBLEMS = path.join(ROOT, "docs", "problems");
 
 const REPO = "https://github.com/gauxs/lld";
 
-/** problem_dir_name -> docs slug */
-const SLUGS = {
-  connect_four: "connect-four",
-  rate_limiter: "rate-limiter",
-  user_activity: "user-activity",
-  auto_complete: "auto-complete"
-};
-
-const PROBLEM_TITLES = {
-  connect_four: "Connect Four",
-  rate_limiter: "Rate limiter",
-  user_activity: "User Activity",
-  auto_complete: "Auto Complete"
-};
-
-function problemTitle(problemId) {
-  return (
-    PROBLEM_TITLES[problemId] ??
-    problemId.replace(/_/g, " ").replace(/^\w/, (c) => c.toUpperCase())
-  );
+function humanizeName(name) {
+  return name
+    .replace(/[-_]+/g, " ")
+    .replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
-function sidebarJsonKey(problemId) {
-  return problemId.replace(/_([a-z])/g, (_, c) => c.toUpperCase());
+function problemTitle(problemId, configuredTitle) {
+  return configuredTitle ?? humanizeName(problemId.split("/").at(-1));
 }
 
 function ensureDir(dir) {
@@ -44,6 +29,10 @@ function yamlLink(key, label, href) {
 
 function extensionSlug(id) {
   return id.replace(/_/g, "-");
+}
+
+function problemSlug(problemId) {
+  return problemId.split("/").map(extensionSlug).join("/");
 }
 
 function loadExtensions(problemId) {
@@ -66,7 +55,32 @@ function loadExtensions(problemId) {
       buildsOn: node.buildsOn ?? null,
     };
   });
-  return { defaultId, extensions, extMap, order };
+  return {
+    title: doc.title ?? null,
+    defaultId,
+    extensions,
+    extMap,
+    order,
+  };
+}
+
+function discoverProblemIds(dir = PROBLEMS, prefix = "") {
+  const ids =
+    prefix && fs.existsSync(path.join(dir, "extensions.json")) ? [prefix] : [];
+  for (const entry of fs
+    .readdirSync(dir, { withFileTypes: true })
+    .sort((a, b) => a.name.localeCompare(b.name))) {
+    if (
+      !entry.isDirectory() ||
+      entry.name.startsWith(".") ||
+      entry.name.startsWith("_")
+    ) {
+      continue;
+    }
+    const childPrefix = prefix ? `${prefix}/${entry.name}` : entry.name;
+    ids.push(...discoverProblemIds(path.join(dir, entry.name), childPrefix));
+  }
+  return ids;
 }
 
 function mermaidExtensionGraph(extensions) {
@@ -131,9 +145,6 @@ ${step.pageClass ? `pageClass: ${step.pageClass}\n` : ""}`;
   if (meta.extension) {
     fm += `extension: ${meta.extension}\n`;
   }
-  if (step.doc === "requirements.md" && meta.scarcityPrev) {
-    fm += yamlLink("prev", "scarcity", "/learn/concurrency/02-problems/scarcity");
-  }
   if (step.doc === "codebase.md") {
     fm += `aside: false
 outline: false
@@ -158,12 +169,12 @@ outline: false
   fs.writeFileSync(path.join(destDir, step.doc), fm + meta.content);
 }
 
-function syncExtensionProblem(problemId, slug) {
-  const { defaultId, extensions } = loadExtensions(problemId);
-  const destRoot = path.join(ROOT, "docs", "problems", slug);
+function syncExtensionProblem(problemId, slug, outputRoot = DOCS_PROBLEMS) {
+  const { extensions, title: configuredTitle } = loadExtensions(problemId);
+  const destRoot = path.join(outputRoot, slug);
   ensureDir(destRoot);
 
-  const title = problemTitle(problemId);
+  const title = problemTitle(problemId, configuredTitle);
 
   const hubLines = [
     `# ${title}`,
@@ -227,8 +238,6 @@ ${hubLines.join("\n")}
         title,
         problem: problemId,
         extension: ext.id,
-        scarcityPrev:
-          ext.id === defaultId && step.doc === "requirements.md",
         content: body,
       });
     }
@@ -281,19 +290,145 @@ function buildSidebarExtensionItems(problemId, slug) {
   });
 }
 
-const sidebarPayload = {};
-for (const [problemId, slug] of Object.entries(SLUGS)) {
-  if (loadExtensions(problemId)) {
-    syncExtensionProblem(problemId, slug);
-    sidebarPayload[sidebarJsonKey(problemId)] = buildSidebarExtensionItems(
-      problemId,
-      slug,
+function buildProblemSidebar(problemId) {
+  const loaded = loadExtensions(problemId);
+  const slug = problemSlug(problemId);
+  return {
+    text: problemTitle(problemId, loaded.title),
+    collapsed: false,
+    items: [
+      { text: "Overview", link: `/problems/${slug}/` },
+      ...buildSidebarExtensionItems(problemId, slug),
+    ],
+  };
+}
+
+function buildSidebarTree(problemIds) {
+  const root = { sections: new Map(), problems: [] };
+
+  for (const problemId of problemIds) {
+    const segments = problemId.split("/");
+    const problemName = segments.pop();
+    let node = root;
+    for (const section of segments) {
+      if (!node.sections.has(section)) {
+        node.sections.set(section, { sections: new Map(), problems: [] });
+      }
+      node = node.sections.get(section);
+    }
+    node.problems.push(
+      segments.length ? `${segments.join("/")}/${problemName}` : problemName,
     );
+  }
+
+  function render(node) {
+    const sections = [...node.sections.entries()]
+      .sort(([a], [b]) => a.localeCompare(b))
+      .map(([name, child]) => ({
+        text: humanizeName(name),
+        collapsed: false,
+        items: render(child),
+      }));
+    const problems = node.problems
+      .sort((a, b) => a.localeCompare(b))
+      .map(buildProblemSidebar);
+    return [...sections, ...problems];
+  }
+
+  return render(root);
+}
+
+function validateProblem(problemId) {
+  const loaded = loadExtensions(problemId);
+  if (!loaded) {
+    throw new Error(`Missing extensions.json for ${problemId}`);
+  }
+
+  const extensionIds = new Set(loaded.extensions.map((ext) => ext.id));
+  if (!extensionIds.has(loaded.defaultId)) {
+    throw new Error(
+      `${problemId}: default extension "${loaded.defaultId}" is not in order`,
+    );
+  }
+
+  for (const extension of loaded.extensions) {
+    if (extension.buildsOn && !extensionIds.has(extension.buildsOn)) {
+      throw new Error(
+        `${problemId}/${extension.id}: unknown buildsOn "${extension.buildsOn}"`,
+      );
+    }
+    for (const document of ["requirements.md", "design.md"]) {
+      const source = path.join(extensionDir(problemId, extension.id), document);
+      if (!fs.existsSync(source)) {
+        throw new Error(`Missing ${source}`);
+      }
+    }
   }
 }
 
+function replaceGeneratedProblems(tempRoot, tempSidebar, sidebarOut) {
+  const backupRoot = `${DOCS_PROBLEMS}.previous`;
+  const backupSidebar = `${sidebarOut}.previous`;
+  fs.rmSync(backupRoot, { recursive: true, force: true });
+  fs.rmSync(backupSidebar, { force: true });
+  try {
+    if (fs.existsSync(DOCS_PROBLEMS)) {
+      fs.renameSync(DOCS_PROBLEMS, backupRoot);
+    }
+    if (fs.existsSync(sidebarOut)) {
+      fs.renameSync(sidebarOut, backupSidebar);
+    }
+    fs.renameSync(tempRoot, DOCS_PROBLEMS);
+    fs.renameSync(tempSidebar, sidebarOut);
+    fs.rmSync(backupRoot, { recursive: true, force: true });
+    fs.rmSync(backupSidebar, { force: true });
+  } catch (error) {
+    fs.rmSync(DOCS_PROBLEMS, { recursive: true, force: true });
+    fs.rmSync(sidebarOut, { force: true });
+    if (fs.existsSync(backupRoot)) {
+      fs.renameSync(backupRoot, DOCS_PROBLEMS);
+    }
+    if (fs.existsSync(backupSidebar)) {
+      fs.renameSync(backupSidebar, sidebarOut);
+    }
+    throw error;
+  }
+}
+
+const problemIds = discoverProblemIds();
+for (const problemId of problemIds) {
+  validateProblem(problemId);
+}
+
+const firstProblemId = problemIds[0] ?? null;
+const firstLoaded = firstProblemId ? loadExtensions(firstProblemId) : null;
+const sidebarPayload = {
+  items: buildSidebarTree(problemIds),
+  firstLink:
+    firstProblemId && firstLoaded
+      ? `/problems/${problemSlug(firstProblemId)}/extensions/${extensionSlug(firstLoaded.defaultId)}/requirements`
+      : "/",
+  problemCount: problemIds.length,
+};
 const sidebarOut = path.join(ROOT, "docs", ".vitepress", "sidebar-problems.json");
-fs.writeFileSync(sidebarOut, JSON.stringify(sidebarPayload, null, 2));
+const tempSidebar = `${sidebarOut}.${process.pid}-${Date.now()}.tmp`;
+fs.writeFileSync(tempSidebar, JSON.stringify(sidebarPayload, null, 2));
+
+const tempProblems = path.join(
+  ROOT,
+  "docs",
+  `.problems-sync-${process.pid}-${Date.now()}`,
+);
+ensureDir(tempProblems);
+try {
+  for (const problemId of problemIds) {
+    syncExtensionProblem(problemId, problemSlug(problemId), tempProblems);
+  }
+  replaceGeneratedProblems(tempProblems, tempSidebar, sidebarOut);
+} finally {
+  fs.rmSync(tempProblems, { recursive: true, force: true });
+  fs.rmSync(tempSidebar, { force: true });
+}
 
 console.log("Synced problem docs from problems/ → docs/problems/");
-console.log(`Wrote ${sidebarOut} (import in config.ts)`);
+console.log(`Wrote ${sidebarOut}`);

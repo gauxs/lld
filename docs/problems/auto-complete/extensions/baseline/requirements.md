@@ -3,9 +3,6 @@ title: User activity tracker
 pageClass: lld-req-page
 problem: auto_complete
 extension: baseline
-prev:
-  text: scarcity
-  link: /learn/concurrency/02-problems/scarcity
 next:
   text: design
   link: /problems/auto-complete/extensions/baseline/design

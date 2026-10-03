@@ -1,166 +1,226 @@
 {
-  "connectFour": [
+  "items": [
     {
-      "text": "Local two-player",
-      "collapsed": true,
+      "text": "Auto Complete",
+      "collapsed": false,
       "items": [
         {
-          "text": "Requirements",
-          "link": "/problems/connect-four/extensions/baseline/requirements"
+          "text": "Overview",
+          "link": "/problems/auto-complete/"
         },
         {
-          "text": "Design",
-          "link": "/problems/connect-four/extensions/baseline/design"
-        },
-        {
-          "text": "Codebase",
-          "link": "/problems/connect-four/extensions/baseline/codebase"
+          "text": "Auto complete",
+          "collapsed": true,
+          "items": [
+            {
+              "text": "Requirements",
+              "link": "/problems/auto-complete/extensions/baseline/requirements"
+            },
+            {
+              "text": "Design",
+              "link": "/problems/auto-complete/extensions/baseline/design"
+            },
+            {
+              "text": "Codebase",
+              "link": "/problems/auto-complete/extensions/baseline/codebase"
+            }
+          ]
         }
       ]
     },
     {
-      "text": "Networked multiplayer",
-      "collapsed": true,
+      "text": "Connect Four",
+      "collapsed": false,
       "items": [
         {
-          "text": "Requirements",
-          "link": "/problems/connect-four/extensions/networked/requirements"
+          "text": "Overview",
+          "link": "/problems/connect-four/"
         },
         {
-          "text": "Design",
-          "link": "/problems/connect-four/extensions/networked/design"
+          "text": "Local two-player",
+          "collapsed": true,
+          "items": [
+            {
+              "text": "Requirements",
+              "link": "/problems/connect-four/extensions/baseline/requirements"
+            },
+            {
+              "text": "Design",
+              "link": "/problems/connect-four/extensions/baseline/design"
+            },
+            {
+              "text": "Codebase",
+              "link": "/problems/connect-four/extensions/baseline/codebase"
+            }
+          ]
+        },
+        {
+          "text": "Networked multiplayer",
+          "collapsed": true,
+          "items": [
+            {
+              "text": "Requirements",
+              "link": "/problems/connect-four/extensions/networked/requirements"
+            },
+            {
+              "text": "Design",
+              "link": "/problems/connect-four/extensions/networked/design"
+            }
+          ]
+        },
+        {
+          "text": "Configurable rules & board",
+          "collapsed": true,
+          "items": [
+            {
+              "text": "Requirements",
+              "link": "/problems/connect-four/extensions/configurable-rules/requirements"
+            },
+            {
+              "text": "Design",
+              "link": "/problems/connect-four/extensions/configurable-rules/design"
+            }
+          ]
+        },
+        {
+          "text": "Spectators",
+          "collapsed": true,
+          "items": [
+            {
+              "text": "Requirements",
+              "link": "/problems/connect-four/extensions/spectators/requirements"
+            },
+            {
+              "text": "Design",
+              "link": "/problems/connect-four/extensions/spectators/design"
+            }
+          ]
         }
       ]
     },
     {
-      "text": "Configurable rules & board",
-      "collapsed": true,
+      "text": "Meeting Room",
+      "collapsed": false,
       "items": [
         {
-          "text": "Requirements",
-          "link": "/problems/connect-four/extensions/configurable-rules/requirements"
+          "text": "Overview",
+          "link": "/problems/meeting-room/"
         },
         {
-          "text": "Design",
-          "link": "/problems/connect-four/extensions/configurable-rules/design"
+          "text": "Baseline",
+          "collapsed": true,
+          "items": [
+            {
+              "text": "Requirements",
+              "link": "/problems/meeting-room/extensions/baseline/requirements"
+            },
+            {
+              "text": "Design",
+              "link": "/problems/meeting-room/extensions/baseline/design"
+            }
+          ]
         }
       ]
     },
     {
-      "text": "Spectators",
-      "collapsed": true,
+      "text": "Rate Limiter",
+      "collapsed": false,
       "items": [
         {
-          "text": "Requirements",
-          "link": "/problems/connect-four/extensions/spectators/requirements"
+          "text": "Overview",
+          "link": "/problems/rate-limiter/"
         },
         {
-          "text": "Design",
-          "link": "/problems/connect-four/extensions/spectators/design"
+          "text": "Fixed window (in-process)",
+          "collapsed": true,
+          "items": [
+            {
+              "text": "Requirements",
+              "link": "/problems/rate-limiter/extensions/baseline/requirements"
+            },
+            {
+              "text": "Design",
+              "link": "/problems/rate-limiter/extensions/baseline/design"
+            },
+            {
+              "text": "Codebase",
+              "link": "/problems/rate-limiter/extensions/baseline/codebase"
+            }
+          ]
+        },
+        {
+          "text": "Pluggable algorithms",
+          "collapsed": true,
+          "items": [
+            {
+              "text": "Requirements",
+              "link": "/problems/rate-limiter/extensions/pluggable-algorithms/requirements"
+            },
+            {
+              "text": "Design",
+              "link": "/problems/rate-limiter/extensions/pluggable-algorithms/design"
+            }
+          ]
+        },
+        {
+          "text": "Rejection metadata",
+          "collapsed": true,
+          "items": [
+            {
+              "text": "Requirements",
+              "link": "/problems/rate-limiter/extensions/rejection-metadata/requirements"
+            },
+            {
+              "text": "Design",
+              "link": "/problems/rate-limiter/extensions/rejection-metadata/design"
+            }
+          ]
+        },
+        {
+          "text": "Distributed limits",
+          "collapsed": true,
+          "items": [
+            {
+              "text": "Requirements",
+              "link": "/problems/rate-limiter/extensions/distributed/requirements"
+            },
+            {
+              "text": "Design",
+              "link": "/problems/rate-limiter/extensions/distributed/design"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "text": "User Activity",
+      "collapsed": false,
+      "items": [
+        {
+          "text": "Overview",
+          "link": "/problems/user-activity/"
+        },
+        {
+          "text": "User Activity Rate Tracker",
+          "collapsed": true,
+          "items": [
+            {
+              "text": "Requirements",
+              "link": "/problems/user-activity/extensions/baseline/requirements"
+            },
+            {
+              "text": "Design",
+              "link": "/problems/user-activity/extensions/baseline/design"
+            },
+            {
+              "text": "Codebase",
+              "link": "/problems/user-activity/extensions/baseline/codebase"
+            }
+          ]
         }
       ]
     }
   ],
-  "rateLimiter": [
-    {
-      "text": "Fixed window (in-process)",
-      "collapsed": true,
-      "items": [
-        {
-          "text": "Requirements",
-          "link": "/problems/rate-limiter/extensions/baseline/requirements"
-        },
-        {
-          "text": "Design",
-          "link": "/problems/rate-limiter/extensions/baseline/design"
-        },
-        {
-          "text": "Codebase",
-          "link": "/problems/rate-limiter/extensions/baseline/codebase"
-        }
-      ]
-    },
-    {
-      "text": "Pluggable algorithms",
-      "collapsed": true,
-      "items": [
-        {
-          "text": "Requirements",
-          "link": "/problems/rate-limiter/extensions/pluggable-algorithms/requirements"
-        },
-        {
-          "text": "Design",
-          "link": "/problems/rate-limiter/extensions/pluggable-algorithms/design"
-        }
-      ]
-    },
-    {
-      "text": "Rejection metadata",
-      "collapsed": true,
-      "items": [
-        {
-          "text": "Requirements",
-          "link": "/problems/rate-limiter/extensions/rejection-metadata/requirements"
-        },
-        {
-          "text": "Design",
-          "link": "/problems/rate-limiter/extensions/rejection-metadata/design"
-        }
-      ]
-    },
-    {
-      "text": "Distributed limits",
-      "collapsed": true,
-      "items": [
-        {
-          "text": "Requirements",
-          "link": "/problems/rate-limiter/extensions/distributed/requirements"
-        },
-        {
-          "text": "Design",
-          "link": "/problems/rate-limiter/extensions/distributed/design"
-        }
-      ]
-    }
-  ],
-  "userActivity": [
-    {
-      "text": "User Activity Rate Tracker",
-      "collapsed": true,
-      "items": [
-        {
-          "text": "Requirements",
-          "link": "/problems/user-activity/extensions/baseline/requirements"
-        },
-        {
-          "text": "Design",
-          "link": "/problems/user-activity/extensions/baseline/design"
-        },
-        {
-          "text": "Codebase",
-          "link": "/problems/user-activity/extensions/baseline/codebase"
-        }
-      ]
-    }
-  ],
-  "autoComplete": [
-    {
-      "text": "Auto complete",
-      "collapsed": true,
-      "items": [
-        {
-          "text": "Requirements",
-          "link": "/problems/auto-complete/extensions/baseline/requirements"
-        },
-        {
-          "text": "Design",
-          "link": "/problems/auto-complete/extensions/baseline/design"
-        },
-        {
-          "text": "Codebase",
-          "link": "/problems/auto-complete/extensions/baseline/codebase"
-        }
-      ]
-    }
-  ]
+  "firstLink": "/problems/auto-complete/extensions/baseline/requirements",
+  "problemCount": 5
 }

@@ -3,9 +3,6 @@ title: Rate limiter — fixed window (in-process)
 pageClass: lld-req-page
 problem: rate_limiter
 extension: baseline
-prev:
-  text: scarcity
-  link: /learn/concurrency/02-problems/scarcity
 next:
   text: design
   link: /problems/rate-limiter/extensions/baseline/design

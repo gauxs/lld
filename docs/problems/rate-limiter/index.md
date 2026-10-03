@@ -1,8 +1,8 @@
 ---
-title: Rate limiter
+title: Rate Limiter
 ---
 
-# Rate limiter
+# Rate Limiter
 
 Extensions are **siblings** in the sidebar (baseline first). Dependencies:
 
