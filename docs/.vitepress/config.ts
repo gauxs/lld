@@ -202,7 +202,7 @@ export default defineConfig(() => {
         dark: SITE_ICON_DARK,
         alt: "LLDZen",
       },
-      logoLink: "/",
+      logoLink: `${BASE}/`,
       nav: [
         {
           text: "Theory",
