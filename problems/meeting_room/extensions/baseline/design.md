@@ -14,3 +14,6 @@ type Example struct{}
 // Example — …
 func (e *Example) Example()
 ```
+
+
+
