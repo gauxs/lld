@@ -1,57 +1,35 @@
-# Problem name — baseline
+# Problem name
 
-One-paragraph problem statement (interview prompt for this extension only).
+One-paragraph interview prompt.
+
+## Goal
+
+What must the system accomplish?
 
 ## Functional requirements
 
-<div class="lld-req">
-
 ### FR-1: Short title
 
-Requirement statement.
+Describe one observable capability.
 
-<details class="lld-reveal">
-<summary><span class="lld-reveal-icon" aria-hidden="true"></span>Interview prompts</summary>
+> **Clarification:** Record the interviewer question and agreed answer.
 
-<div class="lld-reveal-inner">
+### FR-2: Short title
 
-- **Question?** Answer.
+Describe another capability.
 
-</div>
-</details>
+## Constraints
 
-</div>
+- Expected scale
+- Runtime and storage constraints
+- Concurrency expectations
+- Important limits
 
-## Out of scope (this extension)
+## Out of scope
 
-<div class="lld-req lld-req--scope">
+- Deferred capability
+- Infrastructure not required in this round
 
-<details class="lld-reveal">
-<summary><span class="lld-reveal-icon" aria-hidden="true"></span>Interview prompts</summary>
+## Open questions
 
-<div class="lld-reveal-inner">
-
-- **Deferred idea?** Point to a child extension or “not in this scope.”
-
-</div>
-</details>
-
-</div>
-
-## Non-functional requirements
-
-<div class="lld-req">
-
-### NFR-1: Short title
-
-Requirement statement.
-
-</div>
-
-## Extensions from here
-
-Optional follow-ups (sibling extensions). Add a row when you create `extensions/<child_id>/` and register it in `extensions.json`.
-
-| Extension | What it adds |
-| --- | --- |
-| _(none yet)_ | e.g. networked play, configurable rules |
+- Question that still needs an answer

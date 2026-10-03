@@ -4,15 +4,16 @@
 
 ## Delta from networked
 
-| Area | Change |
-| --- | --- |
-| **Subscribe** | Split into `SubscribePlayer` vs `SubscribeSpectator`, or one stream with role in session |
-| **Authorization** | `MakeMove` checks `RolePlayer`; spectators get `403` |
-| **Broadcast** | Same `GameEvent` payload; optional redaction (hidden until start) is out of scope |
+- **Subscribe** — Split into `SubscribePlayer` vs `SubscribeSpectator`, or one stream with role in session
+- **Authorization** — `MakeMove` checks `RolePlayer`; spectators get `403`
+- **Broadcast** — Same `GameEvent` payload; optional redaction (hidden until start) is out of scope
 
 ## API (sketch)
 
-| Method | Description |
-| --- | --- |
-| `WatchMatch(gameID, spectatorID) (<-chan GameEvent, error)` | Read-only stream |
-| `MakeMove(...)` | Unchanged; rejects non-players |
+```text
+WatchMatch(gameID, spectatorID) (<-chan GameEvent, error)
+  Read-only stream
+
+MakeMove(...)
+  Unchanged; rejects non-players
+```

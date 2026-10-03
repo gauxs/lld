@@ -1,6 +1,9 @@
 <script setup>
 import { computed } from "vue";
 import { useData } from "vitepress";
+import practiceNavigation from "../../sidebar-practice.json";
+import problemNavigation from "../../sidebar-problems.json";
+import theoryNavigation from "../../sidebar-theory.json";
 
 const { site, isDark } = useData();
 const base = site.value.base;
@@ -8,20 +11,31 @@ const logoSrc = computed(
   () => `${base}icons/${isDark.value ? "site-dark" : "site"}.svg`,
 );
 
+function withBase(link) {
+  return `${base}${link.replace(/^\//, "")}`;
+}
+
 const cards = [
   {
     title: "Theory",
     description:
-      "Concurrency fundamentals—shared memory, correctness, coordination, and scarcity.",
-    link: `${base}learn/concurrency/intro`,
-    meta: "4 articles",
+      "Concept trails covering the foundations behind low-level design.",
+    link: withBase(theoryNavigation.firstLink),
+    meta: `${theoryNavigation.articleCount} articles`,
   },
   {
     title: "Problems",
     description:
       "Requirement-first extensions with optional Go reference code.",
-    link: `${base}problems/connect-four/`,
-    meta: "Connect Four · Rate limiter",
+    link: withBase(problemNavigation.firstLink),
+    meta: `${problemNavigation.problemCount} problems`,
+  },
+  {
+    title: "Practice with AI",
+    description:
+      "Turn a chatbot into a structured low-level design interviewer.",
+    link: withBase(practiceNavigation.firstLink),
+    meta: `${practiceNavigation.pageCount} prompt${practiceNavigation.pageCount === 1 ? "" : "s"}`,
   },
 ];
 </script>
@@ -38,7 +52,7 @@ const cards = [
       />
       <h1 class="zen-home-title">LLDZen</h1>
       <p class="zen-home-tagline">
-        Low-level design notes—multi-page theory trails and problem walkthroughs.
+        Low-level design notes, problem walkthroughs, and guided AI practice.
       </p>
     </header>
 

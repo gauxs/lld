@@ -1,15 +1,43 @@
-# Problem name — baseline (design)
+# Problem name
 
-For **child extensions**, start the design doc with **Builds on:** (link to parent requirements) and document only **changes** to entities/API—not a full duplicate of baseline.
+## Approach
 
-## Entities & responsibilities
+Summarize the design and why it fits the requirements.
 
-| Entity | Responsibilities |
-| --- | --- |
-| **Example** | … |
+## Core types
+
+- `TypeName` — responsibility
+- `AnotherType` — responsibility
 
 ## API
 
-| Method | Description |
-| --- | --- |
-| `Example()` | … |
+```text
+Create(input) Result
+Get(id) Result
+```
+
+## Data structures
+
+- Structure → what it stores and why
+- Index → which access pattern it supports
+
+## Main flow
+
+1. Validate the request.
+2. Read or update the relevant state.
+3. Return the result.
+
+## Concurrency
+
+Explain shared state, invariants, and synchronization.
+
+## Complexity
+
+- Write: `O(?)`
+- Read: `O(?)`
+- Space: `O(?)`
+
+## Trade-offs
+
+- Decision and benefit
+- Limitation and possible future improvement
