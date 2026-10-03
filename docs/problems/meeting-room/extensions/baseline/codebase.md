@@ -253,7 +253,7 @@ func (mrh *MeetingRoomsHandler) UpdateMeetingSchedule(roomName string, meetingID
 		return nil
 	}
 
-	meetingRoom.BookSlot(meetingID, newEndTime, newEndTime, currentSlot.bookedCapacity)
+	meetingRoom.BookSlot(meetingID, newStartTime, newEndTime, currentSlot.bookedCapacity)
 
 	return nil
 }
