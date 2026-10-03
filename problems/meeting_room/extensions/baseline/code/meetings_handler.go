@@ -22,7 +22,7 @@ func (ms *MeetingsHandler) AddMeeting(meeting *Meeting) error {
 
 func (ms *MeetingsHandler) getMeeting(meetingID string) (*Meeting, error) {
 	val, ok := ms.meetings.Load(meetingID)
-	if ok {
+	if !ok {
 		return nil, nil
 	}
 
@@ -60,6 +60,18 @@ func (ms *MeetingsHandler) GetMeetingTitle(meetingID string) (string, error) {
 	defer m.rwMu.Unlock()
 
 	return m.title, nil
+}
+
+func (ms *MeetingsHandler) GetMeetingRoomName(meetingID string) (string, error) {
+	m, err := ms.getMeeting(meetingID)
+	if err != nil {
+		return "", err
+	}
+
+	m.rwMu.Lock()
+	defer m.rwMu.Unlock()
+
+	return m.roomName, nil
 }
 
 func (ms *MeetingsHandler) UpdateTitle(meetingID string, newTitle string) error {
