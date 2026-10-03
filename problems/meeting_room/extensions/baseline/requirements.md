@@ -1,4 +1,4 @@
-# Meeting room
+# Meeting room — baseline (requirements)
 
 Design and implement a Meeting Room Scheduler.
 
@@ -54,9 +54,6 @@ Design and implement a Meeting Room Scheduler.
 
 ## Out of scope (this extension)
 
-> **Interview prompts**
->
-> - **Deferred idea?** Point to a child extension or “not in this scope.”
 
 ## Non-functional requirements
 
@@ -67,9 +64,3 @@ Concurrent booking attempts are expected, including multiple users attempting to
 > **Interview prompts**
 >
 > - **Concurrent booking will happen?**
-
-## Extensions from here
-
-Optional follow-ups (sibling extensions). Add a row when you create `extensions/<child_id>/` and register it in `extensions.json`.
-
-- _(none yet)_ — e.g. networked play, configurable rules

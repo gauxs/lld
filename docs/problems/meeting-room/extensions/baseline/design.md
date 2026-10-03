@@ -7,7 +7,9 @@ prev:
   link: /problems/meeting-room/extensions/baseline/requirements
 ---
 
-For **child extensions**, start the design doc with **Builds on:** (link to parent requirements) and document only **changes** to entities/API—not a full duplicate of baseline.
+## Approach
+
+Summarize the design and why it fits the requirements.
 
 ## Go design sketch
 
@@ -15,12 +17,43 @@ Method bodies are intentionally omitted. Comments describe ownership,
 responsibilities, and invariants.
 
 ```go
-// Example — …
-type Example struct{}
+// Example owns the state and coordinates the main workflow.
+type Example struct {
+    repository *Repository
+}
 
-// Example — …
-func (e *Example) Example()
+// Repository owns storage and the access patterns over it.
+type Repository struct {
+    records map[string]Record
+}
+
+// NewExample creates an initialized Example.
+func NewExample(repository *Repository) *Example
+
+// Create validates and stores a record.
+func (e *Example) Create(input Input) (Record, error)
+
+// Get returns a record by id.
+func (e *Example) Get(id string) (Record, error)
 ```
 
+## Main flow
 
+1. Validate the request.
+2. Read or update the relevant state.
+3. Return the result.
 
+## Invariants and concurrency
+
+Explain shared state, invariants, and synchronization.
+
+## Complexity
+
+- Write: `O(?)`
+- Read: `O(?)`
+- Space: `O(?)`
+
+## Trade-offs
+
+- Decision and benefit
+- Limitation and possible future improvement
