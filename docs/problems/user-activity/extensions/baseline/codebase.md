@@ -9,7 +9,9 @@ prev:
 
 # Codebase
 
-[View source: `problems/user_activity/extensions/baseline/code`](https://github.com/gauxs/lld/tree/main/problems/user_activity/extensions/baseline/code)
+Source: [GitHub](https://github.com/gauxs/lld/tree/main/problems/user_activity/extensions/baseline/code)
+
+Path: ` problems/user_activity/extensions/baseline/code `
 
 ## Directory structure
 
@@ -17,60 +19,12 @@ prev:
 code/
 ├── enum/
 │   └── activity.go
-├── activity_store_test.go
 ├── activity_store.go
+├── activity_store_test.go
 ├── activity_tracker.go
 ├── error.go
-├── user_activity.go
-└── user.go
-```
-
-## ` activity_store_test.go `
-
-```go
-package code
-
-import (
-	"testing"
-	"time"
-
-	"github.com/gauxs/lld/problems/user_activity/extensions/baseline/code/enum"
-)
-
-var (
-	OneHrBack        = time.Now().Add(-time.Hour)
-	OneAndHalfHrBack = time.Now().Add(-1 * time.Hour).Add(-30 * time.Minute)
-	TwoHrBack        = time.Now().Add(-2 * time.Hour)
-)
-
-func TestStore_InvalidInput(t *testing.T) {
-	as := NewActivityStore(DefaultNumberOfMinutesInWindow)
-	err := as.Store(time.Now(), 0, enum.LOGIN)
-
-	if err == nil {
-		t.Errorf("%s | storing activity should not have been allowed", t.Name())
-	}
-}
-
-func TestStore_GetCountInTimerange(t *testing.T) {
-	as := NewActivityStore(DefaultNumberOfMinutesInWindow)
-
-	userID := uint(1)
-	activity := enum.LOGIN
-	if err := as.Store(OneAndHalfHrBack, userID, activity); err != nil {
-		t.Errorf("%s | error in storing user %d activity %v at time %v", t.Name(), userID, activity, OneAndHalfHrBack)
-	}
-
-	if err := as.Store(OneAndHalfHrBack.Add(time.Minute), userID, activity); err != nil {
-		t.Errorf("%s | error in storing user %d activity %v at time %v", t.Name(), userID, activity, OneAndHalfHrBack)
-	}
-
-	expectedActivityCount := uint(2)
-	if count := as.GetCountInTimerange(TwoHrBack, OneHrBack, userID, activity); count != expectedActivityCount {
-		t.Errorf("%s | unexpected activity count for user %d activity %v between time %v - %v. Expected %v, got %v",
-			t.Name(), userID, activity, TwoHrBack, OneHrBack, expectedActivityCount, count)
-	}
-}
+├── user.go
+└── user_activity.go
 ```
 
 ## ` activity_store.go `
@@ -416,6 +370,54 @@ func NewRecord() *Record {
 }
 ```
 
+## ` activity_store_test.go `
+
+```go
+package code
+
+import (
+	"testing"
+	"time"
+
+	"github.com/gauxs/lld/problems/user_activity/extensions/baseline/code/enum"
+)
+
+var (
+	OneHrBack        = time.Now().Add(-time.Hour)
+	OneAndHalfHrBack = time.Now().Add(-1 * time.Hour).Add(-30 * time.Minute)
+	TwoHrBack        = time.Now().Add(-2 * time.Hour)
+)
+
+func TestStore_InvalidInput(t *testing.T) {
+	as := NewActivityStore(DefaultNumberOfMinutesInWindow)
+	err := as.Store(time.Now(), 0, enum.LOGIN)
+
+	if err == nil {
+		t.Errorf("%s | storing activity should not have been allowed", t.Name())
+	}
+}
+
+func TestStore_GetCountInTimerange(t *testing.T) {
+	as := NewActivityStore(DefaultNumberOfMinutesInWindow)
+
+	userID := uint(1)
+	activity := enum.LOGIN
+	if err := as.Store(OneAndHalfHrBack, userID, activity); err != nil {
+		t.Errorf("%s | error in storing user %d activity %v at time %v", t.Name(), userID, activity, OneAndHalfHrBack)
+	}
+
+	if err := as.Store(OneAndHalfHrBack.Add(time.Minute), userID, activity); err != nil {
+		t.Errorf("%s | error in storing user %d activity %v at time %v", t.Name(), userID, activity, OneAndHalfHrBack)
+	}
+
+	expectedActivityCount := uint(2)
+	if count := as.GetCountInTimerange(TwoHrBack, OneHrBack, userID, activity); count != expectedActivityCount {
+		t.Errorf("%s | unexpected activity count for user %d activity %v between time %v - %v. Expected %v, got %v",
+			t.Name(), userID, activity, TwoHrBack, OneHrBack, expectedActivityCount, count)
+	}
+}
+```
+
 ## ` activity_tracker.go `
 
 ```go
@@ -545,6 +547,31 @@ var ErrInvalidTimeRange = errors.New("invalid time range")
 var ErrInvalidTime = errors.New("invalid time")
 var ErrInvalidUser = errors.New("invalid user")
 var ErrInvalidActivity = errors.New("invalid activity")
+```
+
+## ` user.go `
+
+```go
+package code
+
+type User struct {
+	userID uint
+}
+
+func NewUser(userID uint) *User {
+	return &User{
+		userID: userID,
+	}
+}
+
+func (u *User) GetUserID() uint {
+	if u == nil {
+		// zero is invalid userID
+		return 0
+	}
+
+	return u.userID
+}
 ```
 
 ## ` user_activity.go `
@@ -714,30 +741,5 @@ func Execute() {
 			fmt.Println("Unknown operation number. Please select between 1 and 8.")
 		}
 	}
-}
-```
-
-## ` user.go `
-
-```go
-package code
-
-type User struct {
-	userID uint
-}
-
-func NewUser(userID uint) *User {
-	return &User{
-		userID: userID,
-	}
-}
-
-func (u *User) GetUserID() uint {
-	if u == nil {
-		// zero is invalid userID
-		return 0
-	}
-
-	return u.userID
 }
 ```

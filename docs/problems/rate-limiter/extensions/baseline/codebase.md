@@ -9,7 +9,9 @@ prev:
 
 # Codebase
 
-[View source: `problems/rate_limiter/extensions/baseline/code`](https://github.com/gauxs/lld/tree/main/problems/rate_limiter/extensions/baseline/code)
+Source: [GitHub](https://github.com/gauxs/lld/tree/main/problems/rate_limiter/extensions/baseline/code)
+
+Path: ` problems/rate_limiter/extensions/baseline/code `
 
 ## Directory structure
 

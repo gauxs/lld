@@ -4,17 +4,16 @@
 
 ## Delta from baseline
 
-| Area | Change |
-| --- | --- |
-| **Storage** | Interface extracted from in-memory map; implementations: `MemoryStorage` (baseline), `RedisStorage`, etc. |
-| **FixedWindowAlgorithm** | Unchanged policy; depends on `Storage` port |
-| **Key design** | Global key namespace: env prefix + resource id + window + version |
+- **Storage** — Interface extracted from in-memory map; implementations: `MemoryStorage` (baseline), `RedisStorage`, etc.
+- **FixedWindowAlgorithm** — Unchanged policy; depends on `Storage` port
+- **Key design** — Global key namespace: env prefix + resource id + window + version
 
 ## Storage port (sketch)
 
-| Method | Description |
-| --- | --- |
-| `CompareAndIncrement(ctx, key, limit, ttl) (allowed bool, err error)` | Atomic or best-effort increment with expiry |
+```text
+CompareAndIncrement(ctx, key, limit, ttl) (allowed bool, err error)
+  Atomic or best-effort increment with expiry
+```
 
 ## Deployment sketch
 

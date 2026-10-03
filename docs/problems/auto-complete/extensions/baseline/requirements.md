@@ -12,7 +12,6 @@ Design and implement a Search Autocomplete System
 
 
 ## Functional requirements
-<div class="lld-req">
 
 ### FR-1: Return suggestions when a user types a prefix. The number of suggestions should be configurable.
 
@@ -28,17 +27,12 @@ Design and implement a Search Autocomplete System
 
 ### FR-8: Non-alphabetic input: reject/ignore characters outside a-z after normalization.
 
-</div>
-
 ## Out of scope (this extension)
 
 ## Non-functional requirements
-<div class="lld-req">
 
 ### NFR-1: concurrent additions and retrievals are supported.
 
 ### NFR-2: Query latency: autocomplete retrieval should be low-latency; target is O(query length + number of returned suggestions)
 
 ### NFR-3: When a word is added or its frequency changes, subsequent retrievals should reflect the updated ranking without requiring a full rebuild.
-
-</div>

@@ -9,7 +9,9 @@ prev:
 
 # Codebase
 
-[View source: `problems/connect_four/extensions/baseline/code`](https://github.com/gauxs/lld/tree/main/problems/connect_four/extensions/baseline/code)
+Source: [GitHub](https://github.com/gauxs/lld/tree/main/problems/connect_four/extensions/baseline/code)
+
+Path: ` problems/connect_four/extensions/baseline/code `
 
 ## Directory structure
 

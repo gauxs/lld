@@ -11,12 +11,11 @@ For **child extensions**, start the design doc with **Builds on:** (link to pare
 
 ## Entities & responsibilities
 
-| Entity | Responsibilities |
-| --- | --- |
-| **Example** | … |
+- **Example** — …
 
 ## API
 
-| Method | Description |
-| --- | --- |
-| `Example()` | … |
+```text
+Example()
+  …
+```

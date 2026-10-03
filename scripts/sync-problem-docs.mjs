@@ -9,6 +9,16 @@ const DOCS_PROBLEMS = path.join(ROOT, "docs", "problems");
 
 const REPO = "https://github.com/gauxs/lld";
 
+function compareText(a, b) {
+  return a < b ? -1 : a > b ? 1 : 0;
+}
+
+function encodeUrlSegment(value) {
+  return encodeURIComponent(value).replace(/[!'()*]/g, (character) =>
+    `%${character.charCodeAt(0).toString(16).toUpperCase()}`,
+  );
+}
+
 function humanizeName(name) {
   return name
     .replace(/[-_]+/g, " ")
@@ -69,7 +79,7 @@ function discoverProblemIds(dir = PROBLEMS, prefix = "") {
     prefix && fs.existsSync(path.join(dir, "extensions.json")) ? [prefix] : [];
   for (const entry of fs
     .readdirSync(dir, { withFileTypes: true })
-    .sort((a, b) => a.name.localeCompare(b.name))) {
+    .sort((a, b) => compareText(a.name, b.name))) {
     if (
       !entry.isDirectory() ||
       entry.name.startsWith(".") ||
@@ -133,6 +143,7 @@ const LANGUAGE_BY_EXTENSION = {
   ".scss": "scss",
   ".sh": "bash",
   ".sql": "sql",
+  ".svelte": "svelte",
   ".swift": "swift",
   ".toml": "toml",
   ".ts": "typescript",
@@ -181,7 +192,7 @@ function collectCodeFiles(dir, prefix = "") {
   const files = [];
   for (const entry of fs
     .readdirSync(dir, { withFileTypes: true })
-    .sort((a, b) => a.name.localeCompare(b.name))) {
+    .sort((a, b) => compareText(a.name, b.name))) {
     if (entry.name.startsWith(".") && !INCLUDED_DOTFILES.has(entry.name)) {
       continue;
     }
@@ -221,6 +232,9 @@ function hasCode(problemId, extId) {
 
 function codeLanguage(filePath) {
   const filename = path.basename(filePath);
+  if (filename === "Dockerfile" || filename.startsWith("Dockerfile.")) {
+    return "dockerfile";
+  }
   return (
     LANGUAGE_BY_FILENAME[filename] ??
     LANGUAGE_BY_EXTENSION[path.extname(filename).toLowerCase()] ??
@@ -265,7 +279,7 @@ function directoryTree(files) {
   function render(children, prefix) {
     const entries = [...children.entries()].sort(
       ([nameA, nodeA], [nameB, nodeB]) =>
-        Number(nodeA.file) - Number(nodeB.file) || nameA.localeCompare(nameB),
+        Number(nodeA.file) - Number(nodeB.file) || compareText(nameA, nameB),
     );
     entries.forEach(([name, node], index) => {
       const last = index === entries.length - 1;
@@ -298,7 +312,9 @@ ${content}${fence}`;
 
   return `# Codebase
 
-[View source: \`${codeRel}\`](${codeUrl})
+Source: [GitHub](${codeUrl})
+
+Path: ${inlineCode(codeRel)}
 
 ## Directory structure
 
@@ -400,7 +416,11 @@ ${hubLines.join("\n")}
 
     const steps = trailSteps(problemId, ext.id);
     const codeRel = `problems/${problemId}/extensions/${ext.id}/code`;
-    const codeUrl = `${REPO}/tree/main/${codeRel}`;
+    const encodedCodePath = codeRel
+      .split("/")
+      .map(encodeUrlSegment)
+      .join("/");
+    const codeUrl = `${REPO}/tree/main/${encodedCodePath}`;
 
     for (const step of steps) {
       if (step.doc === "codebase.md") {
@@ -518,14 +538,14 @@ function buildSidebarTree(problemIds) {
 
   function render(node) {
     const sections = [...node.sections.entries()]
-      .sort(([a], [b]) => a.localeCompare(b))
+      .sort(([a], [b]) => compareText(a, b))
       .map(([name, child]) => ({
         text: humanizeName(name),
         collapsed: false,
         items: render(child),
       }));
     const problems = node.problems
-      .sort((a, b) => a.localeCompare(b))
+      .sort(compareText)
       .map(buildProblemSidebar);
     return [...sections, ...problems];
   }
