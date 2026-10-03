@@ -26,7 +26,8 @@ code/
 ├── meeting_scheduler.go
 ├── meetings_handler.go
 ├── notification_service.go
-└── user.go
+├── user.go
+└── util.go
 ```
 
 ## ` enum/meeting_state.go `
@@ -56,6 +57,7 @@ package code
 
 import (
 	"sync"
+	"time"
 
 	"github.com/gauxs/lld/problems/meeting_room/extensions/baseline/code/enum"
 )
@@ -66,9 +68,24 @@ type Meeting struct {
 	id           string
 	title        string
 	roomName     string
-	slot         *TimeSlot
+	startTime    time.Time
+	endTime      time.Time
 	participants []*User
 	state        enum.MeetingState
+}
+
+func NewMeeting(title string, roomName string, startTime time.Time, endTime time.Time, p []*User) *Meeting {
+	return &Meeting{
+		rwMu: &sync.RWMutex{},
+
+		id:           GenerateID(),
+		title:        title,
+		roomName:     roomName,
+		startTime:    startTime,
+		endTime:      endTime,
+		participants: p,
+		state:        enum.MEETINGSTATE_INVALID,
+	}
 }
 ```
 
@@ -83,9 +100,19 @@ import (
 )
 
 type TimeSlot struct {
-	startTime time.Time
-	endTime   time.Time
-	meetingID string
+	startTime      time.Time
+	endTime        time.Time
+	meetingID      string
+	bookedCapacity int
+}
+
+func NewTimeSlot(startTime time.Time, endTime time.Time, meetingID string, participantsCapacity int) *TimeSlot {
+	return &TimeSlot{
+		startTime:      startTime,
+		endTime:        endTime,
+		meetingID:      meetingID,
+		bookedCapacity: participantsCapacity,
+	}
 }
 
 type MeetingRoom struct {
@@ -94,6 +121,36 @@ type MeetingRoom struct {
 	name        string
 	capacity    int
 	bookedslots []*TimeSlot // NOTE: deadlock is not possible
+}
+
+func NewMeetingRoom(name string, cap int) *MeetingRoom {
+	return &MeetingRoom{
+		rwMu:        &sync.RWMutex{},
+		name:        name,
+		capacity:    cap,
+		bookedslots: make([]*TimeSlot, 0),
+	}
+}
+
+func (mr *MeetingRoom) IsAvailaible(startTime time.Time, endTime time.Time, participantsCount int) bool {
+	if mr.capacity < participantsCount {
+		return false
+	}
+
+	// check slot availability
+	// NOTE: use binary search for optimization
+	for _, slot := range mr.bookedslots {
+		if (slot.startTime.After(startTime) && slot.endTime.Before(startTime)) || (slot.startTime.After(endTime) && slot.endTime.Before(endTime)) {
+			return false
+		}
+	}
+
+	return true
+}
+
+func (mr *MeetingRoom) BookSlot(meetingID string, startTime time.Time, endTime time.Time, participantsCount int) error {
+	mr.bookedslots = append(mr.bookedslots, NewTimeSlot(startTime, endTime, meetingID, participantsCount))
+	return nil
 }
 ```
 
@@ -111,16 +168,38 @@ type MeetingRoomsHandler struct {
 	rooms sync.Map
 }
 
-func (mrh *MeetingRoomsHandler) AddMeetingRoom(name string) error {
+func (mrh *MeetingRoomsHandler) AddMeetingRoom(name string, capacity int) error {
+	mrh.rooms.Store(name, NewMeetingRoom(name, capacity))
 	return nil
 }
 
-func (mrh *MeetingRoomsHandler) GetMeetingRoom(name string) error {
-	return nil
+func (mrh *MeetingRoomsHandler) GetMeetingRoom(name string) (*MeetingRoom, error) {
+	if val, ok := mrh.rooms.Load(name); !ok {
+		return nil, nil
+	} else {
+		meetingRoom, ok := val.(*MeetingRoom)
+		if !ok {
+			return nil, nil
+		}
+
+		return meetingRoom, nil
+	}
 }
 
-func (mrh *MeetingRoomsHandler) ReserveMeetingRoom(name string, meetingID string, startTime time.Time, endTime time.Time) error {
-	return nil
+func (mrh *MeetingRoomsHandler) ReserveMeetingRoom(name string, meetingID string, startTime time.Time, endTime time.Time, participantsCount int) error {
+	meetingRoom, err := mrh.GetMeetingRoom(name)
+	if err != nil {
+
+	}
+
+	meetingRoom.rwMu.Lock()
+	defer meetingRoom.rwMu.Unlock()
+
+	if !meetingRoom.IsAvailaible(startTime, endTime, participantsCount) {
+		return nil
+	}
+
+	return meetingRoom.BookSlot(meetingID, startTime, endTime, participantsCount)
 }
 ```
 
@@ -129,7 +208,11 @@ func (mrh *MeetingRoomsHandler) ReserveMeetingRoom(name string, meetingID string
 ```go
 package code
 
-import "time"
+import (
+	"time"
+
+	"github.com/gauxs/lld/problems/meeting_room/extensions/baseline/code/enum"
+)
 
 type MeetingScheduler struct {
 	mrhandler    *MeetingRoomsHandler
@@ -137,10 +220,17 @@ type MeetingScheduler struct {
 	notification *NotificationService
 }
 
-func (ms *MeetingScheduler) ScheduleMeeting(meetingTitle string, roomName string, startTime time.Time, endTime time.Time, participants []string) (string, error) {
+func (ms *MeetingScheduler) ScheduleMeeting(meetingTitle string, roomName string, startTime time.Time, endTime time.Time, participants []*User) (string, error) {
+	meeting := NewMeeting(meetingTitle, roomName, startTime, endTime, participants)
 	// 1 - Try to reserve the room's slots
-	// 2 - If room reserved, create a meeting
-	return "", nil
+	if err := ms.mrhandler.ReserveMeetingRoom(roomName, meeting.id, startTime, endTime, len(participants)); err != nil {
+		return "", nil
+	}
+
+	// 2 - If room reserved, update the meeting
+	meeting.state = enum.MEETINGSTATE_BOOKED
+
+	return meeting.id, ms.mh.AddMeeting(meeting)
 }
 
 func (ms *MeetingScheduler) UpdateMeetingTitle(meetingID string, newTitle string) error {
@@ -178,10 +268,13 @@ type MeetingsHandler struct {
 	meetings sync.Map
 }
 
-func (ms *MeetingsHandler) Schedule(meetingTitle string, roomName string, startTime time.Time, endTime time.Time, participants []string) (string, error) {
-	// 1 - Try to reserve the room's slots
-	// 2 - If room reserved, create a meeting
-	return "", nil
+func (ms *MeetingsHandler) AddMeeting(meeting *Meeting) error {
+	if _, ok := ms.meetings.Load(meeting.id); ok {
+		return nil
+	}
+
+	ms.meetings.Store(meeting.id, meeting)
+	return nil
 }
 
 func (ms *MeetingsHandler) UpdateTitle(meetingID string, newTitle string) error {
@@ -206,9 +299,13 @@ func (ms *MeetingsHandler) Cancel(meetingID string) error {
 ```go
 package code
 
+import "fmt"
+
 type NotificationService struct{}
 
-func (ns *NotificationService) NotifyUser(userName string, msg string) {}
+func (ns *NotificationService) NotifyUser(user *User, meeting *Meeting) {
+	fmt.Printf("%v, meeting %v is updated", user.name, meeting.id)
+}
 ```
 
 ## ` user.go `
@@ -218,5 +315,23 @@ package code
 
 type User struct {
 	name string
+}
+
+func NewUser(name string) *User {
+	return &User{
+		name: name,
+	}
+}
+```
+
+## ` util.go `
+
+```go
+package code
+
+import "github.com/google/uuid"
+
+func GenerateID() string {
+	return uuid.New().String()
 }
 ```

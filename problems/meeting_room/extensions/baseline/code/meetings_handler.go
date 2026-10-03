@@ -9,10 +9,13 @@ type MeetingsHandler struct {
 	meetings sync.Map
 }
 
-func (ms *MeetingsHandler) Schedule(meetingTitle string, roomName string, startTime time.Time, endTime time.Time, participants []string) (string, error) {
-	// 1 - Try to reserve the room's slots
-	// 2 - If room reserved, create a meeting
-	return "", nil
+func (ms *MeetingsHandler) AddMeeting(meeting *Meeting) error {
+	if _, ok := ms.meetings.Load(meeting.id); ok {
+		return nil
+	}
+
+	ms.meetings.Store(meeting.id, meeting)
+	return nil
 }
 
 func (ms *MeetingsHandler) UpdateTitle(meetingID string, newTitle string) error {
