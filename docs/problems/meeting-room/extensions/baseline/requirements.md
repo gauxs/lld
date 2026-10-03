@@ -21,7 +21,8 @@ Design and implement a Meeting Room Scheduler.
 
 ### FR-2: Book a meeting
  - A booking can be made up to 30 days in advance.
- - A room can be booked for a minimum of 30 minutes and a maximum of 4 hours.
+ - A room can be booked for a minimum of 30 minutes and a maximum of 4 hours. 
+ - Bookings can start at arbitrary times, such as 2:13 PM. There is no requirement to align bookings to 15/30-minute boundaries.
 
 > **Interview prompts**
 >

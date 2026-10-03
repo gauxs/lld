@@ -9,8 +9,6 @@ prev:
 
 ## Approach
 
-Summarize the design and why it fits the requirements.
-
 ## Class design & Relationships
 
 ```go
@@ -22,38 +20,55 @@ type TimeSlot struct{
 }
 
 type MeetingRoom struct {
+    rwMu *sync.RWMutex
     name string
     // 15 min slots refreshed for next 30 days
     slots []*TimeSlot
 }
 
 type MeetingRoomsHandler struct{
-    rooms []*MeetingRoom
+    rooms sync.Map[string]*MeetingRoom
 }
 
 func (mrh *MeetingRoomsHandler) AddMeetingRoom(name string) error {}
+
+func (mrh *MeetingRoomsHandler) GetMeetingRoom(name string) error {}
+
+func (mrh *MeetingRoomsHandler) ReserveMeetingRoom(name string, startTime time.Time, endTime time.Time) error {}
 
 type Meeting struct{
     title string
     roomName string
     slots []*TimeSlot
     participants []string
+    state enum.MeetingState
 }
 
-type MeetingScheduler struct{
+type MeetingsHandler struct{
     mrhandler *MeetingRoomsHandler
+    meetings sync.Map[string]*Meeting
 }
 
-func (ms *MeetingScheduler) ScheduleMeeting(startTime time.Time, endTime time.Time, participants []string) *Meeting {}
+func (ms *MeetingScheduler) ScheduleMeeting(meetingTitle string, roomName string, startTime time.Time, endTime time.Time, participants []string) (*Meeting, error) {
+    // 1 - Try to reserve the room's slots
+    // 2 - If room reserved, create a meeting 
+}
 
-func (ms *MeetingScheduler) UpdateMeetingTitle(meeting *Meeting, newTitle string) error {}
+func (ms *MeetingScheduler) UpdateMeetingTitle(currentTitle string, newTitle string) error {}
 
-func (ms *MeetingScheduler) UpdateMeetingParticipants(meeting *Meeting, newparticipants []string) error {}
+func (ms *MeetingScheduler) UpdateMeetingParticipants(meetingTitle string, newparticipants []string) error {}
 
-func (ms *MeetingScheduler) UpdateMeetingSchedule(meeting *Meeting, newStartTime time.Time, endTime time.Time) error {}
+func (ms *MeetingScheduler) UpdateMeetingSchedule(meetingTitle string, newStartTime time.Time, endTime time.Time) error {
+    // 1 - Try to reserve the room's slots
+    // 2 - If room reserved, update the meeting 
+}
 
-func (ms *MeetingScheduler) CancelMeeting(meeting *Meeting) error {}
+func (ms *MeetingScheduler) CancelMeeting(meetingTitle string) error {
+    // 1 - Free up the room's slots
+    // 2 - Update the meeting with CANCELLED state
+}
 
+func ()
 ```
 
 ## Main flow
