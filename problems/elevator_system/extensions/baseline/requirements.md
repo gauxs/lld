@@ -6,9 +6,7 @@ Design and implement a normal passenger elevator system like you'd see in a gate
 
 ### FR-1: Number of elevators & Floors
 
-- Number of elevators: configurable at system initialization
-- Number of floors: configurable at system initialization
-- Both remain fixed after initialization
+- Number of elevators and floors: configurable at system initialization
 - There is a hall/lobby on every floor containing all elevator entrances.
 
 > **Interview prompts**
@@ -25,10 +23,17 @@ Design and implement a normal passenger elevator system like you'd see in a gate
 - Nearest non-moving elevator as the initial selection strategy. We won't optimize/batch multiple requests in the initial implementation.
 - Selection logic should be replaceable/extensible in the future
 
-### FR-3: Elevator Display
+### FR-4: Elevator movement
+- An elevator moves one floor at a time toward its destination.
+- While handling a request, it does not accept another request.
+
+### FR-4: Elevator Details
 
 - Each elevator has its own external display, showing that elevator's current floor.
 - The floor displays outside show the current floor of the elevator(s) serving that floor.
+- Each elevator has a fixed capacity.
+- The system must prevent boarding beyond that capacity.
+- Capacity is considered when handling passengers/requests.
 
 ### FR-4: Multiple Elevators
 
@@ -40,10 +45,7 @@ Design and implement a normal passenger elevator system like you'd see in a gate
 
 ## Non-functional requirements
 
-### NFR-1: Short title
+### NFR-1: Concurrent operation
 
-Constraint or quality requirement.
-
-## Extensions from here
-
-- [Child extension](/problems/problem-name/extensions/child/requirements) — What it adds
+- Multiple elevators can operate independently/concurrently.
+- The simulation should be capable of representing their independent movement.
