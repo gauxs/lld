@@ -17,10 +17,6 @@ Design and implement a normal passenger elevator system like you'd see in a gate
 - Number of elevators and floors: configurable at system initialization
 - There is a hall/lobby on every floor containing all elevator entrances.
 
-> **Interview prompts**
->
-> - **Question?** Agreed answer.
-
 ### FR-2: User interaction
 
 - Outside: each floor has Up and Down buttons.

@@ -17,14 +17,22 @@ Summarize the design and why it fits the requirements.
 ## Class design & Relationships
 
 ```go
-// Example owns the state and coordinates the main workflow.
-type Example struct {
-    repository *Repository
+type ElevatorMovementState int
+
+const (
+    ELEVATORMOVEMENTSTATE_INVALID iota = 0
+    ELEVATORMOVEMENTSTATE_IDLE
+)
+
+type Elevator struct {
+    capacity int
+    passengers []*User
+    currentFloor int
+    movementState ElevatorMovementState
 }
 
-// Repository owns storage and the access patterns over it.
-type Repository struct {
-    records map[string]Record
+type ElevatorManagementSystem struct {
+    elevators []*Elevator
 }
 
 // NewExample creates an initialized Example.
