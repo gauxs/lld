@@ -29,6 +29,12 @@ type Elevator struct {
     passengers []*User
     currentFloor int
     movementState ElevatorMovementState
+    requests chan *ElevatorRequest
+}
+
+type ElevatorRequest struct {
+    sourceFloor int
+    destinationFloor int
 }
 
 type ElevatorManagementSystem struct {
