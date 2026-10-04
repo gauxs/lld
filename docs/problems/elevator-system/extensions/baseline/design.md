@@ -1,4 +1,14 @@
-# Problem name
+---
+title: Elevator System
+problem: elevator_system
+extension: baseline
+prev:
+  text: requirements
+  link: /problems/elevator-system/extensions/baseline/requirements
+next:
+  text: codebase
+  link: /problems/elevator-system/extensions/baseline/codebase
+---
 
 ## Approach
 

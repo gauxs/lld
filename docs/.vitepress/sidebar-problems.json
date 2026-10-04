@@ -21,7 +21,7 @@
               "link": "/problems/auto-complete/extensions/baseline/design"
             },
             {
-              "text": "Codebase",
+              "text": "Code",
               "link": "/problems/auto-complete/extensions/baseline/codebase"
             }
           ]
@@ -49,7 +49,7 @@
               "link": "/problems/connect-four/extensions/baseline/design"
             },
             {
-              "text": "Codebase",
+              "text": "Code",
               "link": "/problems/connect-four/extensions/baseline/codebase"
             }
           ]
@@ -99,6 +99,34 @@
       ]
     },
     {
+      "text": "Elevator System",
+      "collapsed": true,
+      "items": [
+        {
+          "text": "Overview",
+          "link": "/problems/elevator-system/"
+        },
+        {
+          "text": "Baseline",
+          "collapsed": true,
+          "items": [
+            {
+              "text": "Requirements",
+              "link": "/problems/elevator-system/extensions/baseline/requirements"
+            },
+            {
+              "text": "Design",
+              "link": "/problems/elevator-system/extensions/baseline/design"
+            },
+            {
+              "text": "Code",
+              "link": "/problems/elevator-system/extensions/baseline/codebase"
+            }
+          ]
+        }
+      ]
+    },
+    {
       "text": "Meeting Room",
       "collapsed": true,
       "items": [
@@ -117,6 +145,10 @@
             {
               "text": "Design",
               "link": "/problems/meeting-room/extensions/baseline/design"
+            },
+            {
+              "text": "Code",
+              "link": "/problems/meeting-room/extensions/baseline/codebase"
             }
           ]
         }
@@ -143,7 +175,7 @@
               "link": "/problems/rate-limiter/extensions/baseline/design"
             },
             {
-              "text": "Codebase",
+              "text": "Code",
               "link": "/problems/rate-limiter/extensions/baseline/codebase"
             }
           ]
@@ -213,7 +245,7 @@
               "link": "/problems/user-activity/extensions/baseline/design"
             },
             {
-              "text": "Codebase",
+              "text": "Code",
               "link": "/problems/user-activity/extensions/baseline/codebase"
             }
           ]
@@ -222,5 +254,5 @@
     }
   ],
   "firstLink": "/problems/auto-complete/extensions/baseline/requirements",
-  "problemCount": 5
+  "problemCount": 6
 }
