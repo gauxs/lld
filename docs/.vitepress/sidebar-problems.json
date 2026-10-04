@@ -99,6 +99,34 @@
       ]
     },
     {
+      "text": "Elevator System",
+      "collapsed": true,
+      "items": [
+        {
+          "text": "Overview",
+          "link": "/problems/elevator-system/"
+        },
+        {
+          "text": "Baseline",
+          "collapsed": true,
+          "items": [
+            {
+              "text": "Requirements",
+              "link": "/problems/elevator-system/extensions/baseline/requirements"
+            },
+            {
+              "text": "Design",
+              "link": "/problems/elevator-system/extensions/baseline/design"
+            },
+            {
+              "text": "Code",
+              "link": "/problems/elevator-system/extensions/baseline/codebase"
+            }
+          ]
+        }
+      ]
+    },
+    {
       "text": "Meeting Room",
       "collapsed": true,
       "items": [
@@ -226,5 +254,5 @@
     }
   ],
   "firstLink": "/problems/auto-complete/extensions/baseline/requirements",
-  "problemCount": 5
+  "problemCount": 6
 }
