@@ -8,7 +8,7 @@ next:
   link: /problems/elevator-system/extensions/baseline/design
 ---
 
-One-paragraph interview prompt.
+Design and implement an elevator system
 
 ## Functional requirements
 

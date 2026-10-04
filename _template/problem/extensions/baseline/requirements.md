@@ -25,7 +25,3 @@ Requirement statement.
 ### NFR-1: Short title
 
 Constraint or quality requirement.
-
-## Extensions from here
-
-- [Child extension](/problems/problem-name/extensions/child/requirements) — What it adds

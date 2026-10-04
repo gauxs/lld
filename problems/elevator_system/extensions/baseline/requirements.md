@@ -1,6 +1,6 @@
 # Elevator System
 
-One-paragraph interview prompt.
+Design and implement an elevator system
 
 ## Functional requirements
 
