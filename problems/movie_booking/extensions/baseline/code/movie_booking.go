@@ -8,4 +8,4 @@ package code
 // Locking of seats
 // LockSeat(movieTheatreID, screenID, slotID, seatID)
 
-// BookTicket(cityID, movieID, movieTheatreID, screenID, slotID, seatID) Ticket
+// BookTicket(cityID, movieID, movieTheatreID, screenID, slotID, seatID) Booking
