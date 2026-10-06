@@ -19,7 +19,7 @@ Use this prompt to turn a chatbot into a structured low-level design interviewer
 # Goal
 
 #### LEVEL = "Staff / L6"
-#### PROBLEM = "Search Autocomplete System"
+#### PROBLEM = "Elevator System"
 
 Use the values of `LEVEL` and `PROBLEM` throughout this prompt.
 Do not treat `{LEVEL}` or `{PROBLEM}` as literal text.
