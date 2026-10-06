@@ -16,12 +16,12 @@ Requirement statement.
 
 Requirement statement.
 
-## Out of scope (this extension)
-
-- Deferred capability.
-
 ## Non-functional requirements
 
 ### NFR-1: Short title
 
 Constraint or quality requirement.
+
+## Out of scope (this extension)
+
+- Deferred capability.
