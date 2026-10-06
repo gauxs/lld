@@ -19,10 +19,10 @@ type MovieTheatre struct {
 
 type Screen struct {
 	id    string
-	slots []Slot
+	slots []Show
 }
 
-type Slot struct {
+type Show struct {
 	id        string
 	movieID   string
 	startTime time.Time
