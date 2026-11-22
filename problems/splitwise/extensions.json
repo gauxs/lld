@@ -1,0 +1,9 @@
+{
+  "default": "baseline",
+  "order": ["baseline"],
+  "extensions": {
+    "baseline": {
+      "title": "Baseline"
+    }
+  }
+}
