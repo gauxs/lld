@@ -33,6 +33,7 @@ See **[Add study content](_template/setup.md)** for the authoring workflow.
 npm run docs:build
 npm run docs:preview
 ```
+
 # Staff-Level LLD & Machine Coding Prep Checklist (Go)
 
 At **Staff level**, interviewers treat clean interfaces and modularity as table stakes. The bar shifts to **concurrency correctness, lock granularity, failure handling (idempotency, retries, rollbacks), memory/latency trade-offs, and API ergonomics**.
